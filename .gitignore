@@ -14,3 +14,4 @@ cmake-build-debug
 image_processing
 image_processing.iml
 .idea
+output
