@@ -1,37 +1,115 @@
-#include <stdio.h>
+#include <iostream>
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 
 using namespace cv;
+using namespace std;
 
-int main(int argc, char** argv )
-{
-    if ( argc != 2 )
-    {
-        printf("usage: DisplayImage.out <Image_Path>\n");
-        return -1;
-    }
+// Constants
+constexpr int INPUT_IMAGE_POS = 1;
 
-    Mat image;
-    image = imread( argv[1], IMREAD_GRAYSCALE );
+// Print available functions in command-line
+void printCommands() {
+    cout << "Available commands:\n"
+    << "--help - print list of all the available commands with detailed description of their arguments.\n"
+    << "--output [-outputFileName=value] - provide output file name.\n"
+    << "\t -outputFileName - output file name (default is output.bmp)."
+    << "--grayscale - read image in grayscale.\n"
+    << "--brightness [-modVal=value] - modify brightness of an image.\n"
+    << "\t -modVal - integral value to add to each pixel (can be negative).\n";
+}
 
-    if ( !image.data )
-    {
-        printf("No image data \n");
-        return -1;
-    }
+// Command-line input variables
+string outputFileName = "output.bmp";
+ImreadModes imreadMode = IMREAD_COLOR;
+bool isBrightnessModified = false;
+int brightnessModVal;
 
-    for (int x = 0; x < image.rows; x ++) {
-        for (int y = 0; y < image.cols; y++) {
-            if (image.at<uchar>(x, y) <= UCHAR_MAX - 10) {
-                image.at<uchar>(x, y) += 100;
+// Process user input from command-line
+void processInput(int argc, char** argv) {
+    for (int i = 1; i < argc; i++) {
+        if (static_cast<string>(argv[i]) == "--help") {
+            printCommands();
+        }
+        else if (static_cast<string>(argv[i]) == "--output") {
+            string paramVal = argv[++i];
+            if (paramVal.substr(0, 16) != "-outputFileName=") {
+                cout << "The --output parameter has to be of format: -outputFileName=[value]. Skipping outputFileName modification.";
+            }
+            else {
+                outputFileName = paramVal.substr(paramVal.find('=') + 1);
+            }
+        }
+        else if (static_cast<string>(argv[i]) == "--grayscale") {
+            imreadMode = IMREAD_GRAYSCALE;
+        }
+        else if (static_cast<string>(argv[i]) == "--brightness") {
+            isBrightnessModified = true;
+            string paramVal = argv[++i];
+            if (paramVal.substr(0, 8) != "-modVal=") {
+                cout << "The --brightness parameter has to be of format: -modVal=[value]. Skipping brightness modification.";
+                isBrightnessModified = false;
+            }
+            try {
+                brightnessModVal = stoi(paramVal.substr(paramVal.find('=') + 1));
+            }
+            catch (const invalid_argument & e) {
+                cout << "-modVal has to be an integer. Skipping brightness modification.";
+                isBrightnessModified = false;
+            }
+            catch (const out_of_range & e) {
+                cout << "-modVal is out of bounds. Skipping brightness modification.";
+                isBrightnessModified = false;
             }
         }
     }
+}
 
-    if (!std::filesystem::is_directory("output") || !std::filesystem::exists("output")) {
-        std::filesystem::create_directory("output");
+void modifyBrightnessGrayscale(Mat& image) {
+    for (int x = 0; x < image.rows; x ++) {
+        for (int y = 0; y < image.cols; y++) {
+            if (brightnessModVal < 0) {
+                if (image.at<uchar>(x, y) >= 0 - brightnessModVal) {
+                    image.at<uchar>(x, y) += brightnessModVal;
+                }
+                else {
+                    image.at<uchar>(x, y) = 0;
+                }
+            }
+            else {
+                if (image.at<uchar>(x, y) <= UCHAR_MAX - brightnessModVal) {
+                    image.at<uchar>(x, y) += brightnessModVal;
+                }
+                else {
+                    image.at<uchar>(x, y) = UCHAR_MAX;
+                }
+            }
+        }
     }
-    imwrite("output/output2.bmp", image);
+}
+
+void saveImage(Mat image) {
+    if (!filesystem::is_directory("output") || !filesystem::exists("output")) {
+        filesystem::create_directory("output");
+    }
+    imwrite("output/" + outputFileName, image);
+}
+
+int main(int argc, char** argv) {
+    processInput(argc, argv);
+    Mat image = imread(argv[INPUT_IMAGE_POS], imreadMode);
+
+    if (!image.data) {
+        cout << "No image data \n";
+        return -1;
+    }
+
+    if (isBrightnessModified) {
+        modifyBrightnessGrayscale(image);
+    }
+    saveImage(image);
     return 0;
 }
+
+
+
