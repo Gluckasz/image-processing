@@ -41,7 +41,7 @@ void GrayscaleImageProcessor::modifyContrast() {
             float gammaCorrectedVal = pow(normalizedPixelVal, contrastModVal); // Gamma correction
             int gammaCorrectedPixel = round(gammaCorrectedVal * 255); // Scale back to 0-255
 
-            gammaCorrectedPixel = std::min(std::max(gammaCorrectedPixel, 0), 255);
+            gammaCorrectedPixel = std::clamp(gammaCorrectedPixel, 0, UCHAR_MAX);
             image.at<uchar>(x, y) = gammaCorrectedPixel;
         }
     }
