@@ -19,7 +19,9 @@ void printCommands() {
     << "\t -outputFileName - output file name (default is output.bmp).\n"
     << "--grayscale - read image in grayscale.\n"
     << "--brightness [-modVal=value] - modify brightness of an image.\n"
-    << "\t -modVal - integral value to add to each pixel (can be negative).\n";
+    << "\t -modVal - integral value to add to each pixel (can be negative).\n"
+    << "--contrast [-modVal=value] - modify contrast of an image.\n"
+    << "\t -modVal - floating-point value of gamma variable.\n";
 }
 
 // Command-line input variables
@@ -27,6 +29,8 @@ string outputFileName = "output.bmp";
 ImreadModes imreadMode = IMREAD_COLOR;
 bool isBrightnessModified = false;
 int brightnessModVal;
+bool isContrastModified = false;
+float contrastModVal;
 
 // Process user input from command-line
 void processInput(int argc, char** argv) {
@@ -65,6 +69,25 @@ void processInput(int argc, char** argv) {
                 isBrightnessModified = false;
             }
         }
+        else if (static_cast<string>(argv[i]) == "--contrast") {
+            isContrastModified = true;
+            string paramVal = argv[++i];
+            if (paramVal.substr(0, 8) != "-modVal=") {
+                cout << "The --contrast parameter has to be of format: -modVal=[value]. Skipping contrast modification.";
+                isContrastModified = false;
+            }
+            try {
+                contrastModVal = stof(paramVal.substr(paramVal.find('=') + 1));
+            }
+            catch (const invalid_argument & e) {
+                cout << "-modVal has to be an integer. Skipping contrast modification.";
+                isContrastModified = false;
+            }
+            catch (const out_of_range & e) {
+                cout << "-modVal is out of bounds. Skipping contrast modification.";
+                isContrastModified = false;
+            }
+        }
     }
 }
 
@@ -92,13 +115,16 @@ int main(int argc, char** argv) {
     else {
         imageProcessor = make_unique<GrayscaleImageProcessor>(
             image,
-            isBrightnessModified,
-            brightnessModVal
+            brightnessModVal,
+            contrastModVal
             );
     }
 
     if (isBrightnessModified) {
         imageProcessor->modifyBrightness();
+    }
+    if (isContrastModified) {
+        imageProcessor->modifyContrast();
     }
     saveImage(image);
     return 0;

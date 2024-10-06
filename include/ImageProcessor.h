@@ -11,10 +11,11 @@ using namespace cv;
 class ImageProcessor {
 public:
     virtual void modifyBrightness() = 0;
+    virtual void modifyContrast() = 0;
 protected:
     Mat image;
-    bool isBrightnessModified;
     int brightnessModVal;
+    float contrastModVal;
 };
 
 #endif //IMAGEPROCESSOR_H
