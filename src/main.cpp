@@ -2,6 +2,9 @@
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 
+#include "../include/GrayscaleImageProcessor.h"
+#include "../include/ImageProcessor.h"
+
 using namespace cv;
 using namespace std;
 
@@ -13,7 +16,7 @@ void printCommands() {
     cout << "Available commands:\n"
     << "--help - print list of all the available commands with detailed description of their arguments.\n"
     << "--output [-outputFileName=value] - provide output file name.\n"
-    << "\t -outputFileName - output file name (default is output.bmp)."
+    << "\t -outputFileName - output file name (default is output.bmp).\n"
     << "--grayscale - read image in grayscale.\n"
     << "--brightness [-modVal=value] - modify brightness of an image.\n"
     << "\t -modVal - integral value to add to each pixel (can be negative).\n";
@@ -65,29 +68,6 @@ void processInput(int argc, char** argv) {
     }
 }
 
-void modifyBrightnessGrayscale(Mat& image) {
-    for (int x = 0; x < image.rows; x ++) {
-        for (int y = 0; y < image.cols; y++) {
-            if (brightnessModVal < 0) {
-                if (image.at<uchar>(x, y) >= 0 - brightnessModVal) {
-                    image.at<uchar>(x, y) += brightnessModVal;
-                }
-                else {
-                    image.at<uchar>(x, y) = 0;
-                }
-            }
-            else {
-                if (image.at<uchar>(x, y) <= UCHAR_MAX - brightnessModVal) {
-                    image.at<uchar>(x, y) += brightnessModVal;
-                }
-                else {
-                    image.at<uchar>(x, y) = UCHAR_MAX;
-                }
-            }
-        }
-    }
-}
-
 void saveImage(Mat image) {
     if (!filesystem::is_directory("output") || !filesystem::exists("output")) {
         filesystem::create_directory("output");
@@ -104,8 +84,21 @@ int main(int argc, char** argv) {
         return -1;
     }
 
+    unique_ptr<ImageProcessor> imageProcessor;
+    if (imreadMode == IMREAD_COLOR) {
+        // TODO
+        return 0;
+    }
+    else {
+        imageProcessor = make_unique<GrayscaleImageProcessor>(
+            image,
+            isBrightnessModified,
+            brightnessModVal
+            );
+    }
+
     if (isBrightnessModified) {
-        modifyBrightnessGrayscale(image);
+        imageProcessor->modifyBrightness();
     }
     saveImage(image);
     return 0;
