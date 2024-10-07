@@ -8,9 +8,11 @@
 
 class GrayscaleImageProcessor : public ImageProcessor{
 public:
-    GrayscaleImageProcessor(Mat &image, int brightnessModVal, float contrastModVal);
+    GrayscaleImageProcessor(Mat &image, int brightnessModVal, int contrastLinearModVal, float contrastGammaModVal);
     void modifyBrightness() override;
-    void modifyContrast() override;
+    void mofifyContrastLinear() override;
+    void modifyContrastGamma() override;
+    void negative() override;
 };
 
 
