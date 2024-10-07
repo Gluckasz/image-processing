@@ -10,6 +10,8 @@ using namespace cv;
 
 class ImageProcessor {
 public:
+    virtual ~ImageProcessor() = default;
+
     virtual void modifyBrightness() = 0;
     virtual void mofifyContrastLinear() = 0;
     virtual void modifyContrastGamma() = 0;
