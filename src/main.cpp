@@ -2,6 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 
+#include "../include/RGBImageProcessor.h"
 #include "../include/GrayscaleImageProcessor.h"
 #include "../include/ImageProcessor.h"
 
@@ -142,8 +143,12 @@ int main(int argc, char** argv) {
 
     unique_ptr<ImageProcessor> imageProcessor;
     if (imreadMode == IMREAD_COLOR) {
-        // TODO
-        return 0;
+        imageProcessor = make_unique<RGBImageProcessor>(
+            image,
+            brightnessModVal,
+            contrastLinearModVal,
+            contrastGammaModVal
+            );
     }
     else {
         imageProcessor = make_unique<GrayscaleImageProcessor>(
