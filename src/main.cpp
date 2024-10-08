@@ -26,7 +26,8 @@ void printCommands() {
     << "\t -modVal - new value added and subtracted from upper and lower boundary.\n\n"
     << "--contrastGamma [-modVal=value] - modify contrast of an image using gamma correction.\n"
     << "\t -modVal - floating-point value of gamma variable.\n\n"
-    << "--negative - take negative of an image.\n\n";
+    << "--negative - take negative of an image.\n\n"
+    << "--hflip - flip the image horizontally.\n\n";
 }
 
 // Command-line input variables
@@ -39,6 +40,7 @@ int contrastLinearModVal;
 bool isContrastGammaModified = false;
 float contrastGammaModVal;
 bool isNegative = false;
+bool isHorizontalFlip = false;
 
 // Process user input from command-line
 void processInput(int argc, char** argv) {
@@ -118,6 +120,9 @@ void processInput(int argc, char** argv) {
         else if (static_cast<string>(argv[i]) == "--negative") {
             isNegative = true;
         }
+        else if (static_cast<string>(argv[i]) == "--hflip") {
+            isHorizontalFlip = true;
+        }
     }
 }
 
@@ -170,6 +175,9 @@ int main(int argc, char** argv) {
     }
     if (isNegative) {
         imageProcessor->negative();
+    }
+    if (isHorizontalFlip) {
+        imageProcessor->flipHorizontally();
     }
 
     saveImage(image);

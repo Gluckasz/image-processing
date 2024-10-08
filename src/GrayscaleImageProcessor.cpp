@@ -83,5 +83,16 @@ void GrayscaleImageProcessor::negative() {
     }
 }
 
+void GrayscaleImageProcessor::flipHorizontally() {
+    for (int x = 0; x < image.rows; x++) {
+        for (int y = 0; y < image.cols / 2; y++) {
+            uchar temp = image.at<uchar>(x, y);
+            image.at<uchar>(x, y) = image.at<uchar>(x, image.cols - y - 1);
+            image.at<uchar>(x, image.cols - y - 1) = temp;
+        }
+    }
+}
+
+
 
 

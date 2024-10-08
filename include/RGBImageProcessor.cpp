@@ -93,5 +93,17 @@ void RGBImageProcessor::negative() {
     }
 }
 
+void RGBImageProcessor::flipHorizontally() {
+    for (int x = 0; x < image.rows; x++) {
+        for (int y = 0; y < image.cols / 2; y++) {
+            for (int z = 0; z < 3; z++) {
+                uchar temp = image.at<Vec3b>(x, y)[z];
+                image.at<Vec3b>(x, y)[z] = image.at<Vec3b>(x, image.cols - y - 1)[z];
+                image.at<Vec3b>(x, image.cols - y - 1)[z] = temp;
+            }
+        }
+    }
+}
+
 
 

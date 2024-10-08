@@ -13,6 +13,7 @@ public:
     void mofifyContrastLinear() override;
     void modifyContrastGamma() override;
     void negative() override;
+    void flipHorizontally() override;
 };
 
 
