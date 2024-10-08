@@ -14,6 +14,7 @@ public:
     void modifyContrastGamma() override;
     void negative() override;
     void flipHorizontally() override;
+    void flipVertically() override;
 };
 
 

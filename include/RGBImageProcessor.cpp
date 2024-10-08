@@ -105,5 +105,17 @@ void RGBImageProcessor::flipHorizontally() {
     }
 }
 
+void RGBImageProcessor::flipVertically() {
+    for (int x = 0; x < image.rows / 2; x++) {
+        for (int y = 0; y < image.cols; y++) {
+            for (int z = 0; z < 3; z++) {
+                uchar temp = image.at<Vec3b>(x, y)[z];
+                image.at<Vec3b>(x, y)[z] = image.at<Vec3b>(image.rows - x - 1, y)[z];
+                image.at<Vec3b>(image.rows - x - 1, y)[z] = temp;
+            }
+        }
+    }
+}
+
 
 
