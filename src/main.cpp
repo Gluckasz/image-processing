@@ -28,7 +28,11 @@ void printCommands() {
     << "\t -modVal - floating-point value of gamma variable.\n\n"
     << "--negative - take negative of an image.\n\n"
     << "--hflip - flip the image horizontally.\n\n"
-    << "--vflip - flip the image vertically.\n\n";
+    << "--vflip - flip the image vertically.\n\n"
+    << "--shrink [-modVal=value] - shrink an image using nearest Neighbor Method.\n"
+    << "\t -modVal - floating-point scale factor of new image (has to be between 0 and 1 non-inclusive).\n\n"
+    << "--enlarge [-modVal=value] - enlarge an image using nearest Neighbor Method.\n"
+    << "\t -modVal - floating-point scale factor of new image (has to be greater than 1).\n\n";
 }
 
 // Command-line input variables
@@ -44,6 +48,10 @@ bool isNegative = false;
 bool isHorizontalFlip = false;
 bool isVerticalFlip = false;
 bool isDiagonalFlip = false;
+bool isShrink = false;
+float shrinkModVal;
+bool isEnlarged = false;
+float enlargeModVal;
 
 // Process user input from command-line
 void processInput(int argc, char** argv) {
@@ -132,6 +140,50 @@ void processInput(int argc, char** argv) {
         else if (static_cast<string>(argv[i]) == "--dflip") {
             isDiagonalFlip = true;
         }
+        else if (static_cast<string>(argv[i]) == "--shrink") {
+            isShrink = true;
+            string paramVal = argv[++i];
+            if (paramVal.substr(0, 8) != "-modVal=") {
+                cout << "The --shrink parameter has to be of format: -modVal=[value]. Skipping image shrinking.";
+                isShrink = false;
+            }
+            try {
+                shrinkModVal = stof(paramVal.substr(paramVal.find('=') + 1));
+                if (shrinkModVal <= 0 || shrinkModVal >= 1) {
+                    throw out_of_range("Value should be between 0 and 1 non-inclusive.");
+                }
+            }
+            catch (const invalid_argument & e) {
+                cout << "-modVal has to be an integer. Skipping image shrinking.";
+                isShrink = false;
+            }
+            catch (const out_of_range & e) {
+                cout << "-modVal is out of bounds. Skipping image shrinking.";
+                isShrink = false;
+            }
+        }
+        else if (static_cast<string>(argv[i]) == "--enlarge") {
+            isEnlarged = true;
+            string paramVal = argv[++i];
+            if (paramVal.substr(0, 8) != "-modVal=") {
+                cout << "The --enlarge parameter has to be of format: -modVal=[value]. Skipping image enlargement.";
+                isEnlarged = false;
+            }
+            try {
+                enlargeModVal = stof(paramVal.substr(paramVal.find('=') + 1));
+                if (enlargeModVal <= 1) {
+                    throw out_of_range("Value should be greater than 1.");
+                }
+            }
+            catch (const invalid_argument & e) {
+                cout << "-modVal has to be an integer. Skipping image enlargement.";
+                isEnlarged = false;
+            }
+            catch (const out_of_range & e) {
+                cout << "-modVal is out of bounds. Skipping image enlargement.";
+                isEnlarged = false;
+            }
+        }
     }
 }
 
@@ -193,6 +245,12 @@ int main(int argc, char** argv) {
     }
     if (isDiagonalFlip) {
         imageProcessor->flipDiagonally();
+    }
+    if (isShrink) {
+       image = imageProcessor->resize(shrinkModVal);
+    }
+    if (isEnlarged) {
+        image = imageProcessor->resize(enlargeModVal);
     }
 
     saveImage(image);

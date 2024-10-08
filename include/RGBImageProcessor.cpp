@@ -121,6 +121,22 @@ void RGBImageProcessor::flipDiagonally() {
     this->flipVertically();
 }
 
+Mat RGBImageProcessor::resize(float factor) {
+    int newWidth = static_cast<int>(static_cast<float>(image.cols) * factor);
+    int newHeight = static_cast<int>(static_cast<float>(image.rows) * factor);
+    Mat newImage = Mat::zeros(newHeight, newWidth, CV_8UC3);
+    for (int y = 0; y < newHeight; y++) {
+        for (int x = 0; x < newWidth; x++) {
+            for (int z = 0; z < 3; z++) {
+            newImage.at<Vec3b>(y, x)[z] = image.at<Vec3b>(
+                static_cast<int>(static_cast<float>(y) / factor),
+                static_cast<int>(static_cast<float>(x) / factor))[z];
+            }
+        }
+    }
+    return newImage;
+}
+
 
 
 

@@ -16,6 +16,7 @@ public:
     void flipHorizontally() override;
     void flipVertically() override;
     void flipDiagonally() override;
+    Mat resize(float factor) override;
 };
 
 

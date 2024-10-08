@@ -102,9 +102,25 @@ void GrayscaleImageProcessor::flipVertically() {
         }
     }
 }
+
 void GrayscaleImageProcessor::flipDiagonally() {
     this->flipHorizontally();
     this->flipVertically();
+}
+
+Mat GrayscaleImageProcessor::resize(float factor) {
+    int newWidth = static_cast<int>(static_cast<float>(image.cols) * factor);
+    int newHeight = static_cast<int>(static_cast<float>(image.rows) * factor);
+    Mat newImage = Mat::zeros(newHeight, newWidth, CV_8UC1);
+
+    for (int y = 0; y < newHeight; y++) {
+        for (int x = 0; x < newWidth; x++) {
+            newImage.at<uchar>(y, x) = image.at<uchar>(
+                static_cast<int>(static_cast<float>(y) / factor),
+                static_cast<int>(static_cast<float>(x) / factor));
+        }
+    }
+    return newImage;
 }
 
 
