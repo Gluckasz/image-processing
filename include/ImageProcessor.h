@@ -18,6 +18,7 @@ public:
     virtual void negative() = 0;
     virtual void flipHorizontally() = 0;
     virtual void flipVertically() = 0;
+    virtual void flipDiagonally() = 0;
 protected:
     Mat image;
     int brightnessModVal;

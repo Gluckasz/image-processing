@@ -16,6 +16,7 @@ public:
     void negative() override;
     void flipHorizontally() override;
     void flipVertically() override;
+    void flipDiagonally() override;
 };
 
 

@@ -43,6 +43,7 @@ float contrastGammaModVal;
 bool isNegative = false;
 bool isHorizontalFlip = false;
 bool isVerticalFlip = false;
+bool isDiagonalFlip = false;
 
 // Process user input from command-line
 void processInput(int argc, char** argv) {
@@ -128,6 +129,9 @@ void processInput(int argc, char** argv) {
         else if (static_cast<string>(argv[i]) == "--vflip") {
             isVerticalFlip = true;
         }
+        else if (static_cast<string>(argv[i]) == "--dflip") {
+            isDiagonalFlip = true;
+        }
     }
 }
 
@@ -186,6 +190,9 @@ int main(int argc, char** argv) {
     }
     if (isVerticalFlip) {
         imageProcessor->flipVertically();
+    }
+    if (isDiagonalFlip) {
+        imageProcessor->flipDiagonally();
     }
 
     saveImage(image);

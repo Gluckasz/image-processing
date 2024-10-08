@@ -102,6 +102,10 @@ void GrayscaleImageProcessor::flipVertically() {
         }
     }
 }
+void GrayscaleImageProcessor::flipDiagonally() {
+    this->flipHorizontally();
+    this->flipVertically();
+}
 
 
 

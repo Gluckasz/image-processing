@@ -116,6 +116,11 @@ void RGBImageProcessor::flipVertically() {
         }
     }
 }
+void RGBImageProcessor::flipDiagonally() {
+    this->flipHorizontally();
+    this->flipVertically();
+}
+
 
 
 
