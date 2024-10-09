@@ -2,7 +2,7 @@
 // Created by gluckasz on 10/7/24.
 //
 
-#include "RGBImageProcessor.h"
+#include "../include/RGBImageProcessor.h"
 
 RGBImageProcessor::RGBImageProcessor(Mat &image, int brightnessModVal, int contrastLinearModVal, float contrastGammaModVal) {
     this->image = image;
