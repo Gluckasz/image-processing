@@ -5,11 +5,13 @@ set(CMAKE_CXX_STANDARD 20)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(image_processing src/main.cpp
-        src/GrayscaleImageProcessor.cpp
         include/ImageProcessor.h
         include/GrayscaleImageProcessor.h
+        src/GrayscaleImageProcessor.cpp
         include/RGBImageProcessor.h
         src/RGBImageProcessor.cpp
+        include/InputProcessor.h
+        src/InputProcessor.cpp
 )
 
 target_link_libraries(image_processing ${OpenCV_LIBS})
