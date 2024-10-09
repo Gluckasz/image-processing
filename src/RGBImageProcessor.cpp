@@ -137,6 +137,28 @@ Mat RGBImageProcessor::resize(float factor) {
     return newImage;
 }
 
+Mat RGBImageProcessor::midpointFilter() {
+    for (int y = 1; y < image.rows - 1; y++) {
+        for (int x = 1; x < image.cols - 1; x++) {
+            for (int z = 0; z < 2; z++) {
+                uchar max = image.at<Vec3b>(y - 1, x - 1)[z];
+                uchar min = image.at<Vec3b>(y - 1, x - 1)[z];
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        if (max < image.at<Vec3b>(y - j, x - i)[z]) {
+                            max = image.at<Vec3b>(y - j, x - i)[z];
+                        }
+                        if (min > image.at<Vec3b>(y - j, x - i)[z]) {
+                            min = image.at<Vec3b>(y - j, x - i)[z];
+                        }
+                    }
+                }
+                image.at<Vec3b>(y, x)[z] = (max + min) / 2;
+            }
+        }
+    }
+    return image;
+}
 
 
 

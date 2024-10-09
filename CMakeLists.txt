@@ -9,7 +9,7 @@ add_executable(image_processing src/main.cpp
         include/ImageProcessor.h
         include/GrayscaleImageProcessor.h
         include/RGBImageProcessor.h
-        include/RGBImageProcessor.cpp
+        src/RGBImageProcessor.cpp
 )
 
 target_link_libraries(image_processing ${OpenCV_LIBS})

@@ -20,6 +20,7 @@ public:
     virtual void flipVertically() = 0;
     virtual void flipDiagonally() = 0;
     virtual Mat resize(float factor) = 0;
+    virtual Mat midpointFilter() = 0;
 protected:
     Mat image;
     int brightnessModVal;

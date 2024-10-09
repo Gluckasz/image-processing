@@ -123,6 +123,28 @@ Mat GrayscaleImageProcessor::resize(float factor) {
     return newImage;
 }
 
+Mat GrayscaleImageProcessor::midpointFilter() {
+    for (int y = 1; y < image.rows - 1; y++) {
+        for (int x = 1; x < image.cols - 1; x++) {
+            uchar max = image.at<uchar>(y - 1, x - 1);
+            uchar min = image.at<uchar>(y - 1, x - 1);
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    if (max < image.at<uchar>(y - j, x - i)) {
+                        max = image.at<uchar>(y - j, x - i);
+                    }
+                    if (min > image.at<uchar>(y - j, x - i)) {
+                        min = image.at<uchar>(y - j, x - i);
+                    }
+                }
+            }
+            image.at<uchar>(y, x) = (max + min) / 2;
+        }
+    }
+    return image;
+}
+
+
 
 
 

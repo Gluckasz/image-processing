@@ -9,7 +9,7 @@
 using namespace cv;
 using namespace std;
 
-// TODO Variant N4
+// TODO Variant N4, ImageProcessor methods should return image objects, processInput method should probably be in another class.
 // Constants
 constexpr int INPUT_IMAGE_POS = 1;
 
@@ -52,6 +52,7 @@ bool isShrink = false;
 float shrinkModVal;
 bool isEnlarged = false;
 float enlargeModVal;
+bool isMidpointFilter = false;
 
 // Process user input from command-line
 void processInput(int argc, char** argv) {
@@ -184,6 +185,9 @@ void processInput(int argc, char** argv) {
                 isEnlarged = false;
             }
         }
+        else if (static_cast<string>(argv[i]) == "--mid") {
+            isMidpointFilter = true;
+        }
     }
 }
 
@@ -251,6 +255,9 @@ int main(int argc, char** argv) {
     }
     if (isEnlarged) {
         image = imageProcessor->resize(enlargeModVal);
+    }
+    if (isMidpointFilter) {
+        image = imageProcessor->midpointFilter();
     }
 
     saveImage(image);
