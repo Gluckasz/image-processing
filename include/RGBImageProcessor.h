@@ -19,6 +19,7 @@ public:
     void flipDiagonally() override;
     Mat resize(float factor) override;
     Mat midpointFilter() override;
+    Mat arithmeticMeanFilter() override;
 };
 
 

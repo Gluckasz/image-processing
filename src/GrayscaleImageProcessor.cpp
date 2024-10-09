@@ -124,6 +124,8 @@ Mat GrayscaleImageProcessor::resize(float factor) {
 }
 
 Mat GrayscaleImageProcessor::midpointFilter() {
+    Mat newImage;
+    image.copyTo(newImage);
     for (int y = 1; y < image.rows - 1; y++) {
         for (int x = 1; x < image.cols - 1; x++) {
             uchar max = image.at<uchar>(y - 1, x - 1);
@@ -138,13 +140,25 @@ Mat GrayscaleImageProcessor::midpointFilter() {
                     }
                 }
             }
-            image.at<uchar>(y, x) = (max + min) / 2;
+            newImage.at<uchar>(y, x) = (max + min) / 2;
         }
     }
-    return image;
+    return newImage;
 }
 
-
-
-
-
+Mat GrayscaleImageProcessor::arithmeticMeanFilter() {
+    Mat newImage;
+    image.copyTo(newImage);
+    for (int y = 1; y < image.rows - 1; y++) {
+        for (int x = 1; x < image.cols - 1; x++) {
+            int sum = 0;
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    sum += image.at<uchar>(y - j, x - i);
+                }
+            }
+            newImage.at<uchar>(y, x) = sum / 9;
+        }
+    }
+    return newImage;
+}

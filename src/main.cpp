@@ -9,7 +9,7 @@
 using namespace cv;
 using namespace std;
 
-// TODO Variant N4, ImageProcessor methods should return image objects, processInput method should probably be in another class.
+// ImageProcessor methods should return image objects, processInput method should probably be in another class.
 // Constants
 constexpr int INPUT_IMAGE_POS = 1;
 
@@ -32,7 +32,9 @@ void printCommands() {
     << "--shrink [-modVal=value] - shrink an image using nearest Neighbor Method.\n"
     << "\t -modVal - floating-point scale factor of new image (has to be between 0 and 1 non-inclusive).\n\n"
     << "--enlarge [-modVal=value] - enlarge an image using nearest Neighbor Method.\n"
-    << "\t -modVal - floating-point scale factor of new image (has to be greater than 1).\n\n";
+    << "\t -modVal - floating-point scale factor of new image (has to be greater than 1).\n\n"
+    << "--mid - apply midpoint filter.\n\n"
+    << "--amean - apply arithmetic mean filter.\n\n";
 }
 
 // Command-line input variables
@@ -53,6 +55,7 @@ float shrinkModVal;
 bool isEnlarged = false;
 float enlargeModVal;
 bool isMidpointFilter = false;
+bool isArithmeticMeanFilter = false;
 
 // Process user input from command-line
 void processInput(int argc, char** argv) {
@@ -188,6 +191,9 @@ void processInput(int argc, char** argv) {
         else if (static_cast<string>(argv[i]) == "--mid") {
             isMidpointFilter = true;
         }
+        else if (static_cast<string>(argv[i]) == "--amean") {
+            isArithmeticMeanFilter = true;
+        }
     }
 }
 
@@ -258,6 +264,9 @@ int main(int argc, char** argv) {
     }
     if (isMidpointFilter) {
         image = imageProcessor->midpointFilter();
+    }
+    if (isArithmeticMeanFilter) {
+        image = imageProcessor->arithmeticMeanFilter();
     }
 
     saveImage(image);

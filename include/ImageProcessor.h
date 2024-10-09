@@ -21,6 +21,7 @@ public:
     virtual void flipDiagonally() = 0;
     virtual Mat resize(float factor) = 0;
     virtual Mat midpointFilter() = 0;
+    virtual Mat arithmeticMeanFilter() = 0;
 protected:
     Mat image;
     int brightnessModVal;

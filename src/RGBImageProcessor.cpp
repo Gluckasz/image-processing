@@ -138,6 +138,8 @@ Mat RGBImageProcessor::resize(float factor) {
 }
 
 Mat RGBImageProcessor::midpointFilter() {
+    Mat newImage;
+    image.copyTo(newImage);
     for (int y = 1; y < image.rows - 1; y++) {
         for (int x = 1; x < image.cols - 1; x++) {
             for (int z = 0; z < 2; z++) {
@@ -153,12 +155,28 @@ Mat RGBImageProcessor::midpointFilter() {
                         }
                     }
                 }
-                image.at<Vec3b>(y, x)[z] = (max + min) / 2;
+                newImage.at<Vec3b>(y, x)[z] = (max + min) / 2;
             }
         }
     }
-    return image;
+    return newImage;
 }
 
-
-
+Mat RGBImageProcessor::arithmeticMeanFilter() {
+    Mat newImage;
+    image.copyTo(newImage);
+    for (int y = 1; y < image.rows - 1; y++) {
+        for (int x = 1; x < image.cols - 1; x++) {
+            for (int z = 0; z < 2; z++) {
+                int sum = 0;
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        sum += image.at<Vec3b>(y - j, x - i)[z];
+                    }
+                }
+                newImage.at<Vec3b>(y, x)[z] = sum / 9;
+            }
+        }
+    }
+    return newImage;
+}
