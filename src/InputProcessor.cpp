@@ -138,55 +138,45 @@ void InputProcessor::processImage() const {
         return;
     }
     std::unique_ptr<ImageProcessor> imageProcessor;
-    if (imreadMode == IMREAD_COLOR) {
-        imageProcessor = std::make_unique<RGBImageProcessor>(
-            image,
-            brightnessModVal,
-            contrastLinearModVal,
-            contrastGammaModVal
-            );
+    if (imreadMode == cv::IMREAD_COLOR) {
+        imageProcessor = std::make_unique<RGBImageProcessor>();
     }
     else {
-        imageProcessor = std::make_unique<GrayscaleImageProcessor>(
-            image,
-            brightnessModVal,
-            contrastLinearModVal,
-            contrastGammaModVal
-            );
+        imageProcessor = std::make_unique<GrayscaleImageProcessor>();
     }
 
     if (isBrightnessModified) {
-        imageProcessor->modifyBrightness();
+        image = imageProcessor->modifyBrightness(image, brightnessModVal);
     }
     if (isContrastLinearModified) {
-        imageProcessor->mofifyContrastLinear();
+        image = imageProcessor->mofifyContrastLinear(image, contrastLinearModVal);
     }
     if (isContrastGammaModified) {
-        imageProcessor->modifyContrastGamma();
+        image = imageProcessor->modifyContrastGamma(image, contrastGammaModVal);
     }
     if (isNegative) {
-        imageProcessor->negative();
+        image = imageProcessor->negative(image);
     }
     if (isHorizontalFlip) {
-        imageProcessor->flipHorizontally();
+        image = imageProcessor->flipHorizontally(image);
     }
     if (isVerticalFlip) {
-        imageProcessor->flipVertically();
+        image = imageProcessor->flipVertically(image);
     }
     if (isDiagonalFlip) {
-        imageProcessor->flipDiagonally();
+        image = imageProcessor->flipDiagonally(image);
     }
     if (isShrink) {
-        image = imageProcessor->resize(shrinkModVal);
+        image = imageProcessor->resize(image, shrinkModVal);
     }
     if (isEnlarged) {
-        image = imageProcessor->resize(enlargeModVal);
+        image = imageProcessor->resize(image, enlargeModVal);
     }
     if (isMidpointFilter) {
-        image = imageProcessor->midpointFilter();
+        image = imageProcessor->midpointFilter(image);
     }
     if (isArithmeticMeanFilter) {
-        image = imageProcessor->arithmeticMeanFilter();
+        image = imageProcessor->arithmeticMeanFilter(image);
     }
 
     saveImage(image);

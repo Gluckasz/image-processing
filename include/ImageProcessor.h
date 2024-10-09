@@ -6,27 +6,21 @@
 #define IMAGEPROCESSOR_H
 
 #include <opencv2/opencv.hpp>
-using namespace cv;
 
 class ImageProcessor {
 public:
     virtual ~ImageProcessor() = default;
 
-    virtual void modifyBrightness() = 0;
-    virtual void mofifyContrastLinear() = 0;
-    virtual void modifyContrastGamma() = 0;
-    virtual void negative() = 0;
-    virtual void flipHorizontally() = 0;
-    virtual void flipVertically() = 0;
-    virtual void flipDiagonally() = 0;
-    virtual Mat resize(float factor) = 0;
-    virtual Mat midpointFilter() = 0;
-    virtual Mat arithmeticMeanFilter() = 0;
-protected:
-    Mat image;
-    int brightnessModVal;
-    int contrastLinearModVal;
-    float contrastGammaModVal;
+    virtual cv::Mat modifyBrightness(cv::Mat image, int modVal) = 0;
+    virtual cv::Mat mofifyContrastLinear(cv::Mat image, int modVal) = 0;
+    virtual cv::Mat modifyContrastGamma(cv::Mat image, float modVal) = 0;
+    virtual cv::Mat negative(cv::Mat image) = 0;
+    virtual cv::Mat flipHorizontally(cv::Mat image) = 0;
+    virtual cv::Mat flipVertically(cv::Mat image) = 0;
+    virtual cv::Mat flipDiagonally(cv::Mat image) = 0;
+    virtual cv::Mat resize(cv::Mat image, float factor) = 0;
+    virtual cv::Mat midpointFilter(cv::Mat image) = 0;
+    virtual cv::Mat arithmeticMeanFilter(cv::Mat image) = 0;
 };
 
 #endif //IMAGEPROCESSOR_H
