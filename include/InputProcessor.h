@@ -47,9 +47,10 @@ private:
     float enlargeModVal;
     bool isMidpointFilter = false;
     bool isArithmeticMeanFilter = false;
-    bool isMeanSquareError = false;
     bool isNoNoise = false;
     std::string noNoiseImage;
+    bool isMeanSquareError = false;
+    bool isPeakMeanSquareError = false;
 
     /**
      * Prints the information about all the available functions.

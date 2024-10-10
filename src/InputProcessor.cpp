@@ -33,7 +33,8 @@ void InputProcessor::printCommands() {
         << "--amean - apply arithmetic mean filter.\n\n"
         <<"--noNoiseImage [-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
         << "\t -fileName - file name of the image with no noise.\n\n"
-        << "--mse - compute mean square error.\n\n";
+        << "--mse - compute mean square error.\n\n"
+        << "--pmse - compute peak mean square error.\n\n";
 }
 
 void InputProcessor::readIntParam(int i, bool &isModified, int &modVal) {
@@ -136,12 +137,15 @@ void InputProcessor::processInput() {
         else if (static_cast<std::string>(argv[i]) == "--amean") {
             isArithmeticMeanFilter = true;
         }
-        else if (static_cast<std::string>(argv[i]) == "--mse") {
-            isMeanSquareError = true;
-        }
         else if (static_cast<std::string>(argv[i]) == "--noNoiseImage") {
             readStringParam(++i, noNoiseImage);
             isNoNoise = true;
+        }
+        else if (static_cast<std::string>(argv[i]) == "--mse") {
+            isMeanSquareError = true;
+        }
+        else if (static_cast<std::string>(argv[i]) == "--pmse") {
+            isPeakMeanSquareError = true;
         }
     }
 }
@@ -202,7 +206,10 @@ void InputProcessor::processImage() const {
         std::stringstream ss;
         ss << "Image stats:\n";
         if (isMeanSquareError) {
-           ss << imageProcessor->meanSquareError(compareImage, originalImage, newImage);
+            ss << imageProcessor->meanSquareError(compareImage, originalImage, newImage);
+        }
+        if (isPeakMeanSquareError) {
+            ss << imageProcessor->peakMeanSquareError(compareImage, originalImage, newImage);
         }
         std::ofstream statsFile;
         statsFile.open("output/" + outputFileName.substr(0, outputFileName.length() - 4) + ".txt");

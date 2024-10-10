@@ -214,8 +214,61 @@ std::string RGBImageProcessor::meanSquareError(cv::Mat compareImage, cv::Mat ori
     / 3.0f;
 
     std::stringstream ss;
-    ss << "Mean square loss before denoising: " << mseBefore << "\n"
-    << "Mean square loss after denoising: " << mseAfter << "\n";
+    ss << "Mean square error before denoising: " << mseBefore << "\n"
+    << "Mean square error after denoising: " << mseAfter << "\n";
+
+    return ss.str();
+}
+
+std::string RGBImageProcessor::peakMeanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+    int squareDistanceSum = 0;
+    uchar max[3] = {0, 0, 0};
+
+    if (compareImage.rows != originalImage.rows) {
+        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
+    }
+    for (int y = 0; y < compareImage.cols; y++) {
+        for (int x = 0; x < compareImage.rows; x++) {
+            for (int z = 0; z < 3; z++) {
+                squareDistanceSum += pow(compareImage.at<cv::Vec3b>(y, x)[z] - originalImage.at<cv::Vec3b>(y, x)[z] , 2);
+                if (max[z] < compareImage.at<cv::Vec3b>(y, x)[z]) {
+                    max[z] = compareImage.at<cv::Vec3b>(y, x)[z];
+                }
+            }
+        }
+    }
+
+    float maxSum = 0;
+    for (unsigned char i : max) {
+        maxSum += pow(i, 2);
+    }
+    float pmseBefore = static_cast<float>(squareDistanceSum)
+    / static_cast<float>(compareImage.cols)
+    / static_cast<float>(compareImage.rows)
+    / 3.0f
+    / maxSum;
+
+    squareDistanceSum = 0;
+
+    if (compareImage.rows != newImage.rows) {
+        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
+    }
+    for (int y = 0; y < compareImage.cols; y++) {
+        for (int x = 0; x < compareImage.rows; x++) {
+            for (int z = 0; z < 3; z++) {
+                squareDistanceSum += pow(compareImage.at<cv::Vec3b>(y, x)[z] - newImage.at<cv::Vec3b>(y, x)[z] , 2);
+            }
+        }
+    }
+    float pmseAfter= static_cast<float>(squareDistanceSum)
+    / static_cast<float>(compareImage.cols)
+    / static_cast<float>(compareImage.rows)
+    / 3.0f
+    / maxSum;
+
+    std::stringstream ss;
+    ss << "Peak mean square error before denoising: " << pmseBefore << "\n"
+    << "Peak mean square error after denoising: " << pmseAfter << "\n";
 
     return ss.str();
 }

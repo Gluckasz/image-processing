@@ -191,9 +191,52 @@ std::string GrayscaleImageProcessor::meanSquareError(cv::Mat compareImage, cv::M
     / static_cast<float>(compareImage.rows);
 
     std::stringstream ss;
-    ss << "Mean square loss before denoising: " << mseBefore << "\n"
-    << "Mean square loss after denoising: " << mseAfter << "\n";
+    ss << "Mean square error before denoising: " << mseBefore << "\n"
+    << "Mean square error after denoising: " << mseAfter << "\n";
 
     return ss.str();
 }
+
+std::string GrayscaleImageProcessor::peakMeanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+    int squareDistanceSum = 0;
+    uchar max = 0;
+
+    if (compareImage.rows != originalImage.rows) {
+        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
+    }
+    for (int y = 0; y < compareImage.cols; y++) {
+        for (int x = 0; x < compareImage.rows; x++) {
+            squareDistanceSum += pow(compareImage.at<uchar>(y, x) - originalImage.at<uchar>(y, x) , 2);
+            if (compareImage.at<uchar>(y, x) > max) {
+                max = compareImage.at<uchar>(y, x);
+            }
+        }
+    }
+    float pmseBefore = static_cast<float>(squareDistanceSum)
+    / static_cast<float>(compareImage.cols)
+    / static_cast<float>(compareImage.rows)
+    / static_cast<float>(pow(max, 2));
+
+    squareDistanceSum = 0;
+
+    if (compareImage.rows != newImage.rows) {
+        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
+    }
+    for (int y = 0; y < compareImage.cols; y++) {
+        for (int x = 0; x < compareImage.rows; x++) {
+            squareDistanceSum += pow(compareImage.at<uchar>(y, x) - newImage.at<uchar>(y, x) , 2);
+        }
+    }
+    float pmseAfter= static_cast<float>(squareDistanceSum)
+    / static_cast<float>(compareImage.cols)
+    / static_cast<float>(compareImage.rows)
+    / static_cast<float>(pow(max, 2));
+
+    std::stringstream ss;
+    ss << "Peak mean square error before denoising: " << pmseBefore << "\n"
+    << "Peak mean square error after denoising: " << pmseAfter << "\n";
+
+    return ss.str();
+}
+
 
