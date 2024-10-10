@@ -141,7 +141,7 @@ cv::Mat RGBImageProcessor::midpointFilter(cv::Mat image) {
     image.copyTo(newImage);
     for (int y = 1; y < image.rows - 1; y++) {
         for (int x = 1; x < image.cols - 1; x++) {
-            for (int z = 0; z < 2; z++) {
+            for (int z = 0; z < 3; z++) {
                 uchar max = image.at<cv::Vec3b>(y - 1, x - 1)[z];
                 uchar min = image.at<cv::Vec3b>(y - 1, x - 1)[z];
                 for (int i = -1; i <= 1; i++) {
@@ -166,7 +166,7 @@ cv::Mat RGBImageProcessor::arithmeticMeanFilter(cv::Mat image) {
     image.copyTo(newImage);
     for (int y = 1; y < image.rows - 1; y++) {
         for (int x = 1; x < image.cols - 1; x++) {
-            for (int z = 0; z < 2; z++) {
+            for (int z = 0; z < 3; z++) {
                 int sum = 0;
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
@@ -178,4 +178,44 @@ cv::Mat RGBImageProcessor::arithmeticMeanFilter(cv::Mat image) {
         }
     }
     return newImage;
+}
+
+std::string RGBImageProcessor::meanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+    int squareDistanceSum = 0;
+    if (compareImage.rows != originalImage.rows) {
+        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
+    }
+    for (int y = 0; y < compareImage.cols; y++) {
+        for (int x = 0; x < compareImage.rows; x++) {
+            for (int z = 0; z < 3; z++) {
+                squareDistanceSum += pow(compareImage.at<cv::Vec3b>(y, x)[z] - originalImage.at<cv::Vec3b>(y, x)[z] , 2);
+            }
+        }
+    }
+    float mseBefore = static_cast<float>(squareDistanceSum)
+    / static_cast<float>(compareImage.cols)
+    / static_cast<float>(compareImage.rows)
+    / 3.0f;
+
+    squareDistanceSum = 0;
+    if (compareImage.rows != newImage.rows) {
+        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
+    }
+    for (int y = 0; y < compareImage.cols; y++) {
+        for (int x = 0; x < compareImage.rows; x++) {
+            for (int z = 0; z < 3; z++) {
+                squareDistanceSum += pow(compareImage.at<cv::Vec3b>(y, x)[z] - newImage.at<cv::Vec3b>(y, x)[z] , 2);
+            }
+        }
+    }
+    float mseAfter= static_cast<float>(squareDistanceSum)
+    / static_cast<float>(compareImage.cols)
+    / static_cast<float>(compareImage.rows)
+    / 3.0f;
+
+    std::stringstream ss;
+    ss << "Mean square loss before denoising: " << mseBefore << "\n"
+    << "Mean square loss after denoising: " << mseAfter << "\n";
+
+    return ss.str();
 }

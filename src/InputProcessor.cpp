@@ -13,8 +13,8 @@ InputProcessor::InputProcessor(int argc, char **argv) {
 void InputProcessor::printCommands() {
         std::cout << "Available commands:\n"
         << "--help - print list of all the available commands with detailed description of their arguments.\n\n"
-        << "--output [-outputFileName=value] - provide output file name.\n"
-        << "\t -outputFileName - output file name (default is output.bmp).\n\n"
+        << "--output [-fileName=value] - provide output file name.\n"
+        << "\t -fileName - output file name (default is output.bmp).\n\n"
         << "--grayscale - read image in grayscale.\n\n"
         << "--brightness [-modVal=value] - modify brightness of an image.\n"
         << "\t -modVal - integral value to add to each pixel (can be negative).\n\n"
@@ -30,7 +30,10 @@ void InputProcessor::printCommands() {
         << "--enlarge [-modVal=value] - enlarge an image using nearest Neighbor Method.\n"
         << "\t -modVal - floating-point scale factor of new image (has to be greater than 1).\n\n"
         << "--mid - apply midpoint filter.\n\n"
-        << "--amean - apply arithmetic mean filter.\n\n";
+        << "--amean - apply arithmetic mean filter.\n\n"
+        <<"--noNoiseImage [-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
+        << "\t -fileName - file name of the image with no noise.\n\n"
+        << "--mse - compute mean square error.\n\n";
 }
 
 void InputProcessor::readIntParam(int i, bool &isModified, int &modVal) {
@@ -71,6 +74,17 @@ void InputProcessor::readFloatParam(int i, bool &isModified, float &modVal) {
     }
 }
 
+void InputProcessor::readStringParam(int i, std::string &paramVal) {
+    std::string tryParamVal = argv[i];
+    if (tryParamVal.substr(0, std::strlen("-fileName=")) != "-fileName=") {
+        std::cout << "The parameter has to be of format: -fileName=[value].";
+    }
+    else {
+        paramVal = tryParamVal.substr(tryParamVal.find('=') + 1);
+    }
+}
+
+
 
 void InputProcessor::processInput() {
     for (int i = 1; i < argc; i++) {
@@ -79,13 +93,7 @@ void InputProcessor::processInput() {
             return;
         }
         if (static_cast<std::string>(argv[i]) == "--output") {
-            std::string paramVal = argv[++i];
-            if (paramVal.substr(0, std::strlen("-outputFileName=")) != "-outputFileName=") {
-                std::cout << "The --output parameter has to be of format: -outputFileName=[value]. Skipping outputFileName modification.";
-            }
-            else {
-                outputFileName = paramVal.substr(paramVal.find('=') + 1);
-            }
+            readStringParam(++i, outputFileName);
         }
         else if (static_cast<std::string>(argv[i]) == "--grayscale") {
             imreadMode = cv::IMREAD_GRAYSCALE;
@@ -128,12 +136,19 @@ void InputProcessor::processInput() {
         else if (static_cast<std::string>(argv[i]) == "--amean") {
             isArithmeticMeanFilter = true;
         }
+        else if (static_cast<std::string>(argv[i]) == "--mse") {
+            isMeanSquareError = true;
+        }
+        else if (static_cast<std::string>(argv[i]) == "--noNoiseImage") {
+            readStringParam(++i, noNoiseImage);
+            isNoNoise = true;
+        }
     }
 }
 
 void InputProcessor::processImage() const {
-    cv::Mat image = imread(argv[INPUT_IMAGE_POS], imreadMode);
-    if (!image.data) {
+    cv::Mat originalImage = imread(argv[INPUT_IMAGE_POS], imreadMode);
+    if (!originalImage.data) {
         std::cout << "No image data \n";
         return;
     }
@@ -145,41 +160,55 @@ void InputProcessor::processImage() const {
         imageProcessor = std::make_unique<GrayscaleImageProcessor>();
     }
 
+    cv::Mat newImage;
+    originalImage.copyTo(newImage);
     if (isBrightnessModified) {
-        image = imageProcessor->modifyBrightness(image, brightnessModVal);
+        newImage = imageProcessor->modifyBrightness(newImage, brightnessModVal);
     }
     if (isContrastLinearModified) {
-        image = imageProcessor->mofifyContrastLinear(image, contrastLinearModVal);
+        newImage = imageProcessor->mofifyContrastLinear(newImage, contrastLinearModVal);
     }
     if (isContrastGammaModified) {
-        image = imageProcessor->modifyContrastGamma(image, contrastGammaModVal);
+        newImage = imageProcessor->modifyContrastGamma(newImage, contrastGammaModVal);
     }
     if (isNegative) {
-        image = imageProcessor->negative(image);
+        newImage = imageProcessor->negative(newImage);
     }
     if (isHorizontalFlip) {
-        image = imageProcessor->flipHorizontally(image);
+        newImage = imageProcessor->flipHorizontally(newImage);
     }
     if (isVerticalFlip) {
-        image = imageProcessor->flipVertically(image);
+        newImage = imageProcessor->flipVertically(newImage);
     }
     if (isDiagonalFlip) {
-        image = imageProcessor->flipDiagonally(image);
+        newImage = imageProcessor->flipDiagonally(newImage);
     }
     if (isShrink) {
-        image = imageProcessor->resize(image, shrinkModVal);
+        newImage = imageProcessor->resize(newImage, shrinkModVal);
     }
     if (isEnlarged) {
-        image = imageProcessor->resize(image, enlargeModVal);
+        newImage = imageProcessor->resize(newImage, enlargeModVal);
     }
     if (isMidpointFilter) {
-        image = imageProcessor->midpointFilter(image);
+        newImage = imageProcessor->midpointFilter(newImage);
     }
     if (isArithmeticMeanFilter) {
-        image = imageProcessor->arithmeticMeanFilter(image);
+        newImage = imageProcessor->arithmeticMeanFilter(newImage);
     }
+    saveImage(newImage);
 
-    saveImage(image);
+    if (isNoNoise) {
+        cv::Mat compareImage = imread(noNoiseImage, imreadMode);
+        std::stringstream ss;
+        ss << "Image stats:\n";
+        if (isMeanSquareError) {
+           ss << imageProcessor->meanSquareError(compareImage, originalImage, newImage);
+        }
+        std::ofstream statsFile;
+        statsFile.open("output/" + outputFileName.substr(0, outputFileName.length() - 4) + ".txt");
+        statsFile << ss.rdbuf();
+        statsFile.close();
+    }
 }
 
 

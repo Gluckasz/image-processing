@@ -1,5 +1,5 @@
 #include "../include/InputProcessor.h"
-// TODO ImageProcessor methods should return image objects.
+// TODO implement copyto method.
 int main(int argc, char** argv) {
     InputProcessor inputProcessor(argc, argv);;
     inputProcessor.processInput();

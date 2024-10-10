@@ -10,6 +10,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <filesystem>
+#include <fstream>
 
 #include "../include/ImageProcessor.h"
 #include "../include/RGBImageProcessor.h"
@@ -46,6 +47,9 @@ private:
     float enlargeModVal;
     bool isMidpointFilter = false;
     bool isArithmeticMeanFilter = false;
+    bool isMeanSquareError = false;
+    bool isNoNoise = false;
+    std::string noNoiseImage;
 
     /**
      * Prints the information about all the available functions.
@@ -65,6 +69,7 @@ private:
      * @param modVal Float parameter to read. Passed by reference.
     */
     void readFloatParam(int i, bool &isModified, float &modVal);
+    void readStringParam(int i, std::string &paramVal);
     /**
      * Saves given image to the output/outputFileName file.
     */

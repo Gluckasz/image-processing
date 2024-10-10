@@ -21,6 +21,7 @@ public:
     virtual cv::Mat resize(cv::Mat image, float factor) = 0;
     virtual cv::Mat midpointFilter(cv::Mat image) = 0;
     virtual cv::Mat arithmeticMeanFilter(cv::Mat image) = 0;
+    virtual std::string meanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
 };
 
 #endif //IMAGEPROCESSOR_H

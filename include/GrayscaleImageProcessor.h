@@ -18,6 +18,7 @@ public:
     cv::Mat resize(cv::Mat image, float factor) override;
     cv::Mat midpointFilter(cv::Mat image) override;
     cv::Mat arithmeticMeanFilter(cv::Mat image) override;
+    std::string meanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
 };
 
 
