@@ -23,6 +23,9 @@ public:
     virtual cv::Mat arithmeticMeanFilter(cv::Mat image) = 0;
     virtual std::string meanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
     virtual std::string peakMeanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
+    virtual std::string signalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
+    virtual std::string peakSignalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
+    virtual std::string maximumDifference(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
 };
 
 #endif //IMAGEPROCESSOR_H
