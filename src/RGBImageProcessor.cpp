@@ -180,38 +180,32 @@ cv::Mat RGBImageProcessor::arithmeticMeanFilter(cv::Mat image) {
     return newImage;
 }
 
-std::string RGBImageProcessor::meanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+float computeMSE(cv::Mat compareImage, cv::Mat secondImage) {
     int squareDistanceSum = 0;
+    for (int y = 0; y < compareImage.cols; y++) {
+        for (int x = 0; x < compareImage.rows; x++) {
+            for (int z = 0; z < 3; z++) {
+                squareDistanceSum += pow(compareImage.at<cv::Vec3b>(y, x)[z] - secondImage.at<cv::Vec3b>(y, x)[z] , 2);
+            }
+        }
+    }
+    return static_cast<float>(squareDistanceSum)
+    / static_cast<float>(compareImage.cols)
+    / static_cast<float>(compareImage.rows)
+    / 3.0f;
+}
+
+std::string RGBImageProcessor::meanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+
     if (compareImage.rows != originalImage.rows) {
         originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
     }
-    for (int y = 0; y < compareImage.cols; y++) {
-        for (int x = 0; x < compareImage.rows; x++) {
-            for (int z = 0; z < 3; z++) {
-                squareDistanceSum += pow(compareImage.at<cv::Vec3b>(y, x)[z] - originalImage.at<cv::Vec3b>(y, x)[z] , 2);
-            }
-        }
-    }
-    float mseBefore = static_cast<float>(squareDistanceSum)
-    / static_cast<float>(compareImage.cols)
-    / static_cast<float>(compareImage.rows)
-    / 3.0f;
+    float mseBefore = computeMSE(compareImage, originalImage);
 
-    squareDistanceSum = 0;
     if (compareImage.rows != newImage.rows) {
         newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
     }
-    for (int y = 0; y < compareImage.cols; y++) {
-        for (int x = 0; x < compareImage.rows; x++) {
-            for (int z = 0; z < 3; z++) {
-                squareDistanceSum += pow(compareImage.at<cv::Vec3b>(y, x)[z] - newImage.at<cv::Vec3b>(y, x)[z] , 2);
-            }
-        }
-    }
-    float mseAfter= static_cast<float>(squareDistanceSum)
-    / static_cast<float>(compareImage.cols)
-    / static_cast<float>(compareImage.rows)
-    / 3.0f;
+    float mseAfter= computeMSE(compareImage, newImage);
 
     std::stringstream ss;
     ss << "Mean square error before denoising: " << mseBefore << "\n"
@@ -220,17 +214,13 @@ std::string RGBImageProcessor::meanSquareError(cv::Mat compareImage, cv::Mat ori
     return ss.str();
 }
 
-std::string RGBImageProcessor::peakMeanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+float computeMSEAndSetMax(cv::Mat compareImage, cv::Mat secondImage, uchar* max) {
     int squareDistanceSum = 0;
-    uchar max[3] = {0, 0, 0};
 
-    if (compareImage.rows != originalImage.rows) {
-        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
-    }
     for (int y = 0; y < compareImage.cols; y++) {
         for (int x = 0; x < compareImage.rows; x++) {
             for (int z = 0; z < 3; z++) {
-                squareDistanceSum += pow(compareImage.at<cv::Vec3b>(y, x)[z] - originalImage.at<cv::Vec3b>(y, x)[z] , 2);
+                squareDistanceSum += pow(compareImage.at<cv::Vec3b>(y, x)[z] - secondImage.at<cv::Vec3b>(y, x)[z] , 2);
                 if (max[z] < compareImage.at<cv::Vec3b>(y, x)[z]) {
                     max[z] = compareImage.at<cv::Vec3b>(y, x)[z];
                 }
@@ -238,32 +228,31 @@ std::string RGBImageProcessor::peakMeanSquareError(cv::Mat compareImage, cv::Mat
         }
     }
 
+    return static_cast<float>(squareDistanceSum)
+    / static_cast<float>(compareImage.cols)
+    / static_cast<float>(compareImage.rows)
+    / 3.0f;
+}
+
+std::string RGBImageProcessor::peakMeanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+    if (compareImage.rows != originalImage.rows) {
+        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
+    }
+
+    uchar max[3] = {0, 0, 0};
+    float pmseBefore = computeMSEAndSetMax(compareImage, originalImage, max);
     float maxSum = 0;
     for (unsigned char i : max) {
         maxSum += pow(i, 2);
     }
-    float pmseBefore = static_cast<float>(squareDistanceSum)
-    / static_cast<float>(compareImage.cols)
-    / static_cast<float>(compareImage.rows)
-    / 3.0f
-    / maxSum;
+    pmseBefore /= maxSum;
 
-    squareDistanceSum = 0;
 
     if (compareImage.rows != newImage.rows) {
         newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
     }
-    for (int y = 0; y < compareImage.cols; y++) {
-        for (int x = 0; x < compareImage.rows; x++) {
-            for (int z = 0; z < 3; z++) {
-                squareDistanceSum += pow(compareImage.at<cv::Vec3b>(y, x)[z] - newImage.at<cv::Vec3b>(y, x)[z] , 2);
-            }
-        }
-    }
-    float pmseAfter= static_cast<float>(squareDistanceSum)
-    / static_cast<float>(compareImage.cols)
-    / static_cast<float>(compareImage.rows)
-    / 3.0f
+
+    float pmseAfter= computeMSE(compareImage, originalImage)
     / maxSum;
 
     std::stringstream ss;
