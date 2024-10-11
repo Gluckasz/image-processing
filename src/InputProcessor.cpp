@@ -34,7 +34,10 @@ void InputProcessor::printCommands() {
         <<"--noNoiseImage [-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
         << "\t -fileName - file name of the image with no noise.\n\n"
         << "--mse - compute mean square error.\n\n"
-        << "--pmse - compute peak mean square error.\n\n";
+        << "--pmse - compute peak mean square error.\n\n"
+        << "--snr - compute signal to noise ratio.\n\n"
+        << "--psnr - compute peak signal to noise ratio.\n\n"
+        << "--md - compute maximum difference.\n\n";
 }
 
 void InputProcessor::readIntParam(int i, bool &isModified, int &modVal) {
@@ -147,6 +150,15 @@ void InputProcessor::processInput() {
         else if (static_cast<std::string>(argv[i]) == "--pmse") {
             isPeakMeanSquareError = true;
         }
+        else if (static_cast<std::string>(argv[i]) == "--snr") {
+            isSignalToNoise = true;
+        }
+        else if (static_cast<std::string>(argv[i]) == "--psnr") {
+            isPeakSignalToNoise = true;
+        }
+        else if (static_cast<std::string>(argv[i]) == "--md") {
+            isMaximumDifference = true;
+        }
     }
 }
 
@@ -210,6 +222,15 @@ void InputProcessor::processImage() const {
         }
         if (isPeakMeanSquareError) {
             ss << imageProcessor->peakMeanSquareError(compareImage, originalImage, newImage);
+        }
+        if (isSignalToNoise) {
+            ss << imageProcessor->signalToNoiseRatio(compareImage, originalImage, newImage);
+        }
+        if (isPeakSignalToNoise) {
+            ss << imageProcessor->peakSignalToNoiseRatio(compareImage, originalImage, newImage);
+        }
+        if (isMaximumDifference) {
+            ss << imageProcessor->maximumDifference(compareImage, originalImage, newImage);
         }
         std::ofstream statsFile;
         statsFile.open("output/" + outputFileName.substr(0, outputFileName.length() - 4) + ".txt");

@@ -163,7 +163,7 @@ cv::Mat GrayscaleImageProcessor::arithmeticMeanFilter(cv::Mat image) {
     return newImage;
 }
 
-float computeMSE(cv::Mat compareImage, cv::Mat secondImage) {
+float computeMSEGrayscale(cv::Mat compareImage, cv::Mat secondImage) {
     int squareDistanceSum = 0;
 
     for (int y = 0; y < compareImage.cols; y++) {
@@ -181,13 +181,13 @@ std::string GrayscaleImageProcessor::meanSquareError(cv::Mat compareImage, cv::M
     if (compareImage.rows != originalImage.rows) {
         originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
     }
-    float mseBefore = computeMSE(compareImage, originalImage);
+    float mseBefore = computeMSEGrayscale(compareImage, originalImage);
 
     if (compareImage.rows != newImage.rows) {
         newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
     }
 
-    float mseAfter= computeMSE(compareImage, newImage);
+    float mseAfter= computeMSEGrayscale(compareImage, newImage);
 
     std::stringstream ss;
     ss << "Mean square error before denoising: " << mseBefore << "\n"
@@ -196,7 +196,7 @@ std::string GrayscaleImageProcessor::meanSquareError(cv::Mat compareImage, cv::M
     return ss.str();
 }
 
-float computeMSEAndSetMax(cv::Mat compareImage, cv::Mat secondImage, uchar &max) {
+float computeMSEAndSetMaxGrayscale(cv::Mat compareImage, cv::Mat secondImage, uchar &max) {
     int squareDistanceSum = 0;
 
     for (int y = 0; y < compareImage.cols; y++) {
@@ -218,14 +218,14 @@ std::string GrayscaleImageProcessor::peakMeanSquareError(cv::Mat compareImage, c
     if (compareImage.rows != originalImage.rows) {
         originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
     }
-    float pmseBefore = computeMSEAndSetMax(compareImage, originalImage, max)
+    float pmseBefore = computeMSEAndSetMaxGrayscale(compareImage, originalImage, max)
     / static_cast<float>(pow(max, 2));
 
 
     if (compareImage.rows != newImage.rows) {
         newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
     }
-    float pmseAfter= computeMSE(compareImage, newImage)
+    float pmseAfter= computeMSEGrayscale(compareImage, newImage)
     / static_cast<float>(pow(max, 2));
 
     std::stringstream ss;
@@ -235,4 +235,116 @@ std::string GrayscaleImageProcessor::peakMeanSquareError(cv::Mat compareImage, c
     return ss.str();
 }
 
+int computeSquareSum(cv::Mat image) {
+    int sum = 0;
 
+    for (int y = 0; y < image.cols; y++) {
+        for (int x = 0; x < image.rows; x++) {
+            sum += pow(image.at<uchar>(y, x), 2);
+        }
+    }
+
+    return sum;
+}
+
+std::string GrayscaleImageProcessor::signalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+    if (compareImage.rows != originalImage.rows) {
+        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
+    }
+
+    auto squareSum = static_cast<float>(computeSquareSum(compareImage));
+
+    float snrBefore = 10 * std::log10(
+        squareSum
+        / computeMSEGrayscale(compareImage, originalImage));
+
+
+    if (compareImage.rows != newImage.rows) {
+        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
+    }
+
+    float snrAfter = 10 * std::log10(
+        squareSum
+        / computeMSEGrayscale(compareImage, newImage));
+
+    std::stringstream ss;
+    ss << "Signal to noise ratio before denoising: " << snrBefore << "\n"
+    << "Signal to noise ratio after denoising: " << snrAfter << "\n";
+
+    return ss.str();
+}
+
+int computeMaxSquareSum(uchar max, int rows, int cols) {
+    int sum = 0;
+    for (int y = 0; y < cols; y++) {
+        for (int x = 0; x < rows; x++) {
+            sum += pow(max, 2);
+        }
+    }
+
+    return sum;
+}
+
+std::string GrayscaleImageProcessor::peakSignalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+    if (compareImage.rows != originalImage.rows) {
+        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
+    }
+    uchar max = 0;
+
+    float mse = computeMSEAndSetMaxGrayscale(compareImage, originalImage, max);
+    auto maxSquareSum = static_cast<float>(computeMaxSquareSum(max, compareImage.rows, compareImage.cols));
+
+    float psnrBefore = 10 * std::log10(
+        maxSquareSum
+        / mse);
+
+
+    if (compareImage.rows != newImage.rows) {
+        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
+    }
+
+    float psnrAfter = 10 * std::log10(
+        maxSquareSum
+        / computeMSEGrayscale(compareImage, newImage));
+
+    std::stringstream ss;
+    ss << "Peak signal to noise ratio before denoising: " << psnrBefore << "\n"
+    << "Peak signal to noise ratio after denoising: " << psnrAfter << "\n";
+
+    return ss.str();
+}
+
+uchar computeMax(cv::Mat image) {
+    uchar max = 0;
+    for (int y = 0; y < image.cols; y++) {
+        for (int x = 0; x < image.rows; x++) {
+            if (max < image.at<uchar>(y, x)) {
+                max = image.at<uchar>(y, x);
+            }
+        }
+    }
+
+    return max;
+}
+
+std::string GrayscaleImageProcessor::maximumDifference(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+    if (compareImage.rows != originalImage.rows) {
+        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
+    }
+
+    uchar compareImageMax = computeMax(compareImage);
+
+    int maxDifferenceBefore = abs(compareImageMax - computeMax(originalImage));
+
+    if (compareImage.rows != newImage.rows) {
+        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
+    }
+
+    int maxDifferenceAfter = abs(compareImageMax - computeMax(originalImage));
+
+    std::stringstream ss;
+    ss << "Maximum difference before denoising: " << maxDifferenceBefore << "\n"
+    << "Maximum difference after denoising: " << maxDifferenceAfter << "\n";
+
+    return ss.str();
+}

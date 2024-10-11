@@ -261,3 +261,16 @@ std::string RGBImageProcessor::peakMeanSquareError(cv::Mat compareImage, cv::Mat
 
     return ss.str();
 }
+
+std::string RGBImageProcessor::signalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+    return "";
+}
+
+std::string RGBImageProcessor::peakSignalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+    return "";
+}
+
+
+std::string RGBImageProcessor::maximumDifference(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
+    return "";
+}

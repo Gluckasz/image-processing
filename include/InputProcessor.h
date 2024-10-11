@@ -51,6 +51,9 @@ private:
     std::string noNoiseImage;
     bool isMeanSquareError = false;
     bool isPeakMeanSquareError = false;
+    bool isSignalToNoise = false;
+    bool isPeakSignalToNoise = false;
+    bool isMaximumDifference = false;
 
     /**
      * Prints the information about all the available functions.
