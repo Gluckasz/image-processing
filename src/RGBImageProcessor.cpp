@@ -252,7 +252,7 @@ std::string RGBImageProcessor::peakMeanSquareError(cv::Mat compareImage, cv::Mat
         newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
     }
 
-    float pmseAfter= computeMSERGB(compareImage, originalImage)
+    float pmseAfter= computeMSERGB(compareImage, newImage)
     / maxSum;
 
     std::stringstream ss;
@@ -262,8 +262,8 @@ std::string RGBImageProcessor::peakMeanSquareError(cv::Mat compareImage, cv::Mat
     return ss.str();
 }
 
-int computeSquareSumRGB(cv::Mat image) {
-    int sum = 0;
+unsigned long long  computeSquareSumRGB(cv::Mat image) {
+    unsigned long long  sum = 0;
 
     for (int y = 0; y < image.cols; y++) {
         for (int x = 0; x < image.rows; x++) {
