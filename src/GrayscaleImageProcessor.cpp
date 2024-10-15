@@ -235,7 +235,7 @@ std::string GrayscaleImageProcessor::peakMeanSquareError(cv::Mat compareImage, c
     return ss.str();
 }
 
-int computeSquareSum(cv::Mat image) {
+int computeSquareSumGrayscale(cv::Mat image) {
     int sum = 0;
 
     for (int y = 0; y < image.cols; y++) {
@@ -252,7 +252,7 @@ std::string GrayscaleImageProcessor::signalToNoiseRatio(cv::Mat compareImage, cv
         originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
     }
 
-    auto squareSum = static_cast<float>(computeSquareSum(compareImage));
+    auto squareSum = static_cast<float>(computeSquareSumGrayscale(compareImage));
 
     float snrBefore = 10 * std::log10(
         squareSum
@@ -274,14 +274,13 @@ std::string GrayscaleImageProcessor::signalToNoiseRatio(cv::Mat compareImage, cv
     return ss.str();
 }
 
-int computeMaxSquareSum(uchar max, int rows, int cols) {
-    int sum = 0;
+unsigned long long  computeMaxSquareSumGrayscale(uchar max, int rows, int cols) {
+    unsigned long long  sum = 0;
     for (int y = 0; y < cols; y++) {
         for (int x = 0; x < rows; x++) {
-            sum += pow(max, 2);
+            sum += pow(static_cast<int>(max), 2);
         }
     }
-
     return sum;
 }
 
@@ -292,7 +291,7 @@ std::string GrayscaleImageProcessor::peakSignalToNoiseRatio(cv::Mat compareImage
     uchar max = 0;
 
     float mse = computeMSEAndSetMaxGrayscale(compareImage, originalImage, max);
-    auto maxSquareSum = static_cast<float>(computeMaxSquareSum(max, compareImage.rows, compareImage.cols));
+    auto maxSquareSum = static_cast<float>(computeMaxSquareSumGrayscale(max, compareImage.rows, compareImage.cols));
 
     float psnrBefore = 10 * std::log10(
         maxSquareSum
@@ -314,7 +313,7 @@ std::string GrayscaleImageProcessor::peakSignalToNoiseRatio(cv::Mat compareImage
     return ss.str();
 }
 
-uchar computeMax(cv::Mat image) {
+uchar computeMaxGrayscale(cv::Mat image) {
     uchar max = 0;
     for (int y = 0; y < image.cols; y++) {
         for (int x = 0; x < image.rows; x++) {
@@ -332,15 +331,15 @@ std::string GrayscaleImageProcessor::maximumDifference(cv::Mat compareImage, cv:
         originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
     }
 
-    uchar compareImageMax = computeMax(compareImage);
+    uchar compareImageMax = computeMaxGrayscale(compareImage);
 
-    int maxDifferenceBefore = abs(compareImageMax - computeMax(originalImage));
+    int maxDifferenceBefore = abs(compareImageMax - computeMaxGrayscale(originalImage));
 
     if (compareImage.rows != newImage.rows) {
         newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
     }
 
-    int maxDifferenceAfter = abs(compareImageMax - computeMax(originalImage));
+    int maxDifferenceAfter = abs(compareImageMax - computeMaxGrayscale(originalImage));
 
     std::stringstream ss;
     ss << "Maximum difference before denoising: " << maxDifferenceBefore << "\n"
