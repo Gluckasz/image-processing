@@ -8,7 +8,7 @@ cv::Mat GrayscaleImageProcessor::modifyBrightness(cv::Mat image, int modVal){
     for (int x = 0; x < image.rows; x++) {
         for (int y = 0; y < image.cols; y++) {
             if (modVal < 0) {
-                if (image.at<uchar>(x, y) >= 0 - modVal) {
+                if (image.at<uchar>(x, y) >= 0 + modVal) {
                     image.at<uchar>(x, y) += modVal;
                 }
                 else {
@@ -29,27 +29,27 @@ cv::Mat GrayscaleImageProcessor::modifyBrightness(cv::Mat image, int modVal){
 }
 
 cv::Mat GrayscaleImageProcessor::mofifyContrastLinear(cv::Mat image, int modVal) {
-    uchar max = 0;
-    uchar min = 255;
+    int max = 0;
+    int min = 255;
     for (int x = 0; x < image.rows; x++) {
         for (int y = 0; y < image.cols; y++) {
             if (max < image.at<uchar>(x, y)) {
-                max = image.at<uchar>(x, y);
+                max = static_cast<int>(image.at<uchar>(x, y));
             }
             if (min > image.at<uchar>(x, y)) {
-                min = image.at<uchar>(x, y);
+                min = static_cast<int>(image.at<uchar>(x, y));
             }
         }
     }
     for (int x = 0; x < image.rows; x++) {
         for (int y = 0; y < image.cols; y++) {
-            image.at<uchar>(x, y) = std::clamp(
-                (image.at<uchar>(x, y) - min)
+            image.at<uchar>(x, y) = static_cast<uchar>(std::clamp(
+                (static_cast<int>(image.at<uchar>(x, y)) - min)
                 * (max - min + 2 * modVal)
-                / (max - min) + min,
+                / (max - min) + min - modVal,
                 0,
                 UCHAR_MAX
-                );
+                ));
         }
     }
     return image;
