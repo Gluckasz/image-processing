@@ -16,6 +16,7 @@ public:
      * @return image with modified brightness.
      */
     cv::Mat modifyBrightness(cv::Mat image, int modVal) override;
+
     /**
      * Modify contrast of an RGB image using linear contrast stretching.
      * @param image image to modify.
@@ -24,6 +25,13 @@ public:
      * @return image with modified contrast.
      */
     cv::Mat mofifyContrastLinear(cv::Mat image, int modVal) override;
+
+    /**
+     * Modify contrast of an RGB image using gamma contrast correction.
+     * @param image image to modify.
+     * @param modVal floating-point value indicating value of gamma.
+     * @return image with modified contrast.
+     */
     cv::Mat modifyContrastGamma(cv::Mat image, float modVal) override;
     cv::Mat negative(cv::Mat image) override;
     cv::Mat flipHorizontally(cv::Mat image) override;
