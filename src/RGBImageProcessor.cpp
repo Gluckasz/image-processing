@@ -67,9 +67,8 @@ cv::Mat RGBImageProcessor::modifyContrastGamma(cv::Mat image, float modVal) {
             for (int z = 0; z < 3; z++) {
                 float normalizedPixelVal = static_cast<float>(image.at<cv::Vec3b>(x, y)[z]) / 255.0f;
 
-                // Apply gamma correction
-                float gammaCorrectedVal = pow(normalizedPixelVal, modVal); // Gamma correction
-                int gammaCorrectedPixel = round(gammaCorrectedVal * 255); // Scale back to 0-255
+                float gammaCorrectedVal = pow(normalizedPixelVal, modVal);
+                int gammaCorrectedPixel = round(gammaCorrectedVal * 255);
 
                 gammaCorrectedPixel = std::clamp(gammaCorrectedPixel, 0, UCHAR_MAX);
                 image.at<cv::Vec3b>(x, y)[z] = gammaCorrectedPixel;
