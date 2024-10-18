@@ -51,7 +51,7 @@ cv::Mat RGBImageProcessor::mofifyContrastLinear(cv::Mat image, int modVal) {
                 image.at<cv::Vec3b>(x, y)[z] = std::clamp(
                     (image.at<cv::Vec3b>(x, y)[z] - min[z])
                     * (max[z] - min[z] + 2 * modVal)
-                    / (max[z] - min[z]) + min[z],
+                    / (max[z] - min[z]) + min[z] - modVal,
                     0,
                     UCHAR_MAX
                     );
