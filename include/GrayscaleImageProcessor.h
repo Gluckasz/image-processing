@@ -8,6 +8,12 @@
 
 class GrayscaleImageProcessor : public ImageProcessor {
 public:
+    /**
+     * Modify brightness of a grayscale image by a constant factor.
+     * @param image image to modify.
+     * @param modVal brightness modification value (positive makes image brighter and negative makes image darker).
+     * @return modified image.
+     */
     cv::Mat modifyBrightness(cv::Mat image, int modVal) override;
     cv::Mat mofifyContrastLinear(cv::Mat image, int modVal) override;
     cv::Mat modifyContrastGamma(cv::Mat image, float modVal) override;
