@@ -146,11 +146,11 @@ cv::Mat RGBImageProcessor::midpointFilter(cv::Mat image, int kernelSize) {
         leftFilterSize += 1;
     }
 
-    for (int y = border; y < image.rows - border; y++) {
-        for (int x = border; x < image.cols - border; x++) {
+    for (int x = border; x < image.rows - border; x++) {
+        for (int y = border; y < image.cols - border; y++) {
             for (int z = 0; z < 3; z++) {
-                uchar max = image.at<cv::Vec3b>(y - border, x - border)[z];
-                uchar min = image.at<cv::Vec3b>(y - border, x - border)[z];
+                uchar max = image.at<cv::Vec3b>(x - border, y - border)[z];
+                uchar min = image.at<cv::Vec3b>(x - border, y - border)[z];
                 for (int i = leftFilterSize; i <= rightFilterSize; i++) {
                     for (int j = leftFilterSize; j <= rightFilterSize; j++) {
                         uchar currentPixel = image.at<cv::Vec3b>(x + i, y + j)[z];
@@ -162,7 +162,7 @@ cv::Mat RGBImageProcessor::midpointFilter(cv::Mat image, int kernelSize) {
                         }
                     }
                 }
-                newImage.at<cv::Vec3b>(y, x)[z] = (max + min) / 2;
+                newImage.at<cv::Vec3b>(x, y)[z] = (max + min) / 2;
             }
         }
     }
