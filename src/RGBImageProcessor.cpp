@@ -153,11 +153,12 @@ cv::Mat RGBImageProcessor::midpointFilter(cv::Mat image, int kernelSize) {
                 uchar min = image.at<cv::Vec3b>(y - border, x - border)[z];
                 for (int i = leftFilterSize; i <= rightFilterSize; i++) {
                     for (int j = leftFilterSize; j <= rightFilterSize; j++) {
-                        if (max < image.at<cv::Vec3b>(y + j, x + i)[z]) {
-                            max = image.at<cv::Vec3b>(y + j, x + i)[z];
+                        uchar currentPixel = image.at<cv::Vec3b>(x + i, y + j)[z];
+                        if (max < currentPixel) {
+                            max = currentPixel;
                         }
-                        if (min > image.at<cv::Vec3b>(y + j, x + i)[z]) {
-                            min = image.at<cv::Vec3b>(y + j, x + i)[z];
+                        if (min > currentPixel) {
+                            min = currentPixel;
                         }
                     }
                 }
@@ -168,19 +169,26 @@ cv::Mat RGBImageProcessor::midpointFilter(cv::Mat image, int kernelSize) {
     return newImage;
 }
 
-cv::Mat RGBImageProcessor::arithmeticMeanFilter(cv::Mat image) {
+cv::Mat RGBImageProcessor::arithmeticMeanFilter(cv::Mat image, int kernelSize) {
     cv::Mat newImage;
     image.copyTo(newImage);
-    for (int y = 1; y < image.rows - 1; y++) {
-        for (int x = 1; x < image.cols - 1; x++) {
+    int border = (kernelSize - 1) / 2;
+    int leftFilterSize = -(kernelSize / 2);
+    int rightFilterSize = (kernelSize / 2);
+    if (kernelSize % 2 == 0) {
+        leftFilterSize += 1;
+    }
+
+    for (int x = border; x < image.rows - border; x++) {
+        for (int y = border; y < image.cols - border; y++) {
             for (int z = 0; z < 3; z++) {
                 int sum = 0;
-                for (int i = -1; i <= 1; i++) {
-                    for (int j = -1; j <= 1; j++) {
-                        sum += image.at<cv::Vec3b>(y - j, x - i)[z];
+                for (int i = leftFilterSize; i <= rightFilterSize; i++) {
+                    for (int j = leftFilterSize; j <= rightFilterSize; j++) {
+                        sum += image.at<cv::Vec3b>(x + j, y + i)[z];
                     }
                 }
-                newImage.at<cv::Vec3b>(y, x)[z] = sum / 9;
+                newImage.at<cv::Vec3b>(x, y)[z] = sum / 9;
             }
         }
     }

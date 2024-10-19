@@ -213,7 +213,7 @@ void InputProcessor::processImage() const {
         newImage = imageProcessor->midpointFilter(newImage, midpointKernelSize);
     }
     if (isArithmeticMeanFilter) {
-        newImage = imageProcessor->arithmeticMeanFilter(newImage);
+        newImage = imageProcessor->arithmeticMeanFilter(newImage, arithmeticMeanKernelSize);
     }
     saveImage(newImage);
 

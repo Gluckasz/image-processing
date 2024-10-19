@@ -152,18 +152,25 @@ cv::Mat GrayscaleImageProcessor::midpointFilter(cv::Mat image, int kernelSize) {
     return newImage;
 }
 
-cv::Mat GrayscaleImageProcessor::arithmeticMeanFilter(cv::Mat image) {
+cv::Mat GrayscaleImageProcessor::arithmeticMeanFilter(cv::Mat image, int kernelSize) {
     cv::Mat newImage;
     image.copyTo(newImage);
-    for (int y = 1; y < image.rows - 1; y++) {
-        for (int x = 1; x < image.cols - 1; x++) {
+    int border = (kernelSize - 1) / 2;
+    int leftFilterSize = -(kernelSize / 2);
+    int rightFilterSize = (kernelSize / 2);
+    if (kernelSize % 2 == 0) {
+        leftFilterSize += 1;
+    }
+
+    for (int x = border; x < image.rows - border; x++) {
+        for (int y = border; y < image.cols - border; y++) {
             int sum = 0;
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    sum += image.at<uchar>(y - j, x - i);
+            for (int i = leftFilterSize; i <= rightFilterSize; i++) {
+                for (int j = leftFilterSize; j <= rightFilterSize; j++) {
+                    sum += image.at<uchar>(x + j, y + i);
                 }
             }
-            newImage.at<uchar>(y, x) = sum / 9;
+            newImage.at<uchar>(x, y) = sum / 9;
         }
     }
     return newImage;

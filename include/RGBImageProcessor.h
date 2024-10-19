@@ -69,8 +69,22 @@ public:
      * @return image of size = oldImage * factor.
      */
     cv::Mat resize(cv::Mat image, float factor) override;
+
+    /**
+     * Apply a midpoint filter.
+     * @param image to apply filter to.
+     * @param kernelSize of the filter.
+     * @return image after applying the filter.
+     */
     cv::Mat midpointFilter(cv::Mat image, int kernelSize) override;
-    cv::Mat arithmeticMeanFilter(cv::Mat image) override;
+
+    /**
+     * Apply an arithmetic filter.
+     * @param image to apply filter to.
+     * @param kernelSize of the filter.
+     * @return image after applying the filter.
+     */
+    cv::Mat arithmeticMeanFilter(cv::Mat image, int kernelSize) override;
     std::string meanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
     std::string peakMeanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
     std::string signalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
