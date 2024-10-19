@@ -60,6 +60,13 @@ public:
      * @return flipped image diagonally.
      */
     cv::Mat flipDiagonally(cv::Mat image) override;
+
+    /**
+     * Resize an image by a factor.
+     * @param image to be resized.
+     * @param factor of the resize operation.
+     * @return image of size = oldImage * factor.
+     */
     cv::Mat resize(cv::Mat image, float factor) override;
     cv::Mat midpointFilter(cv::Mat image) override;
     cv::Mat arithmeticMeanFilter(cv::Mat image) override;
