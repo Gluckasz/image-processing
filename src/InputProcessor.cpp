@@ -29,8 +29,10 @@ void InputProcessor::printCommands() {
         << "\t -modVal - floating-point scale factor of new image (has to be between 0 and 1 non-inclusive).\n\n"
         << "--enlarge [-modVal=value] - enlarge an image using nearest Neighbor Method.\n"
         << "\t -modVal - floating-point scale factor of new image (has to be greater than 1).\n\n"
-        << "--mid - apply midpoint filter.\n\n"
-        << "--amean - apply arithmetic mean filter.\n\n"
+        << "--mid [-modVal=value] - apply midpoint filter.\n"
+        << "\t -modVal - integer kernel size value.\n\n"
+        << "--amean - apply arithmetic mean filter.\n"
+        << "\t -modVal - integer kernel size value.\n\n"
         <<"--noNoiseImage [-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
         << "\t -fileName - file name of the image with no noise.\n\n"
         << "--mse - compute mean square error.\n\n"
@@ -136,9 +138,11 @@ void InputProcessor::processInput() {
         }
         else if (static_cast<std::string>(argv[i]) == "--mid") {
             isMidpointFilter = true;
+            readIntParam(++i, isMidpointFilter, midpointKernelSize);
         }
         else if (static_cast<std::string>(argv[i]) == "--amean") {
             isArithmeticMeanFilter = true;
+            readIntParam(++i, isArithmeticMeanFilter, arithmeticMeanKernelSize);
         }
         else if (static_cast<std::string>(argv[i]) == "--noNoiseImage") {
             readStringParam(++i, noNoiseImage);
@@ -206,7 +210,7 @@ void InputProcessor::processImage() const {
         newImage = imageProcessor->resize(newImage, enlargeModVal);
     }
     if (isMidpointFilter) {
-        newImage = imageProcessor->midpointFilter(newImage);
+        newImage = imageProcessor->midpointFilter(newImage, midpointKernelSize);
     }
     if (isArithmeticMeanFilter) {
         newImage = imageProcessor->arithmeticMeanFilter(newImage);

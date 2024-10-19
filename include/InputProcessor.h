@@ -46,7 +46,9 @@ private:
     bool isEnlarged = false;
     float enlargeModVal;
     bool isMidpointFilter = false;
+    int midpointKernelSize;
     bool isArithmeticMeanFilter = false;
+    int arithmeticMeanKernelSize;
     bool isNoNoise = false;
     std::string noNoiseImage;
     bool isMeanSquareError = false;

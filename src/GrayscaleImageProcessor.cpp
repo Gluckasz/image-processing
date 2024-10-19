@@ -124,17 +124,25 @@ cv::Mat GrayscaleImageProcessor::resize(cv::Mat image, float factor) {
 cv::Mat GrayscaleImageProcessor::midpointFilter(cv::Mat image, int kernelSize) {
     cv::Mat newImage;
     image.copyTo(newImage);
-    for (int x = (kernelSize - 1) / 2; x < image.rows - (kernelSize - 1) / 2; x++) {
-        for (int y = (kernelSize - 1) / 2; y < image.cols - (kernelSize - 1) / 2; y++) {
-            uchar max = image.at<uchar>(x - (kernelSize - 1) / 2, y - (kernelSize - 1) / 2);
-            uchar min = image.at<uchar>(x - (kernelSize - 1) / 2, y - (kernelSize - 1) / 2);
-            for (int i = -(kernelSize / 2); i <= kernelSize / 2; i++) {
-                for (int j = -(kernelSize / 2); j <= kernelSize / 2; j++) {
-                    if (max < image.at<uchar>(x + j, y + i)) {
-                        max = image.at<uchar>(x + j, y + i);
+    int border = (kernelSize - 1) / 2;
+    int leftFilterSize = -(kernelSize / 2);
+    int rightFilterSize = (kernelSize / 2);
+    if (kernelSize % 2 == 0) {
+        leftFilterSize += 1;
+    }
+
+    for (int x = border; x < image.rows - border; x++) {
+        for (int y = border; y < image.cols - border; y++) {
+            uchar max = image.at<uchar>(x - border, y - border);
+            uchar min = image.at<uchar>(x - border, y - border);
+            for (int i = leftFilterSize; i <= rightFilterSize; i++) {
+                for (int j = leftFilterSize; j <= rightFilterSize; j++) {
+                    uchar currentPixel = image.at<uchar>(x + i, y + j);
+                    if (max < currentPixel) {
+                        max = currentPixel;
                     }
-                    if (min > image.at<uchar>(x + j, y + i)) {
-                        min = image.at<uchar>(x + j, y + i);
+                    if (min > currentPixel) {
+                        min = currentPixel;
                     }
                 }
             }
