@@ -122,13 +122,14 @@ cv::Mat RGBImageProcessor::flipDiagonally(cv::Mat image) {
 cv::Mat RGBImageProcessor::resize(cv::Mat image, float factor) {
     int newWidth = static_cast<int>(static_cast<float>(image.cols) * factor);
     int newHeight = static_cast<int>(static_cast<float>(image.rows) * factor);
-    cv::Mat  newImage = cv::Mat ::zeros(newHeight, newWidth, CV_8UC3);
-    for (int y = 0; y < newHeight; y++) {
-        for (int x = 0; x < newWidth; x++) {
+    cv::Mat newImage = cv::Mat ::zeros(newHeight, newWidth, CV_8UC3);
+
+    for (int x = 0; x < newHeight; x++) {
+        for (int y = 0; y < newWidth; y++) {
             for (int z = 0; z < 3; z++) {
-            newImage.at<cv::Vec3b>(y, x)[z] = image.at<cv::Vec3b>(
-                static_cast<int>(static_cast<float>(y) / factor),
-                static_cast<int>(static_cast<float>(x) / factor))[z];
+            newImage.at<cv::Vec3b>(x, y)[z] = image.at<cv::Vec3b>(
+                static_cast<int>(static_cast<float>(x) / factor),
+                static_cast<int>(static_cast<float>(y) / factor))[z];
             }
         }
     }
