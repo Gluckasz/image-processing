@@ -121,24 +121,24 @@ cv::Mat GrayscaleImageProcessor::resize(cv::Mat image, float factor) {
     return newImage;
 }
 
-cv::Mat GrayscaleImageProcessor::midpointFilter(cv::Mat image) {
+cv::Mat GrayscaleImageProcessor::midpointFilter(cv::Mat image, int kernelSize) {
     cv::Mat newImage;
     image.copyTo(newImage);
-    for (int y = 1; y < image.rows - 1; y++) {
-        for (int x = 1; x < image.cols - 1; x++) {
-            uchar max = image.at<uchar>(y - 1, x - 1);
-            uchar min = image.at<uchar>(y - 1, x - 1);
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    if (max < image.at<uchar>(y - j, x - i)) {
-                        max = image.at<uchar>(y - j, x - i);
+    for (int x = (kernelSize - 1) / 2; x < image.rows - (kernelSize - 1) / 2; x++) {
+        for (int y = (kernelSize - 1) / 2; y < image.cols - (kernelSize - 1) / 2; y++) {
+            uchar max = image.at<uchar>(x - (kernelSize - 1) / 2, y - (kernelSize - 1) / 2);
+            uchar min = image.at<uchar>(x - (kernelSize - 1) / 2, y - (kernelSize - 1) / 2);
+            for (int i = -(kernelSize / 2); i <= kernelSize / 2; i++) {
+                for (int j = -(kernelSize / 2); j <= kernelSize / 2; j++) {
+                    if (max < image.at<uchar>(x + j, y + i)) {
+                        max = image.at<uchar>(x + j, y + i);
                     }
-                    if (min > image.at<uchar>(y - j, x - i)) {
-                        min = image.at<uchar>(y - j, x - i);
+                    if (min > image.at<uchar>(x + j, y + i)) {
+                        min = image.at<uchar>(x + j, y + i);
                     }
                 }
             }
-            newImage.at<uchar>(y, x) = (max + min) / 2;
+            newImage.at<uchar>(x, y) = (max + min) / 2;
         }
     }
     return newImage;

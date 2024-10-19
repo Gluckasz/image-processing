@@ -136,7 +136,7 @@ cv::Mat RGBImageProcessor::resize(cv::Mat image, float factor) {
     return newImage;
 }
 
-cv::Mat RGBImageProcessor::midpointFilter(cv::Mat image) {
+cv::Mat RGBImageProcessor::midpointFilter(cv::Mat image, int kernelSize) {
     cv::Mat  newImage;
     image.copyTo(newImage);
     for (int y = 1; y < image.rows - 1; y++) {
