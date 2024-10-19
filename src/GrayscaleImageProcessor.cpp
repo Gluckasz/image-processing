@@ -170,7 +170,7 @@ cv::Mat GrayscaleImageProcessor::arithmeticMeanFilter(cv::Mat image, int kernelS
                     sum += image.at<uchar>(x + j, y + i);
                 }
             }
-            newImage.at<uchar>(x, y) = sum / 9;
+            newImage.at<uchar>(x, y) = sum / pow(kernelSize, 2);
         }
     }
     return newImage;

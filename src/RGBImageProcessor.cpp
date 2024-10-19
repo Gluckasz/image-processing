@@ -188,7 +188,7 @@ cv::Mat RGBImageProcessor::arithmeticMeanFilter(cv::Mat image, int kernelSize) {
                         sum += image.at<cv::Vec3b>(x + j, y + i)[z];
                     }
                 }
-                newImage.at<cv::Vec3b>(x, y)[z] = sum / 9;
+                newImage.at<cv::Vec3b>(x, y)[z] = sum / pow(kernelSize, 2);
             }
         }
     }
