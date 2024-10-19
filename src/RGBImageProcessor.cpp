@@ -139,18 +139,25 @@ cv::Mat RGBImageProcessor::resize(cv::Mat image, float factor) {
 cv::Mat RGBImageProcessor::midpointFilter(cv::Mat image, int kernelSize) {
     cv::Mat  newImage;
     image.copyTo(newImage);
-    for (int y = 1; y < image.rows - 1; y++) {
-        for (int x = 1; x < image.cols - 1; x++) {
+    int border = (kernelSize - 1) / 2;
+    int leftFilterSize = -(kernelSize / 2);
+    int rightFilterSize = (kernelSize / 2);
+    if (kernelSize % 2 == 0) {
+        leftFilterSize += 1;
+    }
+
+    for (int y = border; y < image.rows - border; y++) {
+        for (int x = border; x < image.cols - border; x++) {
             for (int z = 0; z < 3; z++) {
-                uchar max = image.at<cv::Vec3b>(y - 1, x - 1)[z];
-                uchar min = image.at<cv::Vec3b>(y - 1, x - 1)[z];
-                for (int i = -1; i <= 1; i++) {
-                    for (int j = -1; j <= 1; j++) {
-                        if (max < image.at<cv::Vec3b>(y - j, x - i)[z]) {
-                            max = image.at<cv::Vec3b>(y - j, x - i)[z];
+                uchar max = image.at<cv::Vec3b>(y - border, x - border)[z];
+                uchar min = image.at<cv::Vec3b>(y - border, x - border)[z];
+                for (int i = leftFilterSize; i <= rightFilterSize; i++) {
+                    for (int j = leftFilterSize; j <= rightFilterSize; j++) {
+                        if (max < image.at<cv::Vec3b>(y + j, x + i)[z]) {
+                            max = image.at<cv::Vec3b>(y + j, x + i)[z];
                         }
-                        if (min > image.at<cv::Vec3b>(y - j, x - i)[z]) {
-                            min = image.at<cv::Vec3b>(y - j, x - i)[z];
+                        if (min > image.at<cv::Vec3b>(y + j, x + i)[z]) {
+                            min = image.at<cv::Vec3b>(y + j, x + i)[z];
                         }
                     }
                 }
