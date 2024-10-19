@@ -33,6 +33,12 @@ public:
      * @return image with modified contrast.
      */
     cv::Mat modifyContrastGamma(cv::Mat image, float modVal) override;
+
+    /**
+     * Take the negative of an RGB image.
+     * @param image image to take the negative of.
+     * @return negative of an image
+     */
     cv::Mat negative(cv::Mat image) override;
     cv::Mat flipHorizontally(cv::Mat image) override;
     cv::Mat flipVertically(cv::Mat image) override;
