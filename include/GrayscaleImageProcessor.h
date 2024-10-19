@@ -39,8 +39,26 @@ public:
      * @return negative of an image.
      */
     cv::Mat negative(cv::Mat image) override;
+
+    /**
+     * Flip the image horizontally.
+     * @param image to be flipped.
+     * @return flipped image horizontally.
+     */
     cv::Mat flipHorizontally(cv::Mat image) override;
+
+    /**
+     * Flip the image vertically.
+     * @param image to be flipped.
+     * @return flipped image vertically.
+     */
     cv::Mat flipVertically(cv::Mat image) override;
+
+    /**
+     * Flip the image diagonally.
+     * @param image to be flipped.
+     * @return flipped image diagonally.
+     */
     cv::Mat flipDiagonally(cv::Mat image) override;
     cv::Mat resize(cv::Mat image, float factor) override;
     cv::Mat midpointFilter(cv::Mat image) override;
