@@ -17,73 +17,80 @@ void InputProcessor::printCommands() {
         << "\t -fileName - output file name (default is output.bmp).\n\n"
         << "--grayscale - read image in grayscale.\n\n"
         << "--brightness [-modVal=value] - modify brightness of an image.\n"
-        << "\t -modVal - integral value to add to each pixel (can be negative).\n\n"
+        << "\t -val - integral value to add to each pixel (can be negative).\n\n"
         << "--contrastLinear[-modVal=value] - modify contrast of an image using linear contrast stretching.\n"
-        << "\t -modVal - new value added and subtracted from upper and lower boundary.\n\n"
+        << "\t -val - new value added and subtracted from upper and lower boundary.\n\n"
         << "--contrastGamma [-modVal=value] - modify contrast of an image using gamma correction.\n"
-        << "\t -modVal - floating-point value of gamma variable.\n\n"
+        << "\t -val - floating-point value of gamma variable.\n\n"
         << "--negative - take negative of an image.\n\n"
         << "--hflip - flip the image horizontally.\n\n"
         << "--vflip - flip the image vertically.\n\n"
         << "--shrink [-modVal=value] - shrink an image using nearest Neighbor Method.\n"
-        << "\t -modVal - floating-point scale factor of new image (has to be between 0 and 1 non-inclusive).\n\n"
+        << "\t -val - floating-point scale factor of new image (has to be between 0 and 1 non-inclusive).\n\n"
         << "--enlarge [-modVal=value] - enlarge an image using nearest Neighbor Method.\n"
-        << "\t -modVal - floating-point scale factor of new image (has to be greater than 1).\n\n"
+        << "\t -val - floating-point scale factor of new image (has to be greater than 1).\n\n"
         << "--mid [-modVal=value] - apply midpoint filter.\n"
-        << "\t -modVal - integer kernel size value.\n\n"
+        << "\t -val - integer kernel size value.\n\n"
         << "--amean - apply arithmetic mean filter.\n"
-        << "\t -modVal - integer kernel size value.\n\n"
+        << "\t -val - integer kernel size value.\n\n"
         <<"--noNoiseImage [-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
         << "\t -fileName - file name of the image with no noise.\n\n"
         << "--mse - compute mean square error.\n\n"
         << "--pmse - compute peak mean square error.\n\n"
         << "--snr - compute signal to noise ratio.\n\n"
         << "--psnr - compute peak signal to noise ratio.\n\n"
-        << "--md - compute maximum difference.\n\n";
+        << "--md - compute maximum difference.\n\n"
+        << "--histogram - save histogram of an image to output_file_name_histogram.bmp\n\n"
+        << "\t -val - channel of an image for which to compute and save histogram."
+           "For grayscale images channel does not matter\n\n";
+
 }
 
 void InputProcessor::readIntParam(int i, bool &isModified, int &modVal) {
     std::string paramVal = argv[i];
-    if (paramVal.substr(0, std::strlen("-modVal=")) != "-modVal=") {
-        std::cout << "The parameter has to be of format: -modVal=[value].";
+    std::string paramName = "-val=";
+    if (paramVal.substr(0, paramName.length()) != paramName) {
+        std::cout << "The parameter has to be of format: " + paramName + "[value].";
         isModified = false;
     }
     try {
         modVal = stoi(paramVal.substr(paramVal.find('=') + 1));
     }
     catch (const std::invalid_argument & e) {
-        std::cout << "-modVal has to be an integer.";
+        std::cout << paramName + " has to be an integer.";
         isModified = false;
     }
     catch (const std::out_of_range & e) {
-        std::cout << "-modVal is out of bounds.";
+        std::cout << paramName + " is out of bounds.";
         isModified = false;
     }
 }
 
 void InputProcessor::readFloatParam(int i, bool &isModified, float &modVal) {
     std::string paramVal = argv[i];
-    if (paramVal.substr(0, std::strlen("-modVal=")) != "-modVal=") {
-        std::cout << "The parameter has to be of format: -modVal=[value].";
+    std::string paramName = "-val=";
+    if (paramVal.substr(0, paramName.length()) != paramName) {
+        std::cout << "The parameter has to be of format: " +  paramName + "[value].";
         isModified = false;
     }
     try {
         modVal = stof(paramVal.substr(paramVal.find('=') + 1));
     }
     catch (const std::invalid_argument & e) {
-        std::cout << "-modVal has to be an integer.";
+        std::cout << paramName + " has to be a float.";
         isModified = false;
     }
     catch (const std::out_of_range & e) {
-        std::cout << "-modVal is out of bounds.";
+        std::cout << paramName + " is out of bounds.";
         isModified = false;
     }
 }
 
 void InputProcessor::readStringParam(int i, std::string &paramVal) {
     std::string tryParamVal = argv[i];
-    if (tryParamVal.substr(0, std::strlen("-fileName=")) != "-fileName=") {
-        std::cout << "The parameter has to be of format: -fileName=[value].";
+    std::string paramName = "--fileName=";
+    if (tryParamVal.substr(0, paramName.length()) != paramName) {
+        std::cout << "The parameter has to be of format: " + paramName + "[value].";
     }
     else {
         paramVal = tryParamVal.substr(tryParamVal.find('=') + 1);
@@ -99,7 +106,7 @@ void InputProcessor::processInput() {
             return;
         }
         if (static_cast<std::string>(argv[i]) == "--output") {
-            readStringParam(++i, outputFileName);
+            readStringParam(++i, this->outputFileName);
         }
         else if (static_cast<std::string>(argv[i]) == "--grayscale") {
             imreadMode = cv::IMREAD_GRAYSCALE;
@@ -163,6 +170,14 @@ void InputProcessor::processInput() {
         else if (static_cast<std::string>(argv[i]) == "--md") {
             isMaximumDifference = true;
         }
+        else if (static_cast<std::string>(argv[i]) == "--histogram") {
+            isHistogram = true;
+            readIntParam(++i, isHistogram, histogramChannel);
+            if (histogramChannel < 0 || histogramChannel > 2) {
+                std::cout << " Histogram channel parameter must be between 0 and 2. Skipping histogram creation.";
+                isHistogram = false;
+            }
+        }
     }
 }
 
@@ -215,7 +230,11 @@ void InputProcessor::processImage() const {
     if (isArithmeticMeanFilter) {
         newImage = imageProcessor->arithmeticMeanFilter(newImage, arithmeticMeanKernelSize);
     }
-    saveImage(newImage);
+    if (isHistogram) {
+        std::string histogramFileName = outputFileName.substr(0, outputFileName.length()- 4) + "_histogram.png";
+        saveImage(imageProcessor->histogram(newImage, histogramChannel), histogramFileName);
+    }
+    saveImage(newImage, this->outputFileName);
 
     if (isNoNoise) {
         cv::Mat compareImage = imread(noNoiseImage, imreadMode);
@@ -244,7 +263,7 @@ void InputProcessor::processImage() const {
 }
 
 
-void InputProcessor::saveImage(cv::Mat image) const {
+void InputProcessor::saveImage(cv::Mat image, std::string outputFileName) const {
     if (!std::filesystem::is_directory("output") || !std::filesystem::exists("output")) {
         std::filesystem::create_directory("output");
     }

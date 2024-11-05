@@ -396,3 +396,29 @@ std::string RGBImageProcessor::maximumDifference(cv::Mat compareImage, cv::Mat o
 
     return ss.str();
 }
+
+cv::Mat RGBImageProcessor::histogram(cv::Mat image, int histogramChannel) {
+    uint intensityCountArray[UCHAR_MAX + 1] = {0};
+    for (int x = 0; x < image.rows; x++) {
+        for (int y = 0; y < image.cols; y++) {
+            intensityCountArray[image.at<cv::Vec3b>(x, y)[histogramChannel]] += 1;
+        }
+    }
+
+    // Find max in intensityCountArray to determine histogram image height
+    int histogramHeight = 0;
+    for (int i : intensityCountArray) {
+        histogramHeight = i > histogramHeight ? i : histogramHeight;
+    }
+
+    uint widthFactor = 8;
+    int histogramWidth = (UCHAR_MAX + 1) * widthFactor;
+    cv::Mat histogramImage = cv::Mat::zeros(histogramHeight, histogramWidth + widthFactor, CV_8UC1);
+    for (int y = 0; y < histogramWidth; y++) {
+        for (int x = widthFactor / 2; x < intensityCountArray[y / widthFactor]; x++) {
+            histogramImage.at<uchar>(histogramHeight - x - 1, y) = 255;
+        }
+    }
+
+    return histogramImage;
+}

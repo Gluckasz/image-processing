@@ -56,6 +56,8 @@ private:
     bool isSignalToNoise = false;
     bool isPeakSignalToNoise = false;
     bool isMaximumDifference = false;
+    bool isHistogram = false;
+    int histogramChannel;
 
     /**
      * Prints the information about all the available functions.
@@ -79,7 +81,7 @@ private:
     /**
      * Saves given image to the output/outputFileName file.
     */
-    void saveImage(cv::Mat image) const;
+    void saveImage(cv::Mat image, std::string outputFileName) const;
 };
 
 

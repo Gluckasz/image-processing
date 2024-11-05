@@ -8,7 +8,7 @@ cv::Mat GrayscaleImageProcessor::modifyBrightness(cv::Mat image, int modVal){
     for (int x = 0; x < image.rows; x++) {
         for (int y = 0; y < image.cols; y++) {
             if (modVal < 0) {
-                if (image.at<uchar>(x, y) >= 0 + modVal) {
+                if (image.at<uchar>(x, y) >= 0 - modVal) {
                     image.at<uchar>(x, y) += modVal;
                 }
                 else {
@@ -359,4 +359,30 @@ std::string GrayscaleImageProcessor::maximumDifference(cv::Mat compareImage, cv:
     << "Maximum difference after denoising: " << maxDifferenceAfter << "\n";
 
     return ss.str();
+}
+
+cv::Mat GrayscaleImageProcessor::histogram(cv::Mat image, int histogramChannel) {
+    uint intensityCountArray[UCHAR_MAX + 1] = {0};
+    for (int x = 0; x < image.rows; x++) {
+        for (int y = 0; y < image.cols; y++) {
+            intensityCountArray[image.at<uchar>(x, y)] += 1;
+        }
+    }
+
+    // Find max in intensityCountArray to determine histogram image height
+    uint histogramHeight = 0;
+    for (uint i : intensityCountArray) {
+        histogramHeight = i > histogramHeight ? i : histogramHeight;
+    }
+
+    uint widthFactor = 8;
+    uint histogramWidth = (UCHAR_MAX + 1) * widthFactor;
+    cv::Mat histogramImage = cv::Mat::zeros(histogramHeight, histogramWidth + widthFactor, CV_8UC1);
+    for (int y = 0; y < histogramWidth; y++) {
+        for (int x = widthFactor / 2; x < intensityCountArray[y / widthFactor]; x++) {
+            histogramImage.at<uchar>(histogramHeight - x - 1, y) = 255;
+        }
+    }
+
+    return histogramImage;
 }
