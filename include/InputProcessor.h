@@ -30,6 +30,7 @@ private:
     int argc;
     char **argv;
     std::string outputFileName = "output.bmp";
+    constexpr std::string OUTPUT_DIR_NAME = "output";
     cv::ImreadModes imreadMode = cv::IMREAD_COLOR;
     std::optional<int> brightnessModVal;
     std::optional<int> contrastLinearModVal;
@@ -146,6 +147,12 @@ private:
     void readStringParam(int i, std::string &paramVal);
 
     void applyImageTransformations(cv::Mat &image, std::unique_ptr<ImageProcessor> &imageProcessor) const;
+
+    void InputProcessor::calculateAndSaveImageStatistics(
+        const cv::Mat &compareImage,
+        const cv::Mat &originalImage,
+        const cv::Mat &newImage,
+        std::unique_ptr<ImageProcessor> &imageProcessor) const;
 
     /**
      * Saves given image to the output/outputFileName file.

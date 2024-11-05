@@ -286,6 +286,24 @@ void InputProcessor::applyImageTransformations(cv::Mat &image, std::unique_ptr<I
     }
 }
 
+void InputProcessor::calculateAndSaveImageStatistics(
+    const cv::Mat &compareImage,
+    const cv::Mat &originalImage,
+    const cv::Mat &newImage,
+    std::unique_ptr<ImageProcessor> &imageProcessor) const {
+    std::stringstream ss;
+    ss << "Image stats:\n";
+    if (isMeanSquareError) ss << imageProcessor->meanSquareError(compareImage, originalImage, newImage);
+    if (isPeakMeanSquareError) ss << imageProcessor->peakMeanSquareError(compareImage, originalImage, newImage);
+    if (isSignalToNoise) ss << imageProcessor->signalToNoiseRatio(compareImage, originalImage, newImage);
+    if (isPeakSignalToNoise) ss << imageProcessor->peakSignalToNoiseRatio(compareImage, originalImage, newImage);
+    if (isMaximumDifference) ss << imageProcessor->maximumDifference(compareImage, originalImage, newImage);
+    std::ofstream statsFile;
+    statsFile.open(OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + ".txt");
+    statsFile << ss.rdbuf();
+    statsFile.close();
+}
+
 
 void InputProcessor::processImage() const {
     cv::Mat originalImage = imread(argv[INPUT_IMAGE_POS], imreadMode);
@@ -312,34 +330,16 @@ void InputProcessor::processImage() const {
 
     if (isNoNoise) {
         cv::Mat compareImage = imread(noNoiseImage, imreadMode);
-        std::stringstream ss;
-        ss << "Image stats:\n";
-        if (isMeanSquareError) {
-            ss << imageProcessor->meanSquareError(compareImage, originalImage, newImage);
-        }
-        if (isPeakMeanSquareError) {
-            ss << imageProcessor->peakMeanSquareError(compareImage, originalImage, newImage);
-        }
-        if (isSignalToNoise) {
-            ss << imageProcessor->signalToNoiseRatio(compareImage, originalImage, newImage);
-        }
-        if (isPeakSignalToNoise) {
-            ss << imageProcessor->peakSignalToNoiseRatio(compareImage, originalImage, newImage);
-        }
-        if (isMaximumDifference) {
-            ss << imageProcessor->maximumDifference(compareImage, originalImage, newImage);
-        }
-        std::ofstream statsFile;
-        statsFile.open("output/" + outputFileName.substr(0, outputFileName.length() - 4) + ".txt");
-        statsFile << ss.rdbuf();
-        statsFile.close();
+        calculateAndSaveImageStatistics(compareImage, originalImage, newImage, imageProcessor);
     }
 }
 
 
 void InputProcessor::saveImage(cv::Mat image, std::string outputFileName) const {
-    if (!std::filesystem::is_directory("output") || !std::filesystem::exists("output")) {
-        std::filesystem::create_directory("output");
+    if (!std::filesystem::is_directory(OUTPUT_DIR_NAME) || !std::filesystem::exists(OUTPUT_DIR_NAME)) {
+        std::filesystem::create_directory(OUTPUT_DIR_NAME);
     }
-    imwrite("output/" + outputFileName, image);
+    imwrite(OUTPUT_DIR_NAME + "/" + outputFileName, image);
 }
+
+
