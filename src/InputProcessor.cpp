@@ -193,7 +193,7 @@ void InputProcessor::processInput() {
             case CommandType::HISTOGRAM:
                 if (++i < argc) {
                     readParam(argv[i], "-val=", histogramChannel, "Histogram channel must be an integer (0, 1, or 2).");
-                    if (histogramChannel && (*histogramChannel < 0 || *histogramChannel > 2)) {
+                    if (histogramChannel) {
                         std::cerr <<
                                 "Histogram channel parameter must be between 0 and 2 inclusive. Skipping histogram creation."
                                 << std::endl;
