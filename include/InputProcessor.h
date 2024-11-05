@@ -31,24 +31,17 @@ private:
     char **argv;
     std::string outputFileName = "output.bmp";
     cv::ImreadModes imreadMode = cv::IMREAD_COLOR;
-    bool isBrightnessModified = false;
-    int brightnessModVal;
-    bool isContrastLinearModified = false;
-    int contrastLinearModVal;
-    bool isContrastGammaModified = false;
-    float contrastGammaModVal;
+    std::optional<int> brightnessModVal;
+    std::optional<int> contrastLinearModVal;
+    std::optional<float> contrastGammaModVal;
     bool isNegative = false;
     bool isHorizontalFlip = false;
     bool isVerticalFlip = false;
     bool isDiagonalFlip = false;
-    bool isShrink = false;
-    float shrinkModVal;
-    bool isEnlarged = false;
-    float enlargeModVal;
-    bool isMidpointFilter = false;
-    int midpointKernelSize;
-    bool isArithmeticMeanFilter = false;
-    int arithmeticMeanKernelSize;
+    std::optional<float> shrinkModVal;
+    std::optional<float> enlargeModVal;
+    std::optional<int> midpointKernelSize;
+    std::optional<int> arithmeticMeanKernelSize;
     bool isNoNoise = false;
     std::string noNoiseImage;
     bool isMeanSquareError = false;
@@ -56,8 +49,7 @@ private:
     bool isSignalToNoise = false;
     bool isPeakSignalToNoise = false;
     bool isMaximumDifference = false;
-    bool isHistogram = false;
-    int histogramChannel;
+    std::optional<int> histogramChannel;
 
     enum class CommandType {
         HELP,
@@ -136,21 +128,23 @@ private:
      * Prints the information about all the available functions.
     */
     void printCommands();
+
     /**
      * Reads an integer parameter to one command-line command.
      * @param i Position of parameter to read.
-     * @param isModified Boolean value indicating whether to use selected the command. Passed by reference.
-     * @param modVal Integer parameter to read. Passed by reference.
+     * @param modVal Optional integer parameter to read. Passed by reference.
     */
-    void readIntParam(int i, bool &isModified, int &modVal);
+    void InputProcessor::readIntParam(int i, std::optional<int> &modVal);
+
     /**
      * Reads a float parameter to one command-line command.
      * @param i Position of parameter to read.
-     * @param isModified Boolean value indicating whether to use selected the command. Passed by reference.
-     * @param modVal Float parameter to read. Passed by reference.
+     * @param modVal Optional float parameter to read. Passed by reference.
     */
-    void readFloatParam(int i, bool &isModified, float &modVal);
+    void InputProcessor::readFloatParam(int i, std::optional<float> &modVal);
+
     void readStringParam(int i, std::string &paramVal);
+
     /**
      * Saves given image to the output/outputFileName file.
     */

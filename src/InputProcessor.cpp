@@ -68,43 +68,43 @@ void InputProcessor::printCommands() {
 
 }
 
-void InputProcessor::readIntParam(int i, bool &isModified, int &modVal) {
+void InputProcessor::readIntParam(int i, std::optional<int> &modVal) {
     std::string paramVal = argv[i];
     std::string paramName = "-val=";
     if (paramVal.substr(0, paramName.length()) != paramName) {
         std::cout << "The parameter has to be of format: " + paramName + "[value].";
-        isModified = false;
+        return;
     }
     try {
         modVal = stoi(paramVal.substr(paramVal.find('=') + 1));
     }
     catch (const std::invalid_argument & e) {
         std::cout << paramName + " has to be an integer.";
-        isModified = false;
+        modVal.reset();
     }
     catch (const std::out_of_range & e) {
         std::cout << paramName + " is out of bounds.";
-        isModified = false;
+        modVal.reset();
     }
 }
 
-void InputProcessor::readFloatParam(int i, bool &isModified, float &modVal) {
+void InputProcessor::readFloatParam(int i, std::optional<float> &modVal)  {
     std::string paramVal = argv[i];
     std::string paramName = "-val=";
     if (paramVal.substr(0, paramName.length()) != paramName) {
         std::cout << "The parameter has to be of format: " +  paramName + "[value].";
-        isModified = false;
+        return;
     }
     try {
         modVal = stof(paramVal.substr(paramVal.find('=') + 1));
     }
     catch (const std::invalid_argument & e) {
         std::cout << paramName + " has to be a float.";
-        isModified = false;
+        modVal.reset();
     }
     catch (const std::out_of_range & e) {
         std::cout << paramName + " is out of bounds.";
-        isModified = false;
+        modVal.reset();
     }
 }
 
@@ -146,18 +146,15 @@ void InputProcessor::processInput() {
                 break;
 
             case CommandType::BRIGHTNESS:
-                isBrightnessModified = true;
-                readIntParam(++i, isBrightnessModified, brightnessModVal);
+                readIntParam(++i, brightnessModVal);
                 break;
 
             case CommandType::CONTRAST_LINEAR:
-                isContrastLinearModified = true;
-                readIntParam(++i, isContrastLinearModified, contrastLinearModVal);
+                readIntParam(++i, contrastLinearModVal);
                 break;
 
             case CommandType::CONTRAST_GAMMA:
-                isContrastGammaModified = true;
-                readFloatParam(++i, isContrastGammaModified, contrastGammaModVal);
+                readFloatParam(++i, contrastGammaModVal);
                 break;
 
             case CommandType::NEGATIVE:
@@ -177,23 +174,19 @@ void InputProcessor::processInput() {
                 break;
 
             case CommandType::SHRINK:
-                isShrink = true;
-                readFloatParam(++i, isShrink, shrinkModVal);
+                readFloatParam(++i, shrinkModVal);
                 break;
 
             case CommandType::ENLARGE:
-                isEnlarged = true;
-                readFloatParam(++i, isEnlarged, enlargeModVal);
+                readFloatParam(++i, enlargeModVal);
                 break;
 
             case CommandType::MIDPOINT_FILTER:
-                isMidpointFilter = true;
-                readIntParam(++i, isMidpointFilter, midpointKernelSize);
+                readIntParam(++i, midpointKernelSize);
                 break;
 
             case CommandType::ARITHMETIC_MEAN_FILTER:
-                isArithmeticMeanFilter = true;
-                readIntParam(++i, isArithmeticMeanFilter, arithmeticMeanKernelSize);
+                readIntParam(++i, arithmeticMeanKernelSize);
                 break;
 
             case CommandType::NO_NOISE_IMAGE:
@@ -222,11 +215,11 @@ void InputProcessor::processInput() {
                 break;
 
             case CommandType::HISTOGRAM:
-                isHistogram = true;
-                readIntParam(++i, isHistogram, histogramChannel);
-                if (histogramChannel < 0 || histogramChannel > 2) {
-                    std::cout << " Histogram channel parameter must be between 0 and 2. Skipping histogram creation.";
-                    isHistogram = false;
+                readIntParam(++i, histogramChannel);
+                if (histogramChannel.value() < 0 || histogramChannel.value() > 2) {
+                    std::cout << " Histogram channel parameter must be between 0 and 2 inclusive."
+                                 "Skipping histogram creation.";
+                    histogramChannel.reset();
                 }
                 break;
 
@@ -254,14 +247,14 @@ void InputProcessor::processImage() const {
 
     cv::Mat newImage;
     originalImage.copyTo(newImage);
-    if (isBrightnessModified) {
-        newImage = imageProcessor->modifyBrightness(newImage, brightnessModVal);
+    if (brightnessModVal) {
+        newImage = imageProcessor->modifyBrightness(newImage, brightnessModVal.value());
     }
-    if (isContrastLinearModified) {
-        newImage = imageProcessor->mofifyContrastLinear(newImage, contrastLinearModVal);
+    if (contrastLinearModVal) {
+        newImage = imageProcessor->mofifyContrastLinear(newImage, contrastLinearModVal.value());
     }
-    if (isContrastGammaModified) {
-        newImage = imageProcessor->modifyContrastGamma(newImage, contrastGammaModVal);
+    if (contrastGammaModVal) {
+        newImage = imageProcessor->modifyContrastGamma(newImage, contrastGammaModVal.value());
     }
     if (isNegative) {
         newImage = imageProcessor->negative(newImage);
@@ -275,21 +268,21 @@ void InputProcessor::processImage() const {
     if (isDiagonalFlip) {
         newImage = imageProcessor->flipDiagonally(newImage);
     }
-    if (isShrink) {
-        newImage = imageProcessor->resize(newImage, shrinkModVal);
+    if (shrinkModVal) {
+        newImage = imageProcessor->resize(newImage, shrinkModVal.value());
     }
-    if (isEnlarged) {
-        newImage = imageProcessor->resize(newImage, enlargeModVal);
+    if (enlargeModVal) {
+        newImage = imageProcessor->resize(newImage, enlargeModVal.value());
     }
-    if (isMidpointFilter) {
-        newImage = imageProcessor->midpointFilter(newImage, midpointKernelSize);
+    if (midpointKernelSize) {
+        newImage = imageProcessor->midpointFilter(newImage, midpointKernelSize.value());
     }
-    if (isArithmeticMeanFilter) {
-        newImage = imageProcessor->arithmeticMeanFilter(newImage, arithmeticMeanKernelSize);
+    if (arithmeticMeanKernelSize) {
+        newImage = imageProcessor->arithmeticMeanFilter(newImage, arithmeticMeanKernelSize.value());
     }
-    if (isHistogram) {
+    if (histogramChannel) {
         std::string histogramFileName = outputFileName.substr(0, outputFileName.length()- 4) + "_histogram.png";
-        saveImage(imageProcessor->histogram(newImage, histogramChannel), histogramFileName);
+        saveImage(imageProcessor->histogram(newImage, histogramChannel.value()), histogramFileName);
     }
     saveImage(newImage, this->outputFileName);
 
