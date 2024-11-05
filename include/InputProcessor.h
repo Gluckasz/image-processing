@@ -59,10 +59,82 @@ private:
     bool isHistogram = false;
     int histogramChannel;
 
+    enum class CommandType {
+        HELP,
+        OUTPUT,
+        GRAYSCALE,
+        BRIGHTNESS,
+        CONTRAST_LINEAR,
+        CONTRAST_GAMMA,
+        NEGATIVE,
+        HORIZONTAL_FLIP,
+        VERTICAL_FLIP,
+        DIAGONAL_FLIP,
+        SHRINK,
+        ENLARGE,
+        MIDPOINT_FILTER,
+        ARITHMETIC_MEAN_FILTER,
+        NO_NOISE_IMAGE,
+        MSE,
+        PMSE,
+        SNR,
+        PSNR,
+        MAXIMUM_DIFFERENCE,
+        HISTOGRAM
+     };
+
+    const std::unordered_map<std::string, CommandType> commandMap = {
+      {"--help", CommandType::HELP},
+      {"--output", CommandType::OUTPUT},
+      {"--grayscale", CommandType::GRAYSCALE},
+      {"--brightness", CommandType::BRIGHTNESS},
+      {"--contrastLinear", CommandType::CONTRAST_LINEAR},
+      {"--contrastGamma", CommandType::CONTRAST_GAMMA},
+      {"--negative", CommandType::NEGATIVE},
+      {"--hflip", CommandType::HORIZONTAL_FLIP},
+      {"--vflip", CommandType::VERTICAL_FLIP},
+      {"--dflip", CommandType::DIAGONAL_FLIP},
+      {"--shrink", CommandType::SHRINK},
+      {"--enlarge", CommandType::ENLARGE},
+      {"--mid", CommandType::MIDPOINT_FILTER},
+      {"--amean", CommandType::ARITHMETIC_MEAN_FILTER},
+      {"--noNoiseImage", CommandType::NO_NOISE_IMAGE},
+      {"--mse", CommandType::MSE},
+      {"--pmse", CommandType::PMSE},
+      {"--snr", CommandType::SNR},
+      {"--psnr", CommandType::PSNR},
+      {"--md", CommandType::MAXIMUM_DIFFERENCE},
+      {"--histogram", CommandType::HISTOGRAM}
+    };
+
+    const std::unordered_map<CommandType, std::string> commandToStringMap = {
+      {CommandType::HELP, "--help"},
+      {CommandType::OUTPUT, "--output"},
+      {CommandType::GRAYSCALE, "--grayscale"},
+      {CommandType::BRIGHTNESS, "--brightness"},
+      {CommandType::CONTRAST_LINEAR, "--contrastLinear"},
+      {CommandType::CONTRAST_GAMMA, "--contrastGamma"},
+      {CommandType::NEGATIVE, "--negative"},
+      {CommandType::HORIZONTAL_FLIP, "--hflip"},
+      {CommandType::VERTICAL_FLIP, "--vflip"},
+      {CommandType::DIAGONAL_FLIP, "--dflip"},
+      {CommandType::SHRINK, "--shrink"},
+      {CommandType::ENLARGE, "--enlarge"},
+      {CommandType::MIDPOINT_FILTER, "--mid"},
+      {CommandType::ARITHMETIC_MEAN_FILTER, "--amean"},
+      {CommandType::NO_NOISE_IMAGE, "--noNoiseImage"},
+      {CommandType::MSE, "--mse"},
+      {CommandType::PMSE, "--pmse"},
+      {CommandType::SNR, "--snr"},
+      {CommandType::PSNR, "--psnr"},
+      {CommandType::MAXIMUM_DIFFERENCE, "--md"},
+      {CommandType::HISTOGRAM, "--histogram"}
+    };
+
     /**
      * Prints the information about all the available functions.
     */
-    static void printCommands();
+    void printCommands();
     /**
      * Reads an integer parameter to one command-line command.
      * @param i Position of parameter to read.

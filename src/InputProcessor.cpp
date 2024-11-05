@@ -11,38 +11,60 @@ InputProcessor::InputProcessor(int argc, char **argv) {
 
 
 void InputProcessor::printCommands() {
-        std::cout << "Available commands:\n"
-        << "--help - print list of all the available commands with detailed description of their arguments.\n\n"
-        << "--output [-fileName=value] - provide output file name.\n"
+    std::cout << "Available commands:\n"
+    << commandToStringMap.find(CommandType::HELP)->second
+        << " - print list of all the available commands with detailed description of their arguments.\n\n"
+    << commandToStringMap.find(CommandType::OUTPUT)->second
+        << "[-fileName=value] - provide output file name.\n"
         << "\t -fileName - output file name (default is output.bmp).\n\n"
-        << "--grayscale - read image in grayscale.\n\n"
-        << "--brightness [-modVal=value] - modify brightness of an image.\n"
+    << commandToStringMap.find(CommandType::GRAYSCALE)->second
+        << " - read image in grayscale.\n\n"
+    << commandToStringMap.find(CommandType::BRIGHTNESS)->second
+        << "[-val=value] - modify brightness of an image.\n"
         << "\t -val - integral value to add to each pixel (can be negative).\n\n"
-        << "--contrastLinear[-modVal=value] - modify contrast of an image using linear contrast stretching.\n"
+    << commandToStringMap.find(CommandType::CONTRAST_LINEAR)->second
+        << "[-val=value] - modify contrast of an image using linear contrast stretching.\n"
         << "\t -val - new value added and subtracted from upper and lower boundary.\n\n"
-        << "--contrastGamma [-modVal=value] - modify contrast of an image using gamma correction.\n"
+    << commandToStringMap.find(CommandType::CONTRAST_GAMMA)->second
+        << "[-val=value] - modify contrast of an image using gamma correction.\n"
         << "\t -val - floating-point value of gamma variable.\n\n"
-        << "--negative - take negative of an image.\n\n"
-        << "--hflip - flip the image horizontally.\n\n"
-        << "--vflip - flip the image vertically.\n\n"
-        << "--shrink [-modVal=value] - shrink an image using nearest Neighbor Method.\n"
+    << commandToStringMap.find(CommandType::NEGATIVE)->second
+        << " - take negative of an image.\n\n"
+    << commandToStringMap.find(CommandType::HORIZONTAL_FLIP)->second
+        << " - flip the image horizontally.\n\n"
+    << commandToStringMap.find(CommandType::VERTICAL_FLIP)->second
+        << " - flip the image vertically.\n\n"
+    << commandToStringMap.find(CommandType::DIAGONAL_FLIP)->second
+        << " - flip the image diagonally.\n\n"
+    << commandToStringMap.find(CommandType::SHRINK)->second
+        << "[-val=value] - shrink an image using nearest Neighbor Method.\n"
         << "\t -val - floating-point scale factor of new image (has to be between 0 and 1 non-inclusive).\n\n"
-        << "--enlarge [-modVal=value] - enlarge an image using nearest Neighbor Method.\n"
+    << commandToStringMap.find(CommandType::ENLARGE)->second
+        << "[-val=value] - enlarge an image using nearest Neighbor Method.\n"
         << "\t -val - floating-point scale factor of new image (has to be greater than 1).\n\n"
-        << "--mid [-modVal=value] - apply midpoint filter.\n"
+    << commandToStringMap.find(CommandType::MIDPOINT_FILTER)->second
+        << "[-val=value] - apply midpoint filter.\n"
         << "\t -val - integer kernel size value.\n\n"
-        << "--amean - apply arithmetic mean filter.\n"
+    << commandToStringMap.find(CommandType::ARITHMETIC_MEAN_FILTER)->second
+        << " - apply arithmetic mean filter.\n"
         << "\t -val - integer kernel size value.\n\n"
-        <<"--noNoiseImage [-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
+    << commandToStringMap.find(CommandType::NO_NOISE_IMAGE)->second
+        <<"[-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
         << "\t -fileName - file name of the image with no noise.\n\n"
-        << "--mse - compute mean square error.\n\n"
-        << "--pmse - compute peak mean square error.\n\n"
-        << "--snr - compute signal to noise ratio.\n\n"
-        << "--psnr - compute peak signal to noise ratio.\n\n"
-        << "--md - compute maximum difference.\n\n"
-        << "--histogram - save histogram of an image to output_file_name_histogram.bmp\n\n"
-        << "\t -val - channel of an image for which to compute and save histogram."
-           "For grayscale images channel does not matter\n\n";
+    << commandToStringMap.find(CommandType::MSE)->second
+        << "- compute mean square error.\n\n"
+    << commandToStringMap.find(CommandType::PMSE)->second
+        << " - compute peak mean square error.\n\n"
+    << commandToStringMap.find(CommandType::SNR)->second
+        << " - compute signal to noise ratio.\n\n"
+    << commandToStringMap.find(CommandType::PSNR)->second
+        << " - compute peak signal to noise ratio.\n\n"
+    << commandToStringMap.find(CommandType::MAXIMUM_DIFFERENCE)->second
+        << " - compute maximum difference.\n\n"
+    << commandToStringMap.find(CommandType::HISTOGRAM)->second
+        << " - save histogram of an image to output_file_name_histogram.bmp\n"
+        << "\t -val - channel of an image for which to compute and save histogram. "
+            << "For grayscale images channel does not matter.\n\n";
 
 }
 
