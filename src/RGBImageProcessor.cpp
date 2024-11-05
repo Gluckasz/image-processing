@@ -30,7 +30,7 @@ cv::Mat RGBImageProcessor::modifyBrightness(cv::Mat image, int modVal) {
     return image;
 }
 
-cv::Mat RGBImageProcessor::mofifyContrastLinear(cv::Mat image, int modVal) {
+cv::Mat RGBImageProcessor::modifyContrastLinear(cv::Mat image, int modVal) {
     uchar max[3] = {0, 0, 0};
     uchar min[3] = {255, 255, 255};
     for (int x = 0; x < image.rows; x++) {

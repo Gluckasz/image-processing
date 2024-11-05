@@ -12,7 +12,7 @@ public:
     virtual ~ImageProcessor() = default;
 
     virtual cv::Mat modifyBrightness(cv::Mat image, int modVal) = 0;
-    virtual cv::Mat mofifyContrastLinear(cv::Mat image, int modVal) = 0;
+    virtual cv::Mat modifyContrastLinear(cv::Mat image, int modVal) = 0;
     virtual cv::Mat modifyContrastGamma(cv::Mat image, float modVal) = 0;
     virtual cv::Mat negative(cv::Mat image) = 0;
     virtual cv::Mat flipHorizontally(cv::Mat image) = 0;

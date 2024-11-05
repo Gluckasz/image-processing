@@ -134,16 +134,18 @@ private:
      * @param i Position of parameter to read.
      * @param modVal Optional integer parameter to read. Passed by reference.
     */
-    void InputProcessor::readIntParam(int i, std::optional<int> &modVal);
+    void readIntParam(int i, std::optional<int> &modVal);
 
     /**
      * Reads a float parameter to one command-line command.
      * @param i Position of parameter to read.
      * @param modVal Optional float parameter to read. Passed by reference.
     */
-    void InputProcessor::readFloatParam(int i, std::optional<float> &modVal);
+    void readFloatParam(int i, std::optional<float> &modVal);
 
     void readStringParam(int i, std::string &paramVal);
+
+    void applyImageTransformations(cv::Mat &image, std::unique_ptr<ImageProcessor> &imageProcessor) const;
 
     /**
      * Saves given image to the output/outputFileName file.

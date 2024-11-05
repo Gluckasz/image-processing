@@ -9,7 +9,6 @@ InputProcessor::InputProcessor(int argc, char **argv) {
     this->argv = argv;
 }
 
-
 void InputProcessor::printCommands() {
     std::cout << "Available commands:\n"
     << commandToStringMap.find(CommandType::HELP)->second
@@ -65,7 +64,6 @@ void InputProcessor::printCommands() {
         << " - save histogram of an image to output_file_name_histogram.bmp\n"
         << "\t -val - channel of an image for which to compute and save histogram. "
             << "For grayscale images channel does not matter.\n\n";
-
 }
 
 void InputProcessor::readIntParam(int i, std::optional<int> &modVal) {
@@ -231,6 +229,64 @@ void InputProcessor::processInput() {
     }
 }
 
+void InputProcessor::applyImageTransformations(cv::Mat &image, std::unique_ptr<ImageProcessor> &imageProcessor) const {
+    // Apply brightness modification if set
+    if (brightnessModVal.has_value()) {
+        image = imageProcessor->modifyBrightness(image, brightnessModVal.value());
+    }
+
+    // Apply linear contrast modification if set
+    if (contrastLinearModVal.has_value()) {
+        image = imageProcessor->modifyContrastLinear(image, contrastLinearModVal.value());
+    }
+
+    // Apply gamma contrast modification if set
+    if (contrastGammaModVal.has_value()) {
+        image = imageProcessor->modifyContrastGamma(image, contrastGammaModVal.value());
+    }
+
+    // Apply negative transformation
+    if (isNegative) {
+        image = imageProcessor->negative(image);
+    }
+
+    // Apply horizontal flip if requested
+    if (isHorizontalFlip) {
+        image = imageProcessor->flipHorizontally(image);
+    }
+
+    // Apply vertical flip if requested
+    if (isVerticalFlip) {
+        image = imageProcessor->flipVertically(image);
+    }
+
+    // Apply diagonal flip if requested
+    if (isDiagonalFlip) {
+        image = imageProcessor->flipDiagonally(image);
+    }
+
+    // Apply a shrink transformation if set
+    if (shrinkModVal.has_value()) {
+        image = imageProcessor->resize(image, shrinkModVal.value());
+    }
+
+    // Apply an enlarge transformation if set
+    if (enlargeModVal.has_value()) {
+        image = imageProcessor->resize(image, enlargeModVal.value());
+    }
+
+    // Apply midpoint filter if kernel size is set
+    if (midpointKernelSize.has_value()) {
+        image = imageProcessor->midpointFilter(image, midpointKernelSize.value());
+    }
+
+    // Apply arithmetic mean filter if kernel size is set
+    if (arithmeticMeanKernelSize.has_value()) {
+        image = imageProcessor->arithmeticMeanFilter(image, arithmeticMeanKernelSize.value());
+    }
+}
+
+
 void InputProcessor::processImage() const {
     cv::Mat originalImage = imread(argv[INPUT_IMAGE_POS], imreadMode);
     if (!originalImage.data) {
@@ -247,39 +303,7 @@ void InputProcessor::processImage() const {
 
     cv::Mat newImage;
     originalImage.copyTo(newImage);
-    if (brightnessModVal) {
-        newImage = imageProcessor->modifyBrightness(newImage, brightnessModVal.value());
-    }
-    if (contrastLinearModVal) {
-        newImage = imageProcessor->mofifyContrastLinear(newImage, contrastLinearModVal.value());
-    }
-    if (contrastGammaModVal) {
-        newImage = imageProcessor->modifyContrastGamma(newImage, contrastGammaModVal.value());
-    }
-    if (isNegative) {
-        newImage = imageProcessor->negative(newImage);
-    }
-    if (isHorizontalFlip) {
-        newImage = imageProcessor->flipHorizontally(newImage);
-    }
-    if (isVerticalFlip) {
-        newImage = imageProcessor->flipVertically(newImage);
-    }
-    if (isDiagonalFlip) {
-        newImage = imageProcessor->flipDiagonally(newImage);
-    }
-    if (shrinkModVal) {
-        newImage = imageProcessor->resize(newImage, shrinkModVal.value());
-    }
-    if (enlargeModVal) {
-        newImage = imageProcessor->resize(newImage, enlargeModVal.value());
-    }
-    if (midpointKernelSize) {
-        newImage = imageProcessor->midpointFilter(newImage, midpointKernelSize.value());
-    }
-    if (arithmeticMeanKernelSize) {
-        newImage = imageProcessor->arithmeticMeanFilter(newImage, arithmeticMeanKernelSize.value());
-    }
+    applyImageTransformations(newImage, imageProcessor);
     if (histogramChannel) {
         std::string histogramFileName = outputFileName.substr(0, outputFileName.length()- 4) + "_histogram.png";
         saveImage(imageProcessor->histogram(newImage, histogramChannel.value()), histogramFileName);

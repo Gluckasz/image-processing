@@ -23,7 +23,7 @@ public:
      * and negative makes contrast smaller).
      * @return image with modified contrast.
      */
-    cv::Mat mofifyContrastLinear(cv::Mat image, int modVal) override;
+    cv::Mat modifyContrastLinear(cv::Mat image, int modVal) override;
 
     /**
      * Modify contrast of a grayscale image using gamma contrast correction.

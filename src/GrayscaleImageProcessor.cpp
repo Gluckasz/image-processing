@@ -28,7 +28,7 @@ cv::Mat GrayscaleImageProcessor::modifyBrightness(cv::Mat image, int modVal){
     return image;
 }
 
-cv::Mat GrayscaleImageProcessor::mofifyContrastLinear(cv::Mat image, int modVal) {
+cv::Mat GrayscaleImageProcessor::modifyContrastLinear(cv::Mat image, int modVal) {
     int max = 0;
     int min = 255;
     for (int x = 0; x < image.rows; x++) {
