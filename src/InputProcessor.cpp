@@ -123,82 +123,117 @@ void InputProcessor::readStringParam(int i, std::string &paramVal) {
 
 void InputProcessor::processInput() {
     for (int i = 1; i < argc; i++) {
-        if (static_cast<std::string>(argv[i]) == "--help") {
-            printCommands();
-            return;
+        std::string commandStr = argv[i];
+        CommandType command = CommandType::UNKNOWN;
+
+        // Find the command type in the map
+        auto it = commandMap.find(commandStr);
+        if (it != commandMap.end()) {
+            command = it->second;
         }
-        if (static_cast<std::string>(argv[i]) == "--output") {
-            readStringParam(++i, this->outputFileName);
-        }
-        else if (static_cast<std::string>(argv[i]) == "--grayscale") {
-            imreadMode = cv::IMREAD_GRAYSCALE;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--brightness") {
-            isBrightnessModified = true;
-            readIntParam(++i, isBrightnessModified, brightnessModVal);
-        }
-        else if (static_cast<std::string>(argv[i]) == "--contrastLinear") {
-            isContrastLinearModified = true;
-            readIntParam(++i, isContrastLinearModified, contrastLinearModVal);
-        }
-        else if (static_cast<std::string>(argv[i]) == "--contrastGamma") {
-            isContrastGammaModified = true;
-            readFloatParam(++i, isContrastGammaModified, contrastGammaModVal);
-        }
-        else if (static_cast<std::string>(argv[i]) == "--negative") {
-            isNegative = true;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--hflip") {
-            isHorizontalFlip = true;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--vflip") {
-            isVerticalFlip = true;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--dflip") {
-            isDiagonalFlip = true;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--shrink") {
-            isShrink = true;
-            readFloatParam(++i, isShrink, shrinkModVal);
-        }
-        else if (static_cast<std::string>(argv[i]) == "--enlarge") {
-            isEnlarged = true;
-            readFloatParam(++i, isEnlarged, enlargeModVal);
-        }
-        else if (static_cast<std::string>(argv[i]) == "--mid") {
-            isMidpointFilter = true;
-            readIntParam(++i, isMidpointFilter, midpointKernelSize);
-        }
-        else if (static_cast<std::string>(argv[i]) == "--amean") {
-            isArithmeticMeanFilter = true;
-            readIntParam(++i, isArithmeticMeanFilter, arithmeticMeanKernelSize);
-        }
-        else if (static_cast<std::string>(argv[i]) == "--noNoiseImage") {
-            readStringParam(++i, noNoiseImage);
-            isNoNoise = true;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--mse") {
-            isMeanSquareError = true;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--pmse") {
-            isPeakMeanSquareError = true;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--snr") {
-            isSignalToNoise = true;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--psnr") {
-            isPeakSignalToNoise = true;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--md") {
-            isMaximumDifference = true;
-        }
-        else if (static_cast<std::string>(argv[i]) == "--histogram") {
-            isHistogram = true;
-            readIntParam(++i, isHistogram, histogramChannel);
-            if (histogramChannel < 0 || histogramChannel > 2) {
-                std::cout << " Histogram channel parameter must be between 0 and 2. Skipping histogram creation.";
-                isHistogram = false;
-            }
+
+        switch (command) {
+            case CommandType::HELP:
+                printCommands();
+                return;
+
+            case CommandType::OUTPUT:
+                readStringParam(++i, this->outputFileName);
+                break;
+
+            case CommandType::GRAYSCALE:
+                imreadMode = cv::IMREAD_GRAYSCALE;
+                break;
+
+            case CommandType::BRIGHTNESS:
+                isBrightnessModified = true;
+                readIntParam(++i, isBrightnessModified, brightnessModVal);
+                break;
+
+            case CommandType::CONTRAST_LINEAR:
+                isContrastLinearModified = true;
+                readIntParam(++i, isContrastLinearModified, contrastLinearModVal);
+                break;
+
+            case CommandType::CONTRAST_GAMMA:
+                isContrastGammaModified = true;
+                readFloatParam(++i, isContrastGammaModified, contrastGammaModVal);
+                break;
+
+            case CommandType::NEGATIVE:
+                isNegative = true;
+                break;
+
+            case CommandType::HORIZONTAL_FLIP:
+                isHorizontalFlip = true;
+                break;
+
+            case CommandType::VERTICAL_FLIP:
+                isVerticalFlip = true;
+                break;
+
+            case CommandType::DIAGONAL_FLIP:
+                isDiagonalFlip = true;
+                break;
+
+            case CommandType::SHRINK:
+                isShrink = true;
+                readFloatParam(++i, isShrink, shrinkModVal);
+                break;
+
+            case CommandType::ENLARGE:
+                isEnlarged = true;
+                readFloatParam(++i, isEnlarged, enlargeModVal);
+                break;
+
+            case CommandType::MIDPOINT_FILTER:
+                isMidpointFilter = true;
+                readIntParam(++i, isMidpointFilter, midpointKernelSize);
+                break;
+
+            case CommandType::ARITHMETIC_MEAN_FILTER:
+                isArithmeticMeanFilter = true;
+                readIntParam(++i, isArithmeticMeanFilter, arithmeticMeanKernelSize);
+                break;
+
+            case CommandType::NO_NOISE_IMAGE:
+                readStringParam(++i, noNoiseImage);
+                isNoNoise = true;
+                break;
+
+            case CommandType::MSE:
+                isMeanSquareError = true;
+                break;
+
+            case CommandType::PMSE:
+                isPeakMeanSquareError = true;
+                break;
+
+            case CommandType::SNR:
+                isSignalToNoise = true;
+                break;
+
+            case CommandType::PSNR:
+                isPeakSignalToNoise = true;
+                break;
+
+            case CommandType::MAXIMUM_DIFFERENCE:
+                isMaximumDifference = true;
+                break;
+
+            case CommandType::HISTOGRAM:
+                isHistogram = true;
+                readIntParam(++i, isHistogram, histogramChannel);
+                if (histogramChannel < 0 || histogramChannel > 2) {
+                    std::cout << " Histogram channel parameter must be between 0 and 2. Skipping histogram creation.";
+                    isHistogram = false;
+                }
+                break;
+
+            case CommandType::UNKNOWN:
+            default:
+                std::cout << "Unknown command: " << commandStr << std::endl;
+                break;
         }
     }
 }

@@ -80,7 +80,8 @@ private:
         SNR,
         PSNR,
         MAXIMUM_DIFFERENCE,
-        HISTOGRAM
+        HISTOGRAM,
+        UNKNOWN // For unrecognized commands
      };
 
     const std::unordered_map<std::string, CommandType> commandMap = {
