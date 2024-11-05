@@ -30,7 +30,7 @@ private:
     int argc;
     char **argv;
     std::string outputFileName = "output.bmp";
-    constexpr std::string OUTPUT_DIR_NAME = "output";
+    const std::string OUTPUT_DIR_NAME = "output";
     cv::ImreadModes imreadMode = cv::IMREAD_COLOR;
     std::optional<int> brightnessModVal;
     std::optional<int> contrastLinearModVal;
@@ -130,29 +130,17 @@ private:
     */
     void printCommands();
 
-    /**
-     * Reads an integer parameter to one command-line command.
-     * @param i Position of parameter to read.
-     * @param modVal Optional integer parameter to read. Passed by reference.
-    */
-    void readIntParam(int i, std::optional<int> &modVal);
-
-    /**
-     * Reads a float parameter to one command-line command.
-     * @param i Position of parameter to read.
-     * @param modVal Optional float parameter to read. Passed by reference.
-    */
-    void readFloatParam(int i, std::optional<float> &modVal);
-
-    void readStringParam(int i, std::string &paramVal);
+    template<typename T>
+    bool readParam(const std::string& arg, const std::string& prefix, T& result, const std::string& errorMsg);
 
     void applyImageTransformations(cv::Mat &image, std::unique_ptr<ImageProcessor> &imageProcessor) const;
 
-    void InputProcessor::calculateAndSaveImageStatistics(
+    void calculateAndSaveImageStatistics(
         const cv::Mat &compareImage,
         const cv::Mat &originalImage,
         const cv::Mat &newImage,
-        std::unique_ptr<ImageProcessor> &imageProcessor) const;
+        std::unique_ptr<ImageProcessor> &imageProcessor
+        ) const;
 
     /**
      * Saves given image to the output/outputFileName file.
