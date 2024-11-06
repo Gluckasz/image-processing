@@ -11,76 +11,74 @@ InputProcessor::InputProcessor(int argc, char **argv) {
 
 void InputProcessor::printCommands() {
     std::cout
-    << "Available commands:\n"
-    << commandToStringMap.find(CommandType::HELP)->second
-    << " - print list of all the available commands with detailed description of their arguments.\n\n"
-    << commandToStringMap.find(CommandType::OUTPUT)->second
-    << "[-fileName=value] - provide output file name.\n"
-    << "\t -fileName - output file name (default is output.bmp).\n\n"
-    << commandToStringMap.find(CommandType::GRAYSCALE)->second
-    << " - read image in grayscale.\n\n"
-    << commandToStringMap.find(CommandType::BRIGHTNESS)->second
-    << "[-val=value] - modify brightness of an image.\n"
-    << "\t -val - integral value to add to each pixel (can be negative).\n\n"
-    << commandToStringMap.find(CommandType::CONTRAST_LINEAR)->second
-    << "[-val=value] - modify contrast of an image using linear contrast stretching.\n"
-    << "\t -val - new value added and subtracted from upper and lower boundary.\n\n"
-    << commandToStringMap.find(CommandType::CONTRAST_GAMMA)->second
-    << "[-val=value] - modify contrast of an image using gamma correction.\n"
-    << "\t -val - floating-point value of gamma variable.\n\n"
-    << commandToStringMap.find(CommandType::NEGATIVE)->second
-    << " - take negative of an image.\n\n"
-    << commandToStringMap.find(CommandType::HORIZONTAL_FLIP)->second
-    << " - flip the image horizontally.\n\n"
-    << commandToStringMap.find(CommandType::VERTICAL_FLIP)->second
-    << " - flip the image vertically.\n\n"
-    << commandToStringMap.find(CommandType::DIAGONAL_FLIP)->second
-    << " - flip the image diagonally.\n\n"
-    << commandToStringMap.find(CommandType::SHRINK)->second
-    << "[-val=value] - shrink an image using nearest Neighbor Method.\n"
-    << "\t -val - floating-point scale factor of new image (has to be between 0 and 1 non-inclusive).\n\n"
-    << commandToStringMap.find(CommandType::ENLARGE)->second
-    << "[-val=value] - enlarge an image using nearest Neighbor Method.\n"
-    << "\t -val - floating-point scale factor of new image (has to be greater than 1).\n\n"
-    << commandToStringMap.find(CommandType::MIDPOINT_FILTER)->second
-    << "[-val=value] - apply midpoint filter.\n"
-    << "\t -val - integer kernel size value.\n\n"
-    << commandToStringMap.find(CommandType::ARITHMETIC_MEAN_FILTER)->second
-    << " - apply arithmetic mean filter.\n"
-    << "\t -val - integer kernel size value.\n\n"
-    << commandToStringMap.find(CommandType::NO_NOISE_IMAGE)->second
-    << "[-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
-    << "\t -fileName - file name of the image with no noise.\n\n"
-    << commandToStringMap.find(CommandType::MSE)->second
-    << "- compute mean square error.\n\n"
-    << commandToStringMap.find(CommandType::PMSE)->second
-    << " - compute peak mean square error.\n\n"
-    << commandToStringMap.find(CommandType::SNR)->second
-    << " - compute signal to noise ratio.\n\n"
-    << commandToStringMap.find(CommandType::PSNR)->second
-    << " - compute peak signal to noise ratio.\n\n"
-    << commandToStringMap.find(CommandType::MAXIMUM_DIFFERENCE)->second
-    << " - compute maximum difference.\n\n"
-    << commandToStringMap.find(CommandType::HISTOGRAM)->second
-    << " - save histogram of an image to output_file_name_histogram.bmp\n"
-    << "\t -val - channel of an image for which to compute and save histogram. "
-    << "For grayscale images channel does not matter.\n\n"
-    << commandToStringMap.find(CommandType::HISTOGRAM_UNIFORM)->second
-    << " - improve the quality of an image based on its histogram\n"
-    << "\t -gMax - output image maximum intensity.\n"
-    << "\t -gMin - output image minimum intensity.\n\n";
+            << "Available commands:\n"
+            << commandToStringMap.find(CommandType::HELP)->second
+            << " - print list of all the available commands with detailed description of their arguments.\n\n"
+            << commandToStringMap.find(CommandType::OUTPUT)->second
+            << "[-fileName=value] - provide output file name.\n"
+            << "\t -fileName - output file name (default is output.bmp).\n\n"
+            << commandToStringMap.find(CommandType::GRAYSCALE)->second
+            << " - read image in grayscale.\n\n"
+            << commandToStringMap.find(CommandType::BRIGHTNESS)->second
+            << "[-val=value] - modify brightness of an image.\n"
+            << "\t -val - integral value to add to each pixel (can be negative).\n\n"
+            << commandToStringMap.find(CommandType::CONTRAST_LINEAR)->second
+            << "[-val=value] - modify contrast of an image using linear contrast stretching.\n"
+            << "\t -val - new value added and subtracted from upper and lower boundary.\n\n"
+            << commandToStringMap.find(CommandType::CONTRAST_GAMMA)->second
+            << "[-val=value] - modify contrast of an image using gamma correction.\n"
+            << "\t -val - floating-point value of gamma variable.\n\n"
+            << commandToStringMap.find(CommandType::NEGATIVE)->second
+            << " - take negative of an image.\n\n"
+            << commandToStringMap.find(CommandType::HORIZONTAL_FLIP)->second
+            << " - flip the image horizontally.\n\n"
+            << commandToStringMap.find(CommandType::VERTICAL_FLIP)->second
+            << " - flip the image vertically.\n\n"
+            << commandToStringMap.find(CommandType::DIAGONAL_FLIP)->second
+            << " - flip the image diagonally.\n\n"
+            << commandToStringMap.find(CommandType::SHRINK)->second
+            << "[-val=value] - shrink an image using nearest Neighbor Method.\n"
+            << "\t -val - floating-point scale factor of new image (has to be between 0 and 1 non-inclusive).\n\n"
+            << commandToStringMap.find(CommandType::ENLARGE)->second
+            << "[-val=value] - enlarge an image using nearest Neighbor Method.\n"
+            << "\t -val - floating-point scale factor of new image (has to be greater than 1).\n\n"
+            << commandToStringMap.find(CommandType::MIDPOINT_FILTER)->second
+            << "[-val=value] - apply midpoint filter.\n"
+            << "\t -val - integer kernel size value.\n\n"
+            << commandToStringMap.find(CommandType::ARITHMETIC_MEAN_FILTER)->second
+            << " - apply arithmetic mean filter.\n"
+            << "\t -val - integer kernel size value.\n\n"
+            << commandToStringMap.find(CommandType::NO_NOISE_IMAGE)->second
+            << "[-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
+            << "\t -fileName - file name of the image with no noise.\n\n"
+            << commandToStringMap.find(CommandType::MSE)->second
+            << "- compute mean square error.\n\n"
+            << commandToStringMap.find(CommandType::PMSE)->second
+            << " - compute peak mean square error.\n\n"
+            << commandToStringMap.find(CommandType::SNR)->second
+            << " - compute signal to noise ratio.\n\n"
+            << commandToStringMap.find(CommandType::PSNR)->second
+            << " - compute peak signal to noise ratio.\n\n"
+            << commandToStringMap.find(CommandType::MAXIMUM_DIFFERENCE)->second
+            << " - compute maximum difference.\n\n"
+            << commandToStringMap.find(CommandType::HISTOGRAM)->second
+            << " - save histogram of an image to output_file_name_histogram.bmp\n"
+            << "\t -val - channel of an image for which to compute and save histogram. "
+            << "For grayscale images channel does not matter.\n\n"
+            << commandToStringMap.find(CommandType::HISTOGRAM_UNIFORM)->second
+            << " - improve the quality of an image based on its histogram\n"
+            << "\t -gMax - output image maximum intensity.\n"
+            << "\t -gMin - output image minimum intensity.\n\n";
 }
 
 template<typename T>
 bool InputProcessor::readParam(const std::string &arg, const std::string &prefix, std::optional<T> &result,
                                const std::string &errorMsg) {
-    if (arg.rfind(prefix, 0) != 0) return false;
     try {
         std::string valueStr = arg.substr(prefix.length());
         if (valueStr.empty()) {
             throw std::invalid_argument("Missing value after prefix");
         }
-
         if constexpr (std::is_same_v<T, int>) {
             result = std::stoi(valueStr);
         } else if constexpr (std::is_same_v<T, float>) {
@@ -98,21 +96,19 @@ bool InputProcessor::readParam(const std::string &arg, const std::string &prefix
 }
 
 bool InputProcessor::readStringParam(const std::string &arg, const std::string &prefix, std::string &result,
-                               const std::string &errorMsg) {
-    if (arg.rfind(prefix, 0) != 0) return false;
+                                     const std::string &errorMsg) {
     try {
         std::string valueStr = arg.substr(prefix.length());
         if (valueStr.empty()) {
             throw std::invalid_argument("Missing value after prefix");
         }
-            result = valueStr;
+        result = valueStr;
         return true;
     } catch (const std::exception &e) {
         std::cerr << errorMsg << ": " << e.what() << std::endl;
         return false;
     }
 }
-
 
 
 void InputProcessor::processInput() {
@@ -132,7 +128,7 @@ void InputProcessor::processInput() {
                 return;
             case CommandType::OUTPUT:
                 if (++i < argc)
-                    readStringParam(argv[i], "--fileName=", outputFileName, "Invalid file name format.");
+                    readStringParam(argv[i], "-fileName=", outputFileName, "Invalid file name format.");
                 break;
             case CommandType::GRAYSCALE:
                 imreadMode = cv::IMREAD_GRAYSCALE;
@@ -191,8 +187,8 @@ void InputProcessor::processInput() {
 
             case CommandType::NO_NOISE_IMAGE:
                 if (++i < argc)
-                    readStringParam(argv[i], "--fileName=", noNoiseImage,
-                              "Invalid format for noise-free image file name.");
+                    readStringParam(argv[i], "-fileName=", noNoiseImage,
+                                    "Invalid format for noise-free image file name.");
                 isNoNoise = true;
                 break;
 
