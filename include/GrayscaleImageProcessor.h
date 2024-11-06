@@ -90,6 +90,9 @@ public:
     std::string peakSignalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
     std::string maximumDifference(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
     cv::Mat histogram(cv::Mat image, int histogramChannel) override;
+
+    cv::Mat histogramUniform(cv::Mat image, int gMax, int gMin) override;
+
 };
 
 

@@ -386,3 +386,8 @@ cv::Mat GrayscaleImageProcessor::histogram(cv::Mat image, int histogramChannel) 
 
     return histogramImage;
 }
+
+cv::Mat GrayscaleImageProcessor::histogramUniform(cv::Mat image, int gMax, int gMin) {
+    return image;
+}
+

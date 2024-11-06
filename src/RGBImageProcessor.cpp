@@ -422,3 +422,7 @@ cv::Mat RGBImageProcessor::histogram(cv::Mat image, int histogramChannel) {
 
     return histogramImage;
 }
+
+cv::Mat RGBImageProcessor::histogramUniform(cv::Mat image, int gMax, int gMin) {
+    return image;
+}

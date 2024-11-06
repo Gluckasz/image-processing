@@ -51,6 +51,8 @@ private:
     bool isPeakSignalToNoise = false;
     bool isMaximumDifference = false;
     std::optional<int> histogramChannel;
+    std::optional<int> histogramUniformGMax;
+    std::optional<int> histogramUniformGMin;
 
     enum class CommandType {
         HELP,
@@ -74,55 +76,58 @@ private:
         PSNR,
         MAXIMUM_DIFFERENCE,
         HISTOGRAM,
+        HISTOGRAM_UNIFORM,
         UNKNOWN // For unrecognized commands
      };
 
     const std::unordered_map<std::string, CommandType> commandMap = {
-      {"--help", CommandType::HELP},
-      {"--output", CommandType::OUTPUT},
-      {"--grayscale", CommandType::GRAYSCALE},
-      {"--brightness", CommandType::BRIGHTNESS},
-      {"--contrastLinear", CommandType::CONTRAST_LINEAR},
-      {"--contrastGamma", CommandType::CONTRAST_GAMMA},
-      {"--negative", CommandType::NEGATIVE},
-      {"--hflip", CommandType::HORIZONTAL_FLIP},
-      {"--vflip", CommandType::VERTICAL_FLIP},
-      {"--dflip", CommandType::DIAGONAL_FLIP},
-      {"--shrink", CommandType::SHRINK},
-      {"--enlarge", CommandType::ENLARGE},
-      {"--mid", CommandType::MIDPOINT_FILTER},
-      {"--amean", CommandType::ARITHMETIC_MEAN_FILTER},
-      {"--noNoiseImage", CommandType::NO_NOISE_IMAGE},
-      {"--mse", CommandType::MSE},
-      {"--pmse", CommandType::PMSE},
-      {"--snr", CommandType::SNR},
-      {"--psnr", CommandType::PSNR},
-      {"--md", CommandType::MAXIMUM_DIFFERENCE},
-      {"--histogram", CommandType::HISTOGRAM}
+        {"--help", CommandType::HELP},
+        {"--output", CommandType::OUTPUT},
+        {"--grayscale", CommandType::GRAYSCALE},
+        {"--brightness", CommandType::BRIGHTNESS},
+        {"--contrastLinear", CommandType::CONTRAST_LINEAR},
+        {"--contrastGamma", CommandType::CONTRAST_GAMMA},
+        {"--negative", CommandType::NEGATIVE},
+        {"--hflip", CommandType::HORIZONTAL_FLIP},
+        {"--vflip", CommandType::VERTICAL_FLIP},
+        {"--dflip", CommandType::DIAGONAL_FLIP},
+        {"--shrink", CommandType::SHRINK},
+        {"--enlarge", CommandType::ENLARGE},
+        {"--mid", CommandType::MIDPOINT_FILTER},
+        {"--amean", CommandType::ARITHMETIC_MEAN_FILTER},
+        {"--noNoiseImage", CommandType::NO_NOISE_IMAGE},
+        {"--mse", CommandType::MSE},
+        {"--pmse", CommandType::PMSE},
+        {"--snr", CommandType::SNR},
+        {"--psnr", CommandType::PSNR},
+        {"--md", CommandType::MAXIMUM_DIFFERENCE},
+        {"--histogram", CommandType::HISTOGRAM},
+        {"--huniform", CommandType::HISTOGRAM_UNIFORM}
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
-      {CommandType::HELP, "--help"},
-      {CommandType::OUTPUT, "--output"},
-      {CommandType::GRAYSCALE, "--grayscale"},
-      {CommandType::BRIGHTNESS, "--brightness"},
-      {CommandType::CONTRAST_LINEAR, "--contrastLinear"},
-      {CommandType::CONTRAST_GAMMA, "--contrastGamma"},
-      {CommandType::NEGATIVE, "--negative"},
-      {CommandType::HORIZONTAL_FLIP, "--hflip"},
-      {CommandType::VERTICAL_FLIP, "--vflip"},
-      {CommandType::DIAGONAL_FLIP, "--dflip"},
-      {CommandType::SHRINK, "--shrink"},
-      {CommandType::ENLARGE, "--enlarge"},
-      {CommandType::MIDPOINT_FILTER, "--mid"},
-      {CommandType::ARITHMETIC_MEAN_FILTER, "--amean"},
-      {CommandType::NO_NOISE_IMAGE, "--noNoiseImage"},
-      {CommandType::MSE, "--mse"},
-      {CommandType::PMSE, "--pmse"},
-      {CommandType::SNR, "--snr"},
-      {CommandType::PSNR, "--psnr"},
-      {CommandType::MAXIMUM_DIFFERENCE, "--md"},
-      {CommandType::HISTOGRAM, "--histogram"}
+        {CommandType::HELP, "--help"},
+        {CommandType::OUTPUT, "--output"},
+        {CommandType::GRAYSCALE, "--grayscale"},
+        {CommandType::BRIGHTNESS, "--brightness"},
+        {CommandType::CONTRAST_LINEAR, "--contrastLinear"},
+        {CommandType::CONTRAST_GAMMA, "--contrastGamma"},
+        {CommandType::NEGATIVE, "--negative"},
+        {CommandType::HORIZONTAL_FLIP, "--hflip"},
+        {CommandType::VERTICAL_FLIP, "--vflip"},
+        {CommandType::DIAGONAL_FLIP, "--dflip"},
+        {CommandType::SHRINK, "--shrink"},
+        {CommandType::ENLARGE, "--enlarge"},
+        {CommandType::MIDPOINT_FILTER, "--mid"},
+        {CommandType::ARITHMETIC_MEAN_FILTER, "--amean"},
+        {CommandType::NO_NOISE_IMAGE, "--noNoiseImage"},
+        {CommandType::MSE, "--mse"},
+        {CommandType::PMSE, "--pmse"},
+        {CommandType::SNR, "--snr"},
+        {CommandType::PSNR, "--psnr"},
+        {CommandType::MAXIMUM_DIFFERENCE, "--md"},
+        {CommandType::HISTOGRAM, "--histogram"},
+        {CommandType::HISTOGRAM_UNIFORM, "--huniform"}
     };
 
     /**
@@ -131,7 +136,11 @@ private:
     void printCommands();
 
     template<typename T>
-    bool readParam(const std::string& arg, const std::string& prefix, T& result, const std::string& errorMsg);
+    bool readParam(const std::string &arg, const std::string &prefix, std::optional<T> &result,
+                               const std::string &errorMsg);
+
+    static bool readStringParam(const std::string &arg, const std::string &prefix, std::string &result,
+                               const std::string &errorMsg);
 
     void applyImageTransformations(cv::Mat &image, std::unique_ptr<ImageProcessor> &imageProcessor) const;
 

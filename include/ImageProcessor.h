@@ -27,6 +27,7 @@ public:
     virtual std::string peakSignalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
     virtual std::string maximumDifference(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
     virtual cv::Mat histogram(cv::Mat image, int histogramChannel) = 0;
+    virtual cv::Mat histogramUniform(cv::Mat image, int gMax, int gMin) = 0;
 };
 
 #endif //IMAGEPROCESSOR_H
