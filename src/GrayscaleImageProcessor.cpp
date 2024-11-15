@@ -352,7 +352,7 @@ std::string GrayscaleImageProcessor::maximumDifference(cv::Mat compareImage, cv:
         newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
     }
 
-    int maxDifferenceAfter = abs(compareImageMax - computeMaxGrayscale(originalImage));
+    int maxDifferenceAfter = abs(compareImageMax - computeMaxGrayscale(newImage));
 
     std::stringstream ss;
     ss << "Maximum difference before denoising: " << maxDifferenceBefore << "\n"
@@ -361,33 +361,67 @@ std::string GrayscaleImageProcessor::maximumDifference(cv::Mat compareImage, cv:
     return ss.str();
 }
 
-cv::Mat GrayscaleImageProcessor::histogram(cv::Mat image, int histogramChannel) {
-    uint intensityCountArray[UCHAR_MAX + 1] = {0};
+std::array<uint, UCHAR_MAX + 1> GrayscaleImageProcessor::computeHistogram(cv::Mat image, int histogramChannel, uint& histogramMaxVal) {
+    std::array<uint, UCHAR_MAX + 1> intensityCountArray = {};
+    histogramMaxVal = 0;
+
     for (int x = 0; x < image.rows; x++) {
         for (int y = 0; y < image.cols; y++) {
-            intensityCountArray[image.at<uchar>(x, y)] += 1;
+            uint intensity = image.at<uchar>(x, y);
+            intensityCountArray[intensity]++;
+            if (intensityCountArray[intensity] > histogramMaxVal) {
+                histogramMaxVal = intensityCountArray[intensity];
+            }
         }
     }
 
-    // Find max in intensityCountArray to determine histogram image height
+    return intensityCountArray;
+}
+
+
+
+cv::Mat GrayscaleImageProcessor::histogram(cv::Mat image, int histogramChannel) {
+
     uint histogramHeight = 0;
-    for (uint i : intensityCountArray) {
-        histogramHeight = i > histogramHeight ? i : histogramHeight;
-    }
+    std::array<uint, UCHAR_MAX + 1> histogram = computeHistogram(image, histogramChannel, histogramHeight);
 
     uint widthFactor = 8;
-    uint histogramWidth = (UCHAR_MAX + 1) * widthFactor;
+    uint histogramWidth = 256 * widthFactor;
     cv::Mat histogramImage = cv::Mat::zeros(histogramHeight, histogramWidth + widthFactor, CV_8UC1);
     for (int y = 0; y < histogramWidth; y++) {
-        for (int x = widthFactor / 2; x < intensityCountArray[y / widthFactor]; x++) {
+        for (int x = widthFactor / 2; x < histogram[y / widthFactor]; x++) {
             histogramImage.at<uchar>(histogramHeight - x - 1, y) = 255;
         }
     }
-
     return histogramImage;
 }
 
 cv::Mat GrayscaleImageProcessor::histogramUniform(cv::Mat image, int gMax, int gMin) {
+    uint histogramHeight = 0;
+    std::array<uint, UCHAR_MAX + 1> histogram = this->computeHistogram(image, 0, histogramHeight);
+
+    int totalPixels = image.rows * image.cols;
+
+    uint cdf[256] = {};
+    cdf[0] = histogram[0];
+    for (int i = 1; i < 256; i++) {
+        cdf[i] = cdf[i - 1] + histogram[i];
+    }
+
+    uchar lut[256] = {};
+    for (int i = 0; i < 256; i++) {
+        lut[i] = std::clamp(
+            gMin + static_cast<int>(std::round((gMax - gMin) * (static_cast<double>(cdf[i]) / totalPixels))),
+            0,
+            UCHAR_MAX
+            );
+    }
+
+    for (int x = 0; x < image.rows; x++) {
+        for (int y = 0; y < image.cols; y++) {
+            image.at<uchar>(x, y) = lut[image.at<uchar>(x, y)];
+        }
+    }
     return image;
 }
 

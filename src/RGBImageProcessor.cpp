@@ -388,7 +388,7 @@ std::string RGBImageProcessor::maximumDifference(cv::Mat compareImage, cv::Mat o
         newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
     }
 
-    int maxDifferenceAfter = abs(compareImageMax - computeMaxRGB(originalImage));
+    int maxDifferenceAfter = abs(compareImageMax - computeMaxRGB(newImage));
 
     std::stringstream ss;
     ss << "Maximum difference before denoising: " << maxDifferenceBefore << "\n"
@@ -397,19 +397,27 @@ std::string RGBImageProcessor::maximumDifference(cv::Mat compareImage, cv::Mat o
     return ss.str();
 }
 
-cv::Mat RGBImageProcessor::histogram(cv::Mat image, int histogramChannel) {
-    uint intensityCountArray[UCHAR_MAX + 1] = {0};
+std::array<uint, 256> RGBImageProcessor::computeHistogram(cv::Mat image, int histogramChannel, uint &histogramMaxVal) {
+    std::array<uint, UCHAR_MAX + 1> intensityCountArray = {};
+    histogramMaxVal = 0;
+
     for (int x = 0; x < image.rows; x++) {
         for (int y = 0; y < image.cols; y++) {
-            intensityCountArray[image.at<cv::Vec3b>(x, y)[histogramChannel]] += 1;
+            uint intensity = image.at<cv::Vec3b>(x, y)[histogramChannel];
+            intensityCountArray[intensity]++;
+            if (intensityCountArray[intensity] > histogramMaxVal) {
+                histogramMaxVal = intensityCountArray[intensity];
+            }
         }
     }
 
-    // Find max in intensityCountArray to determine histogram image height
-    int histogramHeight = 0;
-    for (int i : intensityCountArray) {
-        histogramHeight = i > histogramHeight ? i : histogramHeight;
-    }
+    return intensityCountArray;
+}
+
+
+cv::Mat RGBImageProcessor::histogram(cv::Mat image, int histogramChannel) {
+    uint histogramHeight = 0;
+    std::array<uint, UCHAR_MAX + 1> intensityCountArray = computeHistogram(image, histogramChannel, histogramHeight);
 
     uint widthFactor = 8;
     int histogramWidth = (UCHAR_MAX + 1) * widthFactor;
@@ -424,5 +432,32 @@ cv::Mat RGBImageProcessor::histogram(cv::Mat image, int histogramChannel) {
 }
 
 cv::Mat RGBImageProcessor::histogramUniform(cv::Mat image, int gMax, int gMin) {
+    for (int channel = 0; channel <= 2; channel++) {
+        uint histogramHeight = 0;
+        std::array<uint, UCHAR_MAX + 1> histogram = this->computeHistogram(image, channel, histogramHeight);
+
+        int totalPixels = image.rows * image.cols;
+
+        uint cdf[256] = {};
+        cdf[0] = histogram[0];
+        for (int i = 1; i < 256; i++) {
+            cdf[i] = cdf[i - 1] + histogram[i];
+        }
+
+        uchar lut[256] = {};
+        for (int i = 0; i < 256; i++) {
+            lut[i] = std::clamp(
+                gMin + static_cast<int>(std::round((gMax - gMin) * (static_cast<double>(cdf[i]) / totalPixels))),
+                0,
+                UCHAR_MAX
+                );
+        }
+
+        for (int x = 0; x < image.rows; x++) {
+            for (int y = 0; y < image.cols; y++) {
+                image.at<cv::Vec3b>(x, y)[channel] = lut[image.at<cv::Vec3b>(x, y)[channel]];
+            }
+        }
+    }
     return image;
 }

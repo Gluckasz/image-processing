@@ -26,6 +26,7 @@ public:
     virtual std::string signalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
     virtual std::string peakSignalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
     virtual std::string maximumDifference(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) = 0;
+    virtual std::array<uint, UCHAR_MAX + 1> computeHistogram(cv::Mat image, int histogramChanngel, uint& histogramMaxVal) = 0;
     virtual cv::Mat histogram(cv::Mat image, int histogramChannel) = 0;
     virtual cv::Mat histogramUniform(cv::Mat image, int gMax, int gMin) = 0;
 };
