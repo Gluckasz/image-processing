@@ -513,3 +513,45 @@ double GrayscaleImageProcessor::entropy(std::array<uint, (127 * 2 + 1) + 1> imag
 
     return - sum / pixels;
 }
+
+cv::Mat padImageGrayscale(const cv::Mat& image, int padValue) {
+    cv::Mat paddedImage = cv::Mat::zeros(image.rows + padValue * 2, image.cols + padValue * 2, CV_8UC1);
+    for (int x = 0; x < image.rows; x++) {
+        for (int y = 0; y < image.cols; y++) {
+            paddedImage.at<uchar>(x + padValue, y + padValue) = image.at<uchar>(x, y);
+        }
+    }
+    return paddedImage;
+}
+
+cv::Mat GrayscaleImageProcessor::laplacianFilter(cv::Mat image, int laplaceMask) {
+    std::array<std::array<int, 3>, 3> mask{};
+    switch (laplaceMask) {
+        case 0:
+            mask = {{{0, -1, 0}, {-1, 4, -1}, {0, -1, 0}}};
+            break;
+        case 1:
+            mask = {{{-1, -1, -1}, {-1, 8, -1}, {-1, -1, -1}}};
+            break;
+        case 2:
+            mask = {{{1, -2, 1}, {-2, 4, -2}, {1, -2, 1}}};
+            break;
+    }
+
+    cv::Mat paddedImage = padImageGrayscale(image, 1);
+    for (int x = 1; x < paddedImage.rows - 1; x++) {
+        for (int y = 1; y < paddedImage.cols - 1; y++) {
+            int convolutionValue = 0;
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                   convolutionValue += paddedImage.at<uchar>(x + i, y + j) * mask[i + 1][j + 1];
+                }
+            }
+
+            image.at<uchar>(x - 1, y - 1) = convolutionValue;
+        }
+    }
+
+    return image;
+}
+

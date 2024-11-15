@@ -66,7 +66,7 @@ void InputProcessor::printCommands() {
             << "\t -val - channel of an image for which to compute and save histogram. "
             << "For grayscale images channel does not matter.\n\n"
             << commandToStringMap.find(CommandType::HISTOGRAM_UNIFORM)->second
-            << " - improve the quality of an image based on its histogram\n"
+            << " - improve the quality of an image based on its histogram.\n"
             << "\t -gMax - output image maximum intensity.\n"
             << "\t -gMin - output image minimum intensity.\n\n"
             << commandToStringMap.find(CommandType::MEAN)->second
@@ -84,7 +84,10 @@ void InputProcessor::printCommands() {
             << commandToStringMap.find(CommandType::VARIATION_2)->second
             << " - compute variation coefficient II.\n\n"
             << commandToStringMap.find(CommandType::ENTROPY)->second
-            << " - compute information source entropy.\n\n";
+            << " - compute information source entropy.\n\n"
+            << commandToStringMap.find(CommandType::LAPLACE)->second
+            << " - apply laplacian filter.\n"
+            << "\t -val - number of mask to choose (between 0 and 2).\n\n";
 }
 
 template<typename T>
@@ -275,6 +278,12 @@ void InputProcessor::processInput() {
                 isEntropy = true;
             break;
 
+            case CommandType::LAPLACE:
+                if (++i < argc) {
+                    readParam(argv[i], "-val=", lapaceMask, "Laplace mask number must be an integer (0, 1, or 2).");
+                }
+            break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -345,6 +354,10 @@ const {
 
     if (histogramUniformGMax.has_value() && histogramUniformGMin.has_value()) {
         image = imageProcessor->histogramUniform(image, histogramUniformGMax.value(), histogramUniformGMin.value());
+    }
+
+    if (lapaceMask.has_value()) {
+        image = imageProcessor->laplacianFilter(image, lapaceMask.value());
     }
 }
 

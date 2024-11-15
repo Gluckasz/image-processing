@@ -102,6 +102,8 @@ public:
     double flattening(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
     double variation2(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
     double entropy(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
+
+    cv::Mat laplacianFilter(cv::Mat image, int laplaceMask) override;
 };
 
 

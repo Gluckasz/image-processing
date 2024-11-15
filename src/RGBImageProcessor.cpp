@@ -551,10 +551,47 @@ double RGBImageProcessor::entropy(std::array<uint, (127 * 2 + 1) + 1> imageHisto
     return - sum / pixels;
 }
 
+cv::Mat padImage(const cv::Mat& image, int padValue) {
+    cv::Mat paddedImage = cv::Mat::zeros(image.rows + padValue * 2, image.cols + padValue * 2, CV_8UC3);
+    for (int x = 0; x < image.rows; x++) {
+        for (int y = 0; y < image.cols; y++) {
+            for (int z = 0; z < 3; z++) {
+                paddedImage.at<cv::Vec3b>(x + padValue, y + padValue)[z] = image.at<cv::Vec3b>(x, y)[z];
+            }
+        }
+    }
+    return paddedImage;
+}
 
+cv::Mat RGBImageProcessor::laplacianFilter(cv::Mat image, int laplaceMask) {
+    std::array<std::array<int, 3>, 3> mask{};
+    switch (laplaceMask) {
+        case 0:
+            mask = {{{0, -1, 0}, {-1, 4, -1}, {0, -1, 0}}};
+        break;
+        case 1:
+            mask = {{{-1, -1, -1}, {-1, 8, -1}, {-1, -1, -1}}};
+        break;
+        case 2:
+            mask = {{{1, -2, 1}, {-2, 4, -2}, {1, -2, 1}}};
+        break;
+    }
 
+    cv::Mat paddedImage = padImage(image, 1);
+    for (int x = 1; x < paddedImage.rows - 1; x++) {
+        for (int y = 1; y < paddedImage.cols - 1; y++) {
+            for (int z = 0; z < 3; z++) {
+                int convolutionValue = 0;
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        convolutionValue += paddedImage.at<cv::Vec3b>(x + i, y + j)[z] * mask[i + 1][j + 1];
+                    }
+                }
 
+                image.at<cv::Vec3b>(x - 1, y - 1)[z] = convolutionValue;
+            }
+        }
+    }
 
-
-
-
+    return image;
+}

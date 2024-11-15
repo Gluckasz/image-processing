@@ -61,6 +61,7 @@ private:
     bool isFlattening = false;
     bool isVariation2 = false;
     bool isEntropy = false;
+    std::optional<int>  lapaceMask = false;
 
     enum class CommandType {
         HELP,
@@ -93,6 +94,7 @@ private:
         FLATTENING,
         VARIATION_2,
         ENTROPY,
+        LAPLACE,
         UNKNOWN // For unrecognized commands
      };
 
@@ -127,6 +129,7 @@ private:
         {"--cflatco", CommandType::FLATTENING},
         {"--cvarcoii", CommandType::VARIATION_2},
         {"--centropy", CommandType::ENTROPY},
+        {"--slaplace", CommandType::LAPLACE},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -160,6 +163,7 @@ private:
         {CommandType::FLATTENING, "--cflatco"},
         {CommandType::VARIATION_2, "--cvarcoii"},
         {CommandType::ENTROPY, "--centropy"},
+        {CommandType::LAPLACE, "--slaplace"},
     };
 
     /**
