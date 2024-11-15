@@ -461,3 +461,100 @@ cv::Mat RGBImageProcessor::histogramUniform(cv::Mat image, int gMax, int gMin) {
     }
     return image;
 }
+
+double RGBImageProcessor::mean(std::array<uint, (127 * 2 + 1) + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    for (int i = 0; i < imageHistogram.size(); i++) {
+        sum += imageHistogram[i] * i;
+        pixels += imageHistogram[i];
+    }
+
+    return sum / pixels;
+}
+
+double RGBImageProcessor::variance(std::array<uint, (127 * 2 + 1) + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    double mean = this->mean(imageHistogram);
+    for (int i = 0; i < imageHistogram.size(); i++) {
+        sum += imageHistogram[i] * pow(i - mean, 2);
+        pixels += imageHistogram[i];
+    }
+
+    return sum / pixels;
+}
+
+double RGBImageProcessor::standardDeviation(std::array<uint, (127 * 2 + 1) + 1> imageHistogram) {
+    double variance = this->variance(imageHistogram);
+    return sqrt(variance);
+}
+
+double RGBImageProcessor::variation1(std::array<uint, (127 * 2 + 1) + 1> imageHistogram) {
+    double variance = this->variance(imageHistogram);
+    double mean = this->mean(imageHistogram);
+    return variance / mean;
+}
+
+double RGBImageProcessor::asymmetry(std::array<uint, (127 * 2 + 1) + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    double mean = this->mean(imageHistogram);
+    for (int i = 0; i < imageHistogram.size(); i++) {
+        sum += imageHistogram[i] * pow(i - mean, 3);
+        pixels += imageHistogram[i];
+    }
+
+    double standardDeviation = this->standardDeviation(imageHistogram);
+
+    return sum / pixels / pow(standardDeviation, 3);
+}
+
+double RGBImageProcessor::flattening(std::array<uint, (127 * 2 + 1) + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    double mean = this->mean(imageHistogram);
+    for (int i = 0; i < imageHistogram.size(); i++) {
+        sum += imageHistogram[i] * pow(i - mean, 4);
+        pixels += imageHistogram[i];
+    }
+
+    double variance = this->variance(imageHistogram);
+
+    return sum / pixels / pow(variance, 2)  - 3;
+}
+
+double RGBImageProcessor::variation2(std::array<uint, (127 * 2 + 1) + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    for (unsigned int i : imageHistogram) {
+        sum += pow(i, 2);
+        pixels += i;
+    }
+
+    return sum / pow(pixels, 2);
+}
+
+double RGBImageProcessor::entropy(std::array<uint, (127 * 2 + 1) + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    for (unsigned int i : imageHistogram) {
+        pixels += i;
+    }
+
+    for (unsigned int i : imageHistogram) {
+        if (i > 0) {
+            sum += i * log2(i / pixels);
+        }
+    }
+
+    return - sum / pixels;
+}
+
+
+
+
+
+
+
+

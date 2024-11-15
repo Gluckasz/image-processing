@@ -425,3 +425,91 @@ cv::Mat GrayscaleImageProcessor::histogramUniform(cv::Mat image, int gMax, int g
     return image;
 }
 
+double GrayscaleImageProcessor::mean(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    for (int i = 0; i < imageHistogram.size(); i++) {
+        sum += imageHistogram[i] * i;
+        pixels += imageHistogram[i];
+    }
+
+    return sum / pixels;
+}
+
+double GrayscaleImageProcessor::variance(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    double mean = this->mean(imageHistogram);
+    for (int i = 0; i < imageHistogram.size(); i++) {
+        sum += imageHistogram[i] * pow(i - mean, 2);
+        pixels += imageHistogram[i];
+    }
+
+    return sum / pixels;
+}
+
+double GrayscaleImageProcessor::standardDeviation(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
+    double variance = this->variance(imageHistogram);
+    return sqrt(variance);
+}
+
+double GrayscaleImageProcessor::variation1(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
+    double variance = this->variance(imageHistogram);
+    double mean = this->mean(imageHistogram);
+    return variance / mean;
+}
+
+double GrayscaleImageProcessor::asymmetry(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    double mean = this->mean(imageHistogram);
+    for (int i = 0; i < imageHistogram.size(); i++) {
+        sum += imageHistogram[i] * pow(i - mean, 3);
+        pixels += imageHistogram[i];
+    }
+
+    double standardDeviation = this->standardDeviation(imageHistogram);
+
+    return sum / pixels / pow(standardDeviation, 3);
+}
+
+double GrayscaleImageProcessor::flattening(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    double mean = this->mean(imageHistogram);
+    for (int i = 0; i < imageHistogram.size(); i++) {
+        sum += imageHistogram[i] * pow(i - mean, 4);
+        pixels += imageHistogram[i];
+    }
+
+    double variance = this->variance(imageHistogram);
+
+    return sum / pixels / pow(variance, 2)  - 3;
+}
+
+double GrayscaleImageProcessor::variation2(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    for (unsigned int i : imageHistogram) {
+        sum += pow(i, 2);
+        pixels += i;
+    }
+
+    return sum / pow(pixels, 2);
+}
+
+double GrayscaleImageProcessor::entropy(std::array<uint, (127 * 2 + 1) + 1> imageHistogram) {
+    double sum = 0;
+    double pixels = 0;
+    for (unsigned int i : imageHistogram) {
+        pixels += i;
+    }
+
+    for (unsigned int i : imageHistogram) {
+        if (i > 0) {
+            sum += i * log2(i / pixels);
+        }
+    }
+
+    return - sum / pixels;
+}

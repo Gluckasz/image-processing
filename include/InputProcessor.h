@@ -53,6 +53,14 @@ private:
     std::optional<int> histogramChannel;
     std::optional<int> histogramUniformGMax;
     std::optional<int> histogramUniformGMin;
+    bool isMean = false;
+    bool isVariance = false;
+    bool isStandardDeviation = false;
+    bool isVariation1 = false;
+    bool isAsymmetry = false;
+    bool isFlattening = false;
+    bool isVariation2 = false;
+    bool isEntropy = false;
 
     enum class CommandType {
         HELP,
@@ -77,6 +85,14 @@ private:
         MAXIMUM_DIFFERENCE,
         HISTOGRAM,
         HISTOGRAM_UNIFORM,
+        MEAN,
+        VARIANCE,
+        STANDARD_DEVIATION,
+        VARIATION_1,
+        ASYMMETRY,
+        FLATTENING,
+        VARIATION_2,
+        ENTROPY,
         UNKNOWN // For unrecognized commands
      };
 
@@ -102,7 +118,15 @@ private:
         {"--psnr", CommandType::PSNR},
         {"--md", CommandType::MAXIMUM_DIFFERENCE},
         {"--histogram", CommandType::HISTOGRAM},
-        {"--huniform", CommandType::HISTOGRAM_UNIFORM}
+        {"--huniform", CommandType::HISTOGRAM_UNIFORM},
+        {"--cmean", CommandType::MEAN},
+        {"--cvariance", CommandType::VARIANCE},
+        {"--cstdev", CommandType::STANDARD_DEVIATION},
+        {"--cvarcoi", CommandType::VARIATION_1},
+        {"--casyco", CommandType::ASYMMETRY},
+        {"--cflatco", CommandType::FLATTENING},
+        {"--cvarcoii", CommandType::VARIATION_2},
+        {"--centropy", CommandType::ENTROPY},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -127,7 +151,15 @@ private:
         {CommandType::PSNR, "--psnr"},
         {CommandType::MAXIMUM_DIFFERENCE, "--md"},
         {CommandType::HISTOGRAM, "--histogram"},
-        {CommandType::HISTOGRAM_UNIFORM, "--huniform"}
+        {CommandType::HISTOGRAM_UNIFORM, "--huniform"},
+        {CommandType::MEAN, "--cmean"},
+        {CommandType::VARIANCE, "--cvariance"},
+        {CommandType::STANDARD_DEVIATION, "--cstdev"},
+        {CommandType::VARIATION_1, "--cvarcoi"},
+        {CommandType::ASYMMETRY, "--casyco"},
+        {CommandType::FLATTENING, "--cflatco"},
+        {CommandType::VARIATION_2, "--cvarcoii"},
+        {CommandType::ENTROPY, "--centropy"},
     };
 
     /**
@@ -144,12 +176,17 @@ private:
 
     void applyImageTransformations(cv::Mat &image, std::unique_ptr<ImageProcessor> &imageProcessor) const;
 
-    void calculateAndSaveImageStatistics(
+    void calculateAndSaveComparisonImageStatistics(
         const cv::Mat &compareImage,
         const cv::Mat &originalImage,
         const cv::Mat &newImage,
         std::unique_ptr<ImageProcessor> &imageProcessor
         ) const;
+
+    void calculateAndSaveImageStats(
+    const cv::Mat &newImage,
+    std::unique_ptr<ImageProcessor> &imageProcessor
+    ) const;
 
     /**
      * Saves given image to the output/outputFileName file.

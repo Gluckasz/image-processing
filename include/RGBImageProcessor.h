@@ -93,6 +93,15 @@ public:
     std::array<uint, UCHAR_MAX + 1> computeHistogram(cv::Mat image, int histogramChanngel, uint& histogramMaxVal) override;
     cv::Mat histogram(cv::Mat image, int histogramChannel) override;
     cv::Mat histogramUniform(cv::Mat image, int gMax, int gMin) override;
+
+    double mean(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
+    double variance(std::array<uint, UCHAR_MAX+ 1> imageHistogram) override;
+    double standardDeviation(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
+    double variation1(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
+    double asymmetry(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
+    double flattening(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
+    double variation2(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
+    double entropy(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
 };
 
 

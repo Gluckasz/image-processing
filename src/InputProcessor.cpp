@@ -68,7 +68,23 @@ void InputProcessor::printCommands() {
             << commandToStringMap.find(CommandType::HISTOGRAM_UNIFORM)->second
             << " - improve the quality of an image based on its histogram\n"
             << "\t -gMax - output image maximum intensity.\n"
-            << "\t -gMin - output image minimum intensity.\n\n";
+            << "\t -gMin - output image minimum intensity.\n\n"
+            << commandToStringMap.find(CommandType::MEAN)->second
+            << " - compute mean.\n\n"
+            << commandToStringMap.find(CommandType::VARIANCE)->second
+            << " - compute variance.\n\n"
+            << commandToStringMap.find(CommandType::STANDARD_DEVIATION)->second
+            << " - compute standard deviation.\n\n"
+            << commandToStringMap.find(CommandType::VARIATION_1)->second
+            << " - compute variation coefficient I.\n\n"
+            << commandToStringMap.find(CommandType::ASYMMETRY)->second
+            << " - compute asymmetry coefficient.\n\n"
+            << commandToStringMap.find(CommandType::FLATTENING)->second
+            << " - compute flattening coefficient.\n\n"
+            << commandToStringMap.find(CommandType::VARIATION_2)->second
+            << " - compute variation coefficient II.\n\n"
+            << commandToStringMap.find(CommandType::ENTROPY)->second
+            << " - compute information source entropy.\n\n";
 }
 
 template<typename T>
@@ -227,6 +243,38 @@ void InputProcessor::processInput() {
                 }
                 break;
 
+            case CommandType::MEAN:
+                isMean = true;
+            break;
+
+            case CommandType::VARIANCE:
+                isVariance = true;
+            break;
+
+            case CommandType::STANDARD_DEVIATION:
+                isStandardDeviation = true;
+            break;
+
+            case CommandType::VARIATION_1:
+                isVariation1 = true;
+            break;
+
+            case CommandType::ASYMMETRY:
+                isAsymmetry = true;
+            break;
+
+            case CommandType::FLATTENING:
+                isFlattening = true;
+            break;
+
+            case CommandType::VARIATION_2:
+                isVariation2 = true;
+            break;
+
+            case CommandType::ENTROPY:
+                isEntropy = true;
+            break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -300,14 +348,14 @@ const {
     }
 }
 
-void InputProcessor::calculateAndSaveImageStatistics(
+void InputProcessor::calculateAndSaveComparisonImageStatistics(
     const cv::Mat &compareImage,
     const cv::Mat &originalImage,
     const cv::Mat &newImage,
     std::unique_ptr<ImageProcessor> &imageProcessor
 ) const {
     std::stringstream ss;
-    ss << "Image stats:\n";
+    ss << "Comparison image stats:\n";
     if (isMeanSquareError)
         ss << imageProcessor->meanSquareError(
             compareImage, originalImage, newImage);
@@ -325,7 +373,126 @@ void InputProcessor::calculateAndSaveImageStatistics(
             compareImage, originalImage, newImage);
     std::ofstream statsFile;
     statsFile.open(
-        OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + ".txt");
+        OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + "_comparison_stats" + ".txt");
+    statsFile << ss.rdbuf();
+    statsFile.close();
+}
+
+void InputProcessor::calculateAndSaveImageStats(const cv::Mat &newImage, std::unique_ptr<ImageProcessor> &imageProcessor) const {
+    std::stringstream ss;
+    ss << "Comparison image stats:\n";
+    uint n = 0;
+
+    std::array<std::array<uint, UCHAR_MAX + 1>, 3> imageHistograms{};
+    for (int i = 0; i < 3; i++) {
+        imageHistograms[i] = imageProcessor->computeHistogram(newImage, i, n);
+    }
+
+    if (isMean) {
+        if (imreadMode == cv::IMREAD_COLOR) {
+            double mean = 0;
+            for (int i = 0; i < 3; i++) {
+                mean += imageProcessor->mean(imageHistograms[i]);
+            }
+            ss << "Mean: " << mean / 3 << "\n";
+        } else {
+            double mean = imageProcessor->mean(imageHistograms[0]);
+            ss << "Mean: " << mean << "\n";
+        }
+    }
+    if (isVariance) {
+        if (imreadMode == cv::IMREAD_COLOR) {
+            double variance = 0;
+            for (int i = 0; i < 3; i++) {
+                variance += imageProcessor->variance(imageHistograms[i]);
+            }
+            ss << "Variance: " << variance / 3 << "\n";
+        } else {
+            double variance = imageProcessor->variance(imageHistograms[0]);
+            ss << "Variance: " << variance << "\n";
+        }
+    }
+    if (isStandardDeviation) {
+        if (imreadMode == cv::IMREAD_COLOR) {
+            double standardDeviation = 0;
+            for (int i = 0; i < 3; i++) {
+                standardDeviation += imageProcessor->standardDeviation(imageHistograms[i]);
+            }
+            ss << "Standard deviation: " << standardDeviation / 3 << "\n";
+        } else {
+            double standardDeviation = imageProcessor->standardDeviation(imageHistograms[0]);
+            ss << "Standard deviation: " << standardDeviation << "\n";
+        }
+    }
+
+    if (isStandardDeviation) {
+        if (imreadMode == cv::IMREAD_COLOR) {
+            double variation1 = 0;
+            for (int i = 0; i < 3; i++) {
+                variation1 += imageProcessor->variation1(imageHistograms[i]);
+            }
+            ss << "Variation coefficient I: " << variation1 / 3 << "\n";
+        } else {
+            double variation1 = imageProcessor->variation1(imageHistograms[0]);
+            ss << "Variation coefficient I: " << variation1 << "\n";
+        }
+    }
+
+    if (isAsymmetry) {
+        if (imreadMode == cv::IMREAD_COLOR) {
+            double asymmetry = 0;
+            for (int i = 0; i < 3; i++) {
+                asymmetry += imageProcessor->asymmetry(imageHistograms[i]);
+            }
+            ss << "Asymmetry coefficient: " << asymmetry / 3 << "\n";
+        } else {
+            double asymmetry = imageProcessor->asymmetry(imageHistograms[0]);
+            ss << "Asymmetry coefficient: " << asymmetry << "\n";
+        }
+    }
+
+    if (isFlattening) {
+        if (imreadMode == cv::IMREAD_COLOR) {
+            double flattening = 0;
+            for (int i = 0; i < 3; i++) {
+                flattening += imageProcessor->flattening(imageHistograms[i]);
+            }
+            ss << "Flattening coefficient: " << flattening / 3 << "\n";
+        } else {
+            double flattening = imageProcessor->flattening(imageHistograms[0]);
+            ss << "Flattening coefficient: " << flattening << "\n";
+        }
+    }
+
+    if (isVariation2) {
+        if (imreadMode == cv::IMREAD_COLOR) {
+            double variation2 = 0;
+            for (int i = 0; i < 3; i++) {
+                variation2 += imageProcessor->variation2(imageHistograms[i]);
+            }
+            ss << "Variation coefficient II: " << variation2 / 3 << "\n";
+        } else {
+            double variation2 = imageProcessor->variation2(imageHistograms[0]);
+            ss << "Variation coefficient II: " << variation2 << "\n";
+        }
+    }
+
+    if (isEntropy) {
+        if (imreadMode == cv::IMREAD_COLOR) {
+            double entropy = 0;
+            for (int i = 0; i < 3; i++) {
+                entropy += imageProcessor->entropy(imageHistograms[i]);
+            }
+            ss << "Information source entropy: " << entropy / 3 << "\n";
+        } else {
+            double entropy = imageProcessor->entropy(imageHistograms[0]);
+            ss << "Information source entropy: " << entropy << "\n";
+        }
+    }
+
+    std::ofstream statsFile;
+    statsFile.open(
+        OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + "_stats" + ".txt");
     statsFile << ss.rdbuf();
     statsFile.close();
 }
@@ -356,8 +523,11 @@ void InputProcessor::processImage() const {
 
     if (isNoNoise) {
         cv::Mat compareImage = imread(noNoiseImage, imreadMode);
-        calculateAndSaveImageStatistics(compareImage, originalImage, newImage, imageProcessor);
+        calculateAndSaveComparisonImageStatistics(compareImage, originalImage, newImage, imageProcessor);
+        calculateAndSaveImageStats(newImage, imageProcessor);
     }
+
+    calculateAndSaveImageStats(newImage, imageProcessor);
 }
 
 

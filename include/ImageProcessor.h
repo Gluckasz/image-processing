@@ -29,6 +29,14 @@ public:
     virtual std::array<uint, UCHAR_MAX + 1> computeHistogram(cv::Mat image, int histogramChanngel, uint& histogramMaxVal) = 0;
     virtual cv::Mat histogram(cv::Mat image, int histogramChannel) = 0;
     virtual cv::Mat histogramUniform(cv::Mat image, int gMax, int gMin) = 0;
+    virtual double mean(std::array<uint, UCHAR_MAX + 1> imageHistogram) = 0;
+    virtual double variance(std::array<uint, UCHAR_MAX + 1> imageHistogram) = 0;
+    virtual double standardDeviation(std::array<uint, UCHAR_MAX + 1> imageHistogram) = 0;
+    virtual double variation1(std::array<uint, UCHAR_MAX + 1> imageHistogram) = 0;
+    virtual double asymmetry(std::array<uint, UCHAR_MAX + 1> imageHistogram) = 0;
+    virtual double flattening(std::array<uint, UCHAR_MAX + 1> imageHistogram) = 0;
+    virtual double variation2(std::array<uint, UCHAR_MAX + 1> imageHistogram) = 0;
+    virtual double entropy(std::array<uint, UCHAR_MAX + 1> imageHistogram) = 0;
 };
 
 #endif //IMAGEPROCESSOR_H
