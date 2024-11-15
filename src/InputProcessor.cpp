@@ -87,7 +87,9 @@ void InputProcessor::printCommands() {
             << " - compute information source entropy.\n\n"
             << commandToStringMap.find(CommandType::LAPLACE)->second
             << " - apply laplacian filter.\n"
-            << "\t -val - number of mask to choose (between 0 and 2).\n\n";
+            << "\t -val - number of mask to choose (between 0 and 2).\n\n"
+            << commandToStringMap.find(CommandType::OPTIMIZED_LAPLACE)->second
+            << " - apply optimized laplacian filter.\n\n";
 }
 
 template<typename T>
@@ -280,8 +282,12 @@ void InputProcessor::processInput() {
 
             case CommandType::LAPLACE:
                 if (++i < argc) {
-                    readParam(argv[i], "-val=", lapaceMask, "Laplace mask number must be an integer (0, 1, or 2).");
+                    readParam(argv[i], "-val=", laplaceMask, "Laplace mask number must be an integer (0, 1, or 2).");
                 }
+            break;
+
+            case CommandType::OPTIMIZED_LAPLACE:
+                isOptimizedLaplacian = true;
             break;
 
             case CommandType::UNKNOWN:
@@ -356,8 +362,30 @@ const {
         image = imageProcessor->histogramUniform(image, histogramUniformGMax.value(), histogramUniformGMin.value());
     }
 
-    if (lapaceMask.has_value()) {
-        image = imageProcessor->laplacianFilter(image, lapaceMask.value());
+    if (laplaceMask.has_value()) {
+        auto start = std::chrono::high_resolution_clock::now();
+        image = imageProcessor->laplacianFilter(image, laplaceMask.value());
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = duration_cast<std::chrono::microseconds>(stop - start);
+
+        std::ofstream statsFile;
+        statsFile.open(
+            OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + "_laplacian_time" + ".txt");
+        statsFile << duration;
+        statsFile.close();
+    }
+
+    if (isOptimizedLaplacian) {
+        auto start = std::chrono::high_resolution_clock::now();
+        image = imageProcessor->optimizedLaplacianFilter(image);
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = duration_cast<std::chrono::microseconds>(stop - start);
+
+        std::ofstream statsFile;
+        statsFile.open(
+            OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + "_optimized_laplacian_time" + ".txt");
+        statsFile << duration;
+        statsFile.close();
     }
 }
 

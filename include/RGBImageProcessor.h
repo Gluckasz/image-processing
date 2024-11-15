@@ -104,6 +104,7 @@ public:
     double entropy(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
 
     cv::Mat laplacianFilter(cv::Mat image, int laplaceMask) override;
+    cv::Mat optimizedLaplacianFilter(cv::Mat image) override;
 };
 
 

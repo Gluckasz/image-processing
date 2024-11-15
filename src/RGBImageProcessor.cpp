@@ -587,11 +587,40 @@ cv::Mat RGBImageProcessor::laplacianFilter(cv::Mat image, int laplaceMask) {
                         convolutionValue += paddedImage.at<cv::Vec3b>(x + i, y + j)[z] * mask[i + 1][j + 1];
                     }
                 }
+                convolutionValue = std::clamp(convolutionValue, 0, 255);
 
                 image.at<cv::Vec3b>(x - 1, y - 1)[z] = convolutionValue;
             }
         }
     }
 
+    return image;
+}
+
+cv::Mat RGBImageProcessor::optimizedLaplacianFilter(cv::Mat image) {
+    for (int x = 1; x < image.rows - 1; x++) {
+        for (int y = 1; y < image.cols - 1; y++) {
+            for (int z = 0; z < 3; z++) {
+                int convolutionValue = 0;
+                if (x - 1 > 0) {
+                    convolutionValue += image.at<cv::Vec3b>(x - 1, y)[z] * -1;
+                    if (y - 1 > 0) convolutionValue += image.at<cv::Vec3b>(x - 1, y - 1)[z] * -1;
+                    if (y + 1 <= image.cols) convolutionValue += image.at<cv::Vec3b>(x - 1, y + 1)[z] * -1;
+                }
+
+                if (y - 1 > 0) convolutionValue += image.at<cv::Vec3b>(x, y - 1)[z] * -1;
+                convolutionValue += image.at<cv::Vec3b>(x, y)[z] * 4;
+                if (y + 1 <= image.cols) convolutionValue += image.at<cv::Vec3b>(x, y + 1)[z] * -1;
+                if (x + 1 <= image.rows) {
+                    if (y - 1 > 0) convolutionValue += image.at<cv::Vec3b>(x + 1, y - 1)[z] * -1;
+                    convolutionValue += image.at<cv::Vec3b>(x + 1, y)[z] * -1;
+                    if (y + 1 <= image.cols) convolutionValue += image.at<cv::Vec3b>(x + 1, y + 1)[z] * -1;
+                }
+                convolutionValue = std::clamp(convolutionValue, 0, 255);
+
+                image.at<cv::Vec3b>(x - 1, y - 1)[z] = convolutionValue;
+            }
+        }
+    }
     return image;
 }

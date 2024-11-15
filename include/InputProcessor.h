@@ -11,6 +11,7 @@
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 #include <fstream>
+#include <chrono>
 
 #include "../include/ImageProcessor.h"
 #include "../include/RGBImageProcessor.h"
@@ -61,7 +62,8 @@ private:
     bool isFlattening = false;
     bool isVariation2 = false;
     bool isEntropy = false;
-    std::optional<int>  lapaceMask = false;
+    std::optional<int> laplaceMask;
+    bool isOptimizedLaplacian = false;
 
     enum class CommandType {
         HELP,
@@ -95,6 +97,7 @@ private:
         VARIATION_2,
         ENTROPY,
         LAPLACE,
+        OPTIMIZED_LAPLACE,
         UNKNOWN // For unrecognized commands
      };
 
@@ -130,6 +133,7 @@ private:
         {"--cvarcoii", CommandType::VARIATION_2},
         {"--centropy", CommandType::ENTROPY},
         {"--slaplace", CommandType::LAPLACE},
+        {"--oslaplace", CommandType::OPTIMIZED_LAPLACE},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -164,6 +168,7 @@ private:
         {CommandType::VARIATION_2, "--cvarcoii"},
         {CommandType::ENTROPY, "--centropy"},
         {CommandType::LAPLACE, "--slaplace"},
+        {CommandType::OPTIMIZED_LAPLACE, "--oslaplace"},
     };
 
     /**
