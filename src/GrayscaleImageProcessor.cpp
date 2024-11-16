@@ -557,27 +557,19 @@ cv::Mat GrayscaleImageProcessor::laplacianFilter(cv::Mat image, int laplaceMask)
 }
 
 cv::Mat GrayscaleImageProcessor::optimizedLaplacianFilter(cv::Mat image) {
-    for (int x = 1; x < image.rows - 1; x++) {
-        for (int y = 1; y < image.cols - 1; y++) {
+    cv::Mat newImage = cv::Mat::zeros(image.size(), CV_8UC1);
+    for (int x = 0; x < image.rows; x++) {
+        for (int y = 0; y < image.cols; y++) {
                 int convolutionValue = 0;
-                if (x - 1 > 0) {
-                    convolutionValue += image.at<uchar>(x - 1, y) * -1;
-                    if (y - 1 > 0) convolutionValue += image.at<uchar>(x - 1, y - 1) * -1;
-                    if (y + 1 <= image.cols) convolutionValue += image.at<uchar>(x - 1, y + 1) * -1;
-                }
-
-                if (y - 1 > 0) convolutionValue += image.at<uchar>(x, y - 1) * -1;
+                if (x - 1 >= 0) convolutionValue += image.at<uchar>(x - 1, y) * -1;
+                if (y - 1 >= 0) convolutionValue += image.at<uchar>(x, y - 1) * -1;
                 convolutionValue += image.at<uchar>(x, y) * 4;
-                if (y + 1 <= image.cols) convolutionValue += image.at<uchar>(x, y + 1) * -1;
-                if (x + 1 <= image.rows) {
-                    if (y - 1 > 0) convolutionValue += image.at<uchar>(x + 1, y - 1) * -1;
-                    convolutionValue += image.at<uchar>(x + 1, y) * -1;
-                    if (y + 1 <= image.cols) convolutionValue += image.at<uchar>(x + 1, y + 1) * -1;
-                }
+                if (y + 1 < image.cols) convolutionValue += image.at<uchar>(x, y + 1) * -1;
+                if (x + 1 < image.rows) convolutionValue += image.at<uchar>(x + 1, y) * -1;
                 convolutionValue = std::clamp(convolutionValue, 0, 255);
 
-                image.at<uchar>(x - 1, y - 1) = convolutionValue;
+                newImage.at<uchar>(x, y) = convolutionValue;
             }
         }
-    return image;
+    return newImage;
 }

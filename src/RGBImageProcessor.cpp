@@ -598,29 +598,22 @@ cv::Mat RGBImageProcessor::laplacianFilter(cv::Mat image, int laplaceMask) {
 }
 
 cv::Mat RGBImageProcessor::optimizedLaplacianFilter(cv::Mat image) {
-    for (int x = 1; x < image.rows - 1; x++) {
-        for (int y = 1; y < image.cols - 1; y++) {
+    cv::Mat newImage = cv::Mat::zeros(image.size(), CV_8UC3);
+    for (int x = 0; x < newImage.rows; x++) {
+        for (int y = 0; y < newImage.cols; y++) {
             for (int z = 0; z < 3; z++) {
                 int convolutionValue = 0;
-                if (x - 1 > 0) {
-                    convolutionValue += image.at<cv::Vec3b>(x - 1, y)[z] * -1;
-                    if (y - 1 > 0) convolutionValue += image.at<cv::Vec3b>(x - 1, y - 1)[z] * -1;
-                    if (y + 1 <= image.cols) convolutionValue += image.at<cv::Vec3b>(x - 1, y + 1)[z] * -1;
-                }
+                if (x - 1 >= 0) convolutionValue += image.at<cv::Vec3b>(x - 1, y)[z] * -1;
 
-                if (y - 1 > 0) convolutionValue += image.at<cv::Vec3b>(x, y - 1)[z] * -1;
+                if (y - 1 >= 0) convolutionValue += image.at<cv::Vec3b>(x, y - 1)[z] * -1;
                 convolutionValue += image.at<cv::Vec3b>(x, y)[z] * 4;
-                if (y + 1 <= image.cols) convolutionValue += image.at<cv::Vec3b>(x, y + 1)[z] * -1;
-                if (x + 1 <= image.rows) {
-                    if (y - 1 > 0) convolutionValue += image.at<cv::Vec3b>(x + 1, y - 1)[z] * -1;
-                    convolutionValue += image.at<cv::Vec3b>(x + 1, y)[z] * -1;
-                    if (y + 1 <= image.cols) convolutionValue += image.at<cv::Vec3b>(x + 1, y + 1)[z] * -1;
-                }
+                if (y + 1 < newImage.cols) convolutionValue += image.at<cv::Vec3b>(x, y + 1)[z] * -1;
+                if (x + 1 < newImage.rows) convolutionValue += image.at<cv::Vec3b>(x + 1, y)[z] * -1;
                 convolutionValue = std::clamp(convolutionValue, 0, 255);
 
-                image.at<cv::Vec3b>(x - 1, y - 1)[z] = convolutionValue;
+                newImage.at<cv::Vec3b>(x, y)[z] = convolutionValue;
             }
         }
     }
-    return image;
+    return newImage;
 }
