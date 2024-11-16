@@ -617,3 +617,17 @@ cv::Mat RGBImageProcessor::optimizedLaplacianFilter(cv::Mat image) {
     }
     return newImage;
 }
+
+cv::Mat RGBImageProcessor::robertsOperator1(cv::Mat image) {
+    for (int x = 0; x < image.rows - 1; x++) {
+        for (int y = 0; y < image.cols - 1; y++) {
+            for (int z = 0; z < 3; z++) {
+                image.at<cv::Vec3b>(x, y)[z] = std::clamp(static_cast<int>(sqrt(
+                pow(image.at<cv::Vec3b>(x, y)[z] - image.at<cv::Vec3b>(x + 1, y + 1)[z], 2)
+                + pow(image.at<cv::Vec3b>(x, y + 1)[z] - image.at<cv::Vec3b>(x + 1, y)[z], 2)
+                )), 0, UCHAR_MAX);
+            }
+        }
+    }
+    return image;
+}

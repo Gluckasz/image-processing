@@ -106,6 +106,7 @@ public:
 
     cv::Mat laplacianFilter(cv::Mat image, int laplaceMask) override;
     cv::Mat optimizedLaplacianFilter(cv::Mat image) override;
+    cv::Mat robertsOperator1(cv::Mat image) override;
 };
 
 

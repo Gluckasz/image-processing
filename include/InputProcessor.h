@@ -64,6 +64,7 @@ private:
     bool isEntropy = false;
     std::optional<int> laplaceMask;
     bool isOptimizedLaplacian = false;
+    bool isRobertsOperator = false;
 
     enum class CommandType {
         HELP,
@@ -98,6 +99,7 @@ private:
         ENTROPY,
         LAPLACE,
         OPTIMIZED_LAPLACE,
+        ROBERTS_OPERATOR,
         UNKNOWN // For unrecognized commands
      };
 
@@ -134,6 +136,7 @@ private:
         {"--centropy", CommandType::ENTROPY},
         {"--slaplace", CommandType::LAPLACE},
         {"--oslaplace", CommandType::OPTIMIZED_LAPLACE},
+        {"--orobertsi", CommandType::ROBERTS_OPERATOR},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -169,6 +172,7 @@ private:
         {CommandType::ENTROPY, "--centropy"},
         {CommandType::LAPLACE, "--slaplace"},
         {CommandType::OPTIMIZED_LAPLACE, "--oslaplace"},
+        {CommandType::ROBERTS_OPERATOR, "--orobertsi"},
     };
 
     /**

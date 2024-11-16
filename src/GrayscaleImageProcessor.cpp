@@ -573,3 +573,15 @@ cv::Mat GrayscaleImageProcessor::optimizedLaplacianFilter(cv::Mat image) {
         }
     return newImage;
 }
+
+cv::Mat GrayscaleImageProcessor::robertsOperator1(cv::Mat image) {
+    for (int x = 0; x < image.rows - 1; x++) {
+        for (int y = 0; y < image.cols - 1; y++) {
+            image.at<uchar>(x, y) = std::clamp(static_cast<int>(sqrt(
+                pow(image.at<uchar>(x, y) - image.at<uchar>(x + 1, y + 1), 2)
+                + pow(image.at<uchar>(x, y + 1) - image.at<uchar>(x + 1, y), 2)
+                )), 0, UCHAR_MAX);
+        }
+    }
+    return image;
+}

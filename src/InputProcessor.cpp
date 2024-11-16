@@ -89,7 +89,9 @@ void InputProcessor::printCommands() {
             << " - apply laplacian filter.\n"
             << "\t -val - number of mask to choose (between 0 and 2).\n\n"
             << commandToStringMap.find(CommandType::OPTIMIZED_LAPLACE)->second
-            << " - apply optimized laplacian filter.\n\n";
+            << " - apply optimized laplacian filter.\n\n"
+            << commandToStringMap.find(CommandType::ROBERTS_OPERATOR)->second
+            << " - apply roberts operator I.\n\n";
 }
 
 template<typename T>
@@ -290,6 +292,10 @@ void InputProcessor::processInput() {
                 isOptimizedLaplacian = true;
             break;
 
+            case CommandType::ROBERTS_OPERATOR:
+                isRobertsOperator = true;
+            break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -386,6 +392,10 @@ const {
             OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + "_optimized_laplacian_time" + ".txt");
         statsFile << duration;
         statsFile.close();
+    }
+
+    if (isRobertsOperator) {
+        image = imageProcessor->robertsOperator1(image);
     }
 }
 

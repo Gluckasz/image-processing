@@ -39,6 +39,7 @@ public:
     virtual double entropy(std::array<uint, UCHAR_MAX + 1> imageHistogram) = 0;
     virtual cv::Mat laplacianFilter(cv::Mat image, int laplaceMask) = 0;
     virtual cv::Mat optimizedLaplacianFilter(cv::Mat image) = 0;
+    virtual cv::Mat robertsOperator1(cv::Mat image) = 0;
 };
 
 #endif //IMAGEPROCESSOR_H
