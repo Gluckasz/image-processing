@@ -242,12 +242,21 @@ void InputProcessor::processInput() {
                 break;
 
             case CommandType::HISTOGRAM_UNIFORM:
-                if (++i < argc) {
-                    readParam(argv[i], "-gMax=", histogramUniformGMax, "Histogram gMax must be an integer.");
+
+                try {
+                    if (++i < argc) {
+                        readParam(argv[i], "-gMax=", histogramUniformGMax, "Histogram gMax must be an integer.");
+                    }
+                    if (++i < argc) {
+                        readParam(argv[i], "-gMin=", histogramUniformGMin, "Histogram gMin must be an integer.");
+                    }
+                    if (histogramUniformGMax < histogramUniformGMin) {
+                        throw new std::invalid_argument("gMax has to be greater than gMin");
+                    }
+                } catch ( const std::invalid_argument &e) {
+                    throw;
                 }
-                if (++i < argc) {
-                    readParam(argv[i], "-gMin=", histogramUniformGMin, "Histogram gMin must be an integer.");
-                }
+
                 break;
 
             case CommandType::MEAN:
