@@ -4,55 +4,57 @@
 
 #include "../include/GrayscaleImageProcessor.h"
 
-cv::Mat GrayscaleImageProcessor::modifyBrightness(cv::Mat image, int modVal){
-    for (int x = 0; x < image.rows; x++) {
-        for (int y = 0; y < image.cols; y++) {
+cv::Mat GrayscaleImageProcessor::modifyBrightness(cv::Mat image, int modVal) {
+    cv::Mat result = image.clone();
+    for (int x = 0; x < result.rows; x++) {
+        for (int y = 0; y < result.cols; y++) {
             if (modVal < 0) {
-                if (image.at<uchar>(x, y) >= 0 - modVal) {
-                    image.at<uchar>(x, y) += modVal;
+                if (result.at<uchar>(x, y) >= 0 - modVal) {
+                    result.at<uchar>(x, y) += modVal;
                 }
                 else {
-                    image.at<uchar>(x, y) = 0;
+                    result.at<uchar>(x, y) = 0;
                 }
             }
             else {
-                if (image.at<uchar>(x, y) <= UCHAR_MAX - modVal) {
-                    image.at<uchar>(x, y) += modVal;
+                if (result.at<uchar>(x, y) <= UCHAR_MAX - modVal) {
+                    result.at<uchar>(x, y) += modVal;
                 }
                 else {
-                    image.at<uchar>(x, y) = UCHAR_MAX;
+                    result.at<uchar>(x, y) = UCHAR_MAX;
                 }
             }
         }
     }
-    return image;
+    return result;
 }
 
 cv::Mat GrayscaleImageProcessor::modifyContrastLinear(cv::Mat image, int modVal) {
+    cv::Mat result = image.clone();
     int max = 0;
     int min = 255;
-    for (int x = 0; x < image.rows; x++) {
-        for (int y = 0; y < image.cols; y++) {
-            if (max < image.at<uchar>(x, y)) {
-                max = static_cast<int>(image.at<uchar>(x, y));
+    for (int x = 0; x < result.rows; x++) {
+        for (int y = 0; y < result.cols; y++) {
+            if (max < result.at<uchar>(x, y)) {
+                max = static_cast<int>(result.at<uchar>(x, y));
             }
-            if (min > image.at<uchar>(x, y)) {
-                min = static_cast<int>(image.at<uchar>(x, y));
+            if (min > result.at<uchar>(x, y)) {
+                min = static_cast<int>(result.at<uchar>(x, y));
             }
         }
     }
-    for (int x = 0; x < image.rows; x++) {
-        for (int y = 0; y < image.cols; y++) {
-            image.at<uchar>(x, y) = static_cast<uchar>(std::clamp(
-                (static_cast<int>(image.at<uchar>(x, y)) - min)
-                * (max - min + 2 * modVal)
+    for (int x = 0; x < result.rows; x++) {
+        for (int y = 0; y < result.cols; y++) {
+            result.at<uchar>(x, y) = static_cast<uchar>(std::clamp(
+                (static_cast<int>(result.at<uchar>(x, y)) - min)
+                * std::max(max - min + 2 * modVal, 0)
                 / (max - min) + min - modVal,
                 0,
                 UCHAR_MAX
                 ));
         }
     }
-    return image;
+    return result;
 }
 
 

@@ -2,9 +2,14 @@ cmake_minimum_required(VERSION 3.28)
 project(image_processing)
 
 set(CMAKE_CXX_STANDARD 20)
+
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
-add_executable(image_processing src/main.cpp
+
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
+
+add_library(image_processing_lib
         include/ImageProcessor.h
         include/GrayscaleImageProcessor.h
         src/GrayscaleImageProcessor.cpp
@@ -14,4 +19,26 @@ add_executable(image_processing src/main.cpp
         src/InputProcessor.cpp
 )
 
-target_link_libraries(image_processing ${OpenCV_LIBS})
+target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})
+target_include_directories(image_processing_lib PUBLIC include)
+
+add_executable(image_processing
+        src/main.cpp
+)
+
+target_link_libraries(image_processing PRIVATE image_processing_lib)
+
+enable_testing()
+
+add_executable(image_processing_tests
+        tests/GrayscaleImageProcessorTests.cpp
+)
+
+target_link_libraries(image_processing_tests
+        PRIVATE
+        image_processing_lib
+        GTest::GTest
+        GTest::Main
+)
+
+add_test(NAME ImageProcessingTests COMMAND image_processing_tests)
