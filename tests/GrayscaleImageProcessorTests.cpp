@@ -66,11 +66,11 @@ TEST_F(GrayscaleImageProcessorTest, ModifyBrightnessTestEdgeCases) {
 }
 
 TEST_F(GrayscaleImageProcessorTest, ModifyContrastLinearTestNormalCases) {
-    const uchar pixel1 = 10;
-    const uchar pixel2 = 20;
-    const uchar pixel3 = 30;
-    const uchar pixel4 = 40;
-    const int contrastLinearModVal = 10;
+    constexpr uchar pixel1 = 10;
+    constexpr uchar pixel2 = 20;
+    constexpr uchar pixel3 = 30;
+    constexpr uchar pixel4 = 40;
+    constexpr int contrastLinearModVal = 10;
 
     blackImageGrayscale.at<uchar>(0, 0) = pixel1;
     blackImageGrayscale.at<uchar>(1, 0) = pixel2;
@@ -96,11 +96,11 @@ TEST_F(GrayscaleImageProcessorTest, ModifyContrastLinearTestNormalCases) {
 }
 
 TEST_F(GrayscaleImageProcessorTest, ModifyContrastLinearTestEdgeCases) {
-    const uchar pixel1 = 10;
-    const uchar pixel2 = 20;
-    const uchar pixel3 = 30;
-    const uchar pixel4 = 40;
-    const int contrastLinearModVal = 20;
+    constexpr uchar pixel1 = 10;
+    constexpr uchar pixel2 = 20;
+    constexpr uchar pixel3 = 30;
+    constexpr uchar pixel4 = 40;
+    constexpr int contrastLinearModVal = 20;
 
     blackImageGrayscale.at<uchar>(0, 0) = pixel1;
     blackImageGrayscale.at<uchar>(1, 0) = pixel2;
