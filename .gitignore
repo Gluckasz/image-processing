@@ -16,3 +16,5 @@ image_processing.iml
 .idea
 output
 .cmake
+image_processing_tests
+libimage_processing_lib.a
