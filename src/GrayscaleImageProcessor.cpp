@@ -74,23 +74,25 @@ cv::Mat GrayscaleImageProcessor::modifyContrastGamma(cv::Mat image, float modVal
 }
 
 cv::Mat GrayscaleImageProcessor::negative(cv::Mat image) {
-    for (int x = 0; x < image.rows; x++) {
-        for (int y = 0; y < image.cols; y++) {
-            image.at<uchar>(x, y) = 255 - image.at<uchar>(x, y);
+    cv::Mat result = image.clone();
+    for (int x = 0; x < result.rows; x++) {
+        for (int y = 0; y < result.cols; y++) {
+            result.at<uchar>(x, y) = 255 - result.at<uchar>(x, y);
         }
     }
-    return image;
+    return result;
 }
 
 cv::Mat GrayscaleImageProcessor::flipHorizontally(cv::Mat image) {
-    for (int x = 0; x < image.rows; x++) {
-        for (int y = 0; y < image.cols / 2; y++) {
-            uchar temp = image.at<uchar>(x, y);
-            image.at<uchar>(x, y) = image.at<uchar>(x, image.cols - y - 1);
-            image.at<uchar>(x, image.cols - y - 1) = temp;
+    cv::Mat result = image.clone();
+    for (int x = 0; x < result.rows; x++) {
+        for (int y = 0; y < result.cols / 2; y++) {
+            uchar temp = result.at<uchar>(x, y);
+            result.at<uchar>(x, y) = result.at<uchar>(x, result.cols - y - 1);
+            result.at<uchar>(x, result.cols - y - 1) = temp;
         }
     }
-    return image;
+    return result;
 }
 
 cv::Mat GrayscaleImageProcessor::flipVertically(cv::Mat image) {

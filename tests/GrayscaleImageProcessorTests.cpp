@@ -186,3 +186,39 @@ TEST_F(GrayscaleImageProcessorTest, ModifyContrastGammaTestEdgeCases) {
     EXPECT_EQ(lowGammaImage.at<uchar>(0, 1), 255);
     EXPECT_EQ(lowGammaImage.at<uchar>(1, 1), 255);
 }
+
+TEST_F(GrayscaleImageProcessorTest, NegativeTest) {
+    cv::Mat brighterImage = grayscaleImageProcessor->negative(blackImageGrayscale);
+    cv::Mat darkerImage = grayscaleImageProcessor->negative(whiteImageGrayscale);
+    ASSERT_FALSE(brighterImage.empty()) << "The brighterImage should not be empty.";
+    ASSERT_FALSE(darkerImage.empty()) << "The darkerImage should not be empty.";
+
+    for (int row = 0; row < blackImageGrayscale.rows; row++) {
+        for (int col = 0; col < blackImageGrayscale.cols; col++) {
+            int originalPixel = blackImageGrayscale.at<uchar>(row, col);
+            int modifiedPixel = brighterImage.at<uchar>(row, col);
+            EXPECT_EQ(255 - originalPixel, modifiedPixel)
+                << "Mismatch at pixel (" << row << ", " << col << ")";
+
+            originalPixel = whiteImageGrayscale.at<uchar>(row, col);
+            modifiedPixel = darkerImage.at<uchar>(row, col);
+            EXPECT_EQ(255 - originalPixel, modifiedPixel)
+                << "Mismatch at pixel (" << row << ", " << col << ")";
+        }
+    }
+}
+
+TEST_F(GrayscaleImageProcessorTest, HorizontalFlipTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 1;
+    cv::Mat imageAfterFlip = grayscaleImageProcessor->flipHorizontally(blackImageGrayscale);
+    ASSERT_FALSE(imageAfterFlip.empty()) << "The imageAfterFlip should not be empty.";
+
+    for (int row = 0; row < blackImageGrayscale.rows; row++) {
+        for (int col = 0; col < blackImageGrayscale.cols; col++) {
+            int originalPixel = blackImageGrayscale.at<uchar>(row, blackImageGrayscale.cols - 1 - col);
+            int modifiedPixel = imageAfterFlip.at<uchar>(row, col);
+            EXPECT_EQ(originalPixel, modifiedPixel)
+                << "Mismatch at pixel (" << row << ", " << col << ")";
+        }
+    }
+}
