@@ -252,3 +252,31 @@ TEST_F(GrayscaleImageProcessorTest, DiagonalFlipTest) {
         }
     }
 }
+
+TEST_F(GrayscaleImageProcessorTest, ResizeTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 1;
+    float factor = 2;
+
+    cv::Mat imageAfterEnlargement = grayscaleImageProcessor->resize(blackImageGrayscale, factor);
+    cv::Mat imageAfterShrinking = grayscaleImageProcessor->resize(blackImageGrayscale, 1 / factor);
+    ASSERT_FALSE(imageAfterEnlargement.empty()) << "The imageAfterEnlargement should not be empty.";
+    ASSERT_FALSE(imageAfterShrinking.empty()) << "The imageAfterShrinking should not be empty.";
+    ASSERT_EQ(imageAfterEnlargement.rows, 4);
+    ASSERT_EQ(imageAfterEnlargement.cols, 4);
+    ASSERT_EQ(imageAfterShrinking.rows, 1);
+    ASSERT_EQ(imageAfterShrinking.cols, 1);
+
+    int originalPixel = blackImageGrayscale.at<uchar>(0, 0);
+    int modifiedPixel = imageAfterShrinking.at<uchar>(0, 0);
+    EXPECT_EQ(originalPixel, modifiedPixel)
+                << "Mismatch at pixel (" << 0 << ", " << 0 << ")";
+
+    for (int row = 0; row < imageAfterEnlargement.rows; row++) {
+        for (int col = 0; col < imageAfterEnlargement.cols; col++) {
+            int originalPixel = blackImageGrayscale.at<uchar>(row / factor, col / factor);
+            int modifiedPixel = imageAfterEnlargement.at<uchar>(row, col);
+            EXPECT_EQ(originalPixel, modifiedPixel)
+                << "Mismatch at pixel (" << row << ", " << col << ")";
+        }
+    }
+}
