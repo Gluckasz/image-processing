@@ -59,17 +59,18 @@ cv::Mat GrayscaleImageProcessor::modifyContrastLinear(cv::Mat image, int modVal)
 
 
 cv::Mat GrayscaleImageProcessor::modifyContrastGamma(cv::Mat image, float modVal){
-    for (int x = 0; x < image.rows; x++) {
-        for (int y = 0; y < image.cols; y++) {
-            float normalizedPixelVal = static_cast<float>(image.at<uchar>(x, y)) / 255.0f;
+    cv::Mat result = image.clone();
+    for (int x = 0; x < result.rows; x++) {
+        for (int y = 0; y < result.cols; y++) {
+            float normalizedPixelVal = static_cast<float>(result.at<uchar>(x, y)) / 255.0f;
             float gammaCorrectedVal = pow(normalizedPixelVal, modVal);
             int gammaCorrectedPixel = round(gammaCorrectedVal * 255);
 
             gammaCorrectedPixel = std::clamp(gammaCorrectedPixel, 0, UCHAR_MAX);
-            image.at<uchar>(x, y) = gammaCorrectedPixel;
+            result.at<uchar>(x, y) = gammaCorrectedPixel;
         }
     }
-    return image;
+    return result;
 }
 
 cv::Mat GrayscaleImageProcessor::negative(cv::Mat image) {

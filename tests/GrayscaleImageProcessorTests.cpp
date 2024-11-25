@@ -124,3 +124,65 @@ TEST_F(GrayscaleImageProcessorTest, ModifyContrastLinearTestEdgeCases) {
     EXPECT_EQ(modifiedLessContrastImage.at<uchar>(0, 1), 30);
     EXPECT_EQ(modifiedLessContrastImage.at<uchar>(1, 1), 30);
 }
+
+TEST_F(GrayscaleImageProcessorTest, ModifyContrastGammaTestNormalCases) {
+    constexpr uchar pixel1 = 10;
+    constexpr uchar pixel2 = 20;
+    constexpr uchar pixel3 = 30;
+    constexpr uchar pixel4 = 40;
+    constexpr int highGamma = 2;
+    constexpr float lowGamma = 0.5f;
+
+    blackImageGrayscale.at<uchar>(0, 0) = pixel1;
+    blackImageGrayscale.at<uchar>(1, 0) = pixel2;
+    blackImageGrayscale.at<uchar>(0, 1) = pixel3;
+    blackImageGrayscale.at<uchar>(1, 1) = pixel4;
+
+    cv::Mat highGammaImage = grayscaleImageProcessor->modifyContrastGamma(blackImageGrayscale, highGamma);
+    ASSERT_FALSE(highGammaImage.empty()) << "The highGammaImage should not be empty.";
+
+    // Calculated values for contrastLinearModVal = 10
+    EXPECT_EQ(highGammaImage.at<uchar>(0, 0), 0);
+    EXPECT_EQ(highGammaImage.at<uchar>(1, 0), 2);
+    EXPECT_EQ(highGammaImage.at<uchar>(0, 1), 4);
+    EXPECT_EQ(highGammaImage.at<uchar>(1, 1), 6);
+
+    cv::Mat lowGammaImage = grayscaleImageProcessor->modifyContrastGamma(blackImageGrayscale, lowGamma);
+    ASSERT_FALSE(lowGammaImage.empty()) << "The lowGammaImage should not be empty.";
+
+    EXPECT_EQ(lowGammaImage.at<uchar>(0, 0), 50);
+    EXPECT_EQ(lowGammaImage.at<uchar>(1, 0), 71);
+    EXPECT_EQ(lowGammaImage.at<uchar>(0, 1), 87);
+    EXPECT_EQ(lowGammaImage.at<uchar>(1, 1), 101);
+}
+
+TEST_F(GrayscaleImageProcessorTest, ModifyContrastGammaTestEdgeCases) {
+    constexpr uchar pixel1 = 10;
+    constexpr uchar pixel2 = 20;
+    constexpr uchar pixel3 = 30;
+    constexpr uchar pixel4 = 40;
+    constexpr int highGamma = 10000;
+    constexpr float lowGamma = 0.0001f;
+
+    blackImageGrayscale.at<uchar>(0, 0) = pixel1;
+    blackImageGrayscale.at<uchar>(1, 0) = pixel2;
+    blackImageGrayscale.at<uchar>(0, 1) = pixel3;
+    blackImageGrayscale.at<uchar>(1, 1) = pixel4;
+
+    cv::Mat highGammaImage = grayscaleImageProcessor->modifyContrastGamma(blackImageGrayscale, highGamma);
+    ASSERT_FALSE(highGammaImage.empty()) << "The highGammaImage should not be empty.";
+
+    // Calculated values for contrastLinearModVal = 10
+    EXPECT_EQ(highGammaImage.at<uchar>(0, 0), 0);
+    EXPECT_EQ(highGammaImage.at<uchar>(1, 0), 0);
+    EXPECT_EQ(highGammaImage.at<uchar>(0, 1), 0);
+    EXPECT_EQ(highGammaImage.at<uchar>(1, 1), 0);
+
+    cv::Mat lowGammaImage = grayscaleImageProcessor->modifyContrastGamma(blackImageGrayscale, lowGamma);
+    ASSERT_FALSE(lowGammaImage.empty()) << "The lowGammaImage should not be empty.";
+
+    EXPECT_EQ(lowGammaImage.at<uchar>(0, 0), 255);
+    EXPECT_EQ(lowGammaImage.at<uchar>(1, 0), 255);
+    EXPECT_EQ(lowGammaImage.at<uchar>(0, 1), 255);
+    EXPECT_EQ(lowGammaImage.at<uchar>(1, 1), 255);
+}
