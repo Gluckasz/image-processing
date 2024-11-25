@@ -280,3 +280,26 @@ TEST_F(GrayscaleImageProcessorTest, ResizeTest) {
         }
     }
 }
+
+TEST_F(GrayscaleImageProcessorTest, MidpointFilterTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 10;
+    cv::Mat imageAfterModification = grayscaleImageProcessor->midpointFilter(blackImageGrayscale, 2);
+    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
+
+    int expectedValue = (10 + 0) / 2;
+    int modifiedPixel = imageAfterModification.at<uchar>(0, 0);
+    EXPECT_EQ(expectedValue, modifiedPixel)
+        << "Mismatch at pixel (" << 0 << ", " << 0 << ")";
+}
+
+TEST_F(GrayscaleImageProcessorTest, ArithmeticMeanFilterTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 10;
+    blackImageGrayscale.at<uchar>(0, 1) = 10;
+    cv::Mat imageAfterModification = grayscaleImageProcessor->arithmeticMeanFilter(blackImageGrayscale, 2);
+    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
+
+    int expectedValue = (10 + 10 + 0 + 0) / 4;
+    int modifiedPixel = imageAfterModification.at<uchar>(0, 0);
+    EXPECT_EQ(expectedValue, modifiedPixel)
+        << "Mismatch at pixel (" << 0 << ", " << 0 << ")";
+}
