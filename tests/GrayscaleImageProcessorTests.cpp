@@ -222,3 +222,33 @@ TEST_F(GrayscaleImageProcessorTest, HorizontalFlipTest) {
         }
     }
 }
+
+TEST_F(GrayscaleImageProcessorTest, VerticalFlipTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 1;
+    cv::Mat imageAfterFlip = grayscaleImageProcessor->flipVertically(blackImageGrayscale);
+    ASSERT_FALSE(imageAfterFlip.empty()) << "The imageAfterFlip should not be empty.";
+
+    for (int row = 0; row < blackImageGrayscale.rows; row++) {
+        for (int col = 0; col < blackImageGrayscale.cols; col++) {
+            int originalPixel = blackImageGrayscale.at<uchar>(blackImageGrayscale.rows - 1 - row, col);
+            int modifiedPixel = imageAfterFlip.at<uchar>(row, col);
+            EXPECT_EQ(originalPixel, modifiedPixel)
+                << "Mismatch at pixel (" << row << ", " << col << ")";
+        }
+    }
+}
+
+TEST_F(GrayscaleImageProcessorTest, DiagonalFlipTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 1;
+    cv::Mat imageAfterFlip = grayscaleImageProcessor->flipDiagonally(blackImageGrayscale);
+    ASSERT_FALSE(imageAfterFlip.empty()) << "The imageAfterFlip should not be empty.";
+
+    for (int row = 0; row < blackImageGrayscale.rows; row++) {
+        for (int col = 0; col < blackImageGrayscale.cols; col++) {
+            int originalPixel = blackImageGrayscale.at<uchar>(blackImageGrayscale.rows - 1 - row, blackImageGrayscale.cols - 1 - col);
+            int modifiedPixel = imageAfterFlip.at<uchar>(row, col);
+            EXPECT_EQ(originalPixel, modifiedPixel)
+                << "Mismatch at pixel (" << row << ", " << col << ")";
+        }
+    }
+}

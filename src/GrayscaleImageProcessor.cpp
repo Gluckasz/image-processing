@@ -96,19 +96,21 @@ cv::Mat GrayscaleImageProcessor::flipHorizontally(cv::Mat image) {
 }
 
 cv::Mat GrayscaleImageProcessor::flipVertically(cv::Mat image) {
-    for (int x = 0; x < image.rows / 2; x++) {
-        for (int y = 0; y < image.cols; y++) {
-            uchar temp = image.at<uchar>(x, y);
-            image.at<uchar>(x, y) = image.at<uchar>(image.rows - x - 1, y);
-            image.at<uchar>(image.rows - x - 1, y)= temp;
+    cv::Mat result = image.clone();
+    for (int x = 0; x < result.rows / 2; x++) {
+        for (int y = 0; y < result.cols; y++) {
+            uchar temp = result.at<uchar>(x, y);
+            result.at<uchar>(x, y) = result.at<uchar>(result.rows - x - 1, y);
+            result.at<uchar>(result.rows - x - 1, y)= temp;
         }
     }
-    return image;
+    return result;
 }
 
 cv::Mat GrayscaleImageProcessor::flipDiagonally(cv::Mat image) {
-    image = this->flipHorizontally(image);
-    return this->flipVertically(image);
+    cv::Mat result = image.clone();
+    result = this->flipHorizontally(result);
+    return this->flipVertically(result);
 }
 
 cv::Mat GrayscaleImageProcessor::resize(cv::Mat image, float factor) {
