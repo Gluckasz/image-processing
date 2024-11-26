@@ -84,7 +84,7 @@ cv::Mat GrayscaleImageProcessor::negative(cv::Mat image) {
 }
 
 cv::Mat GrayscaleImageProcessor::flipHorizontally(cv::Mat image) {
-    cv::Mat result = image.clone();
+    cv::Mat resultUpdated .gitignore to include coverage directory = image.clone();
     for (int x = 0; x < result.rows; x++) {
         for (int y = 0; y < result.cols / 2; y++) {
             uchar temp = result.at<uchar>(x, y);
@@ -183,76 +183,32 @@ cv::Mat GrayscaleImageProcessor::arithmeticMeanFilter(cv::Mat image, int kernelS
     return newImage;
 }
 
-float computeMSEGrayscale(cv::Mat compareImage, cv::Mat secondImage) {
+float GrayscaleImageProcessor::meanSquareError(cv::Mat originalImage, cv::Mat newImage) {
     int squareDistanceSum = 0;
 
-    for (int y = 0; y < compareImage.cols; y++) {
-        for (int x = 0; x < compareImage.rows; x++) {
-            squareDistanceSum += pow(compareImage.at<uchar>(y, x) - secondImage.at<uchar>(y, x) , 2);
+    for (int y = 0; y < originalImage.cols; y++) {
+        for (int x = 0; x < originalImage.rows; x++) {
+            squareDistanceSum += pow(originalImage.at<uchar>(y, x) - newImage.at<uchar>(y, x) , 2);
         }
     }
 
     return static_cast<float>(squareDistanceSum)
-    / static_cast<float>(compareImage.cols)
-    / static_cast<float>(compareImage.rows);
+    / static_cast<float>(originalImage.cols)
+    / static_cast<float>(originalImage.rows);
 }
 
-std::string GrayscaleImageProcessor::meanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
-    if (compareImage.rows != originalImage.rows) {
-        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
-    }
-    float mseBefore = computeMSEGrayscale(compareImage, originalImage);
+float GrayscaleImageProcessor::peakMeanSquareError(cv::Mat originalImage, cv::Mat newImage) {
+    uchar max = 0;
 
-    if (compareImage.rows != newImage.rows) {
-        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
-    }
-
-    float mseAfter= computeMSEGrayscale(compareImage, newImage);
-
-    std::stringstream ss;
-    ss << "Mean square error before denoising: " << mseBefore << "\n"
-    << "Mean square error after denoising: " << mseAfter << "\n";
-
-    return ss.str();
-}
-
-float computeMSEAndSetMaxGrayscale(cv::Mat compareImage, cv::Mat secondImage, uchar &max) {
-    int squareDistanceSum = 0;
-
-    for (int y = 0; y < compareImage.cols; y++) {
-        for (int x = 0; x < compareImage.rows; x++) {
-            squareDistanceSum += pow(compareImage.at<uchar>(y, x) - secondImage.at<uchar>(y, x) , 2);
-            if (compareImage.at<uchar>(y, x) > max) {
-                max = compareImage.at<uchar>(y, x);
+    for (int y = 0; y < originalImage.cols; y++) {
+        for (int x = 0; x < originalImage.rows; x++) {
+            if (originalImage.at<uchar>(y, x) > max) {
+                max = originalImage.at<uchar>(y, x);
             }
         }
     }
-    return static_cast<float>(squareDistanceSum)
-    / static_cast<float>(compareImage.cols)
-    / static_cast<float>(compareImage.rows);
-}
-
-std::string GrayscaleImageProcessor::peakMeanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
-    uchar max = 0;
-
-    if (compareImage.rows != originalImage.rows) {
-        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
-    }
-    float pmseBefore = computeMSEAndSetMaxGrayscale(compareImage, originalImage, max)
+    return this->meanSquareError(originalImage, newImage)
     / static_cast<float>(pow(max, 2));
-
-
-    if (compareImage.rows != newImage.rows) {
-        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
-    }
-    float pmseAfter= computeMSEGrayscale(compareImage, newImage)
-    / static_cast<float>(pow(max, 2));
-
-    std::stringstream ss;
-    ss << "Peak mean square error before denoising: " << pmseBefore << "\n"
-    << "Peak mean square error after denoising: " << pmseAfter << "\n";
-
-    return ss.str();
 }
 
 int computeSquareSumGrayscale(cv::Mat image) {
@@ -267,9 +223,13 @@ int computeSquareSumGrayscale(cv::Mat image) {
     return sum;
 }
 
-std::string GrayscaleImageProcessor::signalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
-    if (compareImage.rows != originalImage.rows) {
-        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
+float GrayscaleImageProcessor::signalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) {
+    int sum = 0;
+
+    for (int y = 0; y < originalImage.cols; y++) {
+        for (int x = 0; x < originalImage.rows; x++) {
+            sum += pow(originalImage.at<uchar>(y, x), 2);
+        }
     }
 
     auto squareSum = static_cast<float>(computeSquareSumGrayscale(compareImage));

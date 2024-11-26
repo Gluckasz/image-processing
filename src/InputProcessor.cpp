@@ -417,20 +417,20 @@ void InputProcessor::calculateAndSaveComparisonImageStatistics(
     std::stringstream ss;
     ss << "Comparison image stats:\n";
     if (isMeanSquareError)
-        ss << imageProcessor->meanSquareError(
-            compareImage, originalImage, newImage);
+        ss << "Mean square error before denoising: " << imageProcessor->meanSquareError(compareImage, originalImage) << "\n"
+        << "Mean square error after denoising: " << imageProcessor->meanSquareError(originalImage, newImage) << "\n";
     if (isPeakMeanSquareError)
-        ss << imageProcessor->peakMeanSquareError(
-            compareImage, originalImage, newImage);
+        ss << "Peak mean square error before denoising: " << imageProcessor->peakMeanSquareError(compareImage, originalImage) << "\n"
+    << "Peak mean square error after denoising: " << imageProcessor->peakMeanSquareError(originalImage, newImage) << "\n";
     if (isSignalToNoise)
-        ss << imageProcessor->signalToNoiseRatio(
-            compareImage, originalImage, newImage);
+        ss << "Signal to noise ratio before denoising: " << imageProcessor->signalToNoiseRatio(compareImage, originalImage) << "\n"
+    << "Signal to noise ratio after denoising: " << imageProcessor->signalToNoiseRatio(originalImage, newImage) << "\n";
     if (isPeakSignalToNoise)
-        ss << imageProcessor->peakSignalToNoiseRatio(
-            compareImage, originalImage, newImage);
+        ss << "Signal to noise ratio before denoising: " << imageProcessor->peakSignalToNoiseRatio(compareImage, originalImage) << "\n"
+    << "Signal to noise ratio after denoising: " << imageProcessor->peakSignalToNoiseRatio(originalImage, newImage) << "\n";
     if (isMaximumDifference)
-        ss << imageProcessor->maximumDifference(
-            compareImage, originalImage, newImage);
+        ss << "Signal to noise ratio before denoising: " << imageProcessor->maximumDifference(compareImage, originalImage) << "\n"
+    << "Signal to noise ratio after denoising: " << imageProcessor->maximumDifference(originalImage, newImage) << "\n";
     std::ofstream statsFile;
     statsFile.open(
         OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + "_comparison_stats" + ".txt");

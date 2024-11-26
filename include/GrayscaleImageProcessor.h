@@ -84,11 +84,11 @@ public:
      * @return image after applying the filter.
      */
     cv::Mat arithmeticMeanFilter(cv::Mat image, int kernelSize) override;
-    std::string meanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
-    std::string peakMeanSquareError(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
-    std::string signalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
-    std::string peakSignalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
-    std::string maximumDifference(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) override;
+    float meanSquareError(cv::Mat originalImage, cv::Mat newImage) override;
+    float peakMeanSquareError(cv::Mat originalImage, cv::Mat newImage) override;
+    float signalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) override;
+    float peakSignalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) override;
+    float maximumDifference(cv::Mat originalImage, cv::Mat newImage) override;
 
     std::array<uint, UCHAR_MAX + 1> computeHistogram(cv::Mat image, int histogramChanngel, uint& histogramMaxVal) override;
     cv::Mat histogram(cv::Mat image, int histogramChannel) override;
