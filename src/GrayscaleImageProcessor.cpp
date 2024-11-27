@@ -84,7 +84,7 @@ cv::Mat GrayscaleImageProcessor::negative(cv::Mat image) {
 }
 
 cv::Mat GrayscaleImageProcessor::flipHorizontally(cv::Mat image) {
-    cv::Mat resultUpdated .gitignore to include coverage directory = image.clone();
+    cv::Mat result = image.clone();
     for (int x = 0; x < result.rows; x++) {
         for (int y = 0; y < result.cols / 2; y++) {
             uchar temp = result.at<uchar>(x, y);
@@ -183,149 +183,81 @@ cv::Mat GrayscaleImageProcessor::arithmeticMeanFilter(cv::Mat image, int kernelS
     return newImage;
 }
 
-float GrayscaleImageProcessor::meanSquareError(cv::Mat originalImage, cv::Mat newImage) {
+double GrayscaleImageProcessor::meanSquareError(cv::Mat originalImage, cv::Mat newImage) {
     int squareDistanceSum = 0;
 
-    for (int y = 0; y < originalImage.cols; y++) {
-        for (int x = 0; x < originalImage.rows; x++) {
-            squareDistanceSum += pow(originalImage.at<uchar>(y, x) - newImage.at<uchar>(y, x) , 2);
+    for (int x = 0; x < originalImage.cols; x++) {
+        for (int y = 0; y < originalImage.rows; y++) {
+            squareDistanceSum += pow(originalImage.at<uchar>(x, y) - newImage.at<uchar>(x, y) , 2);
         }
     }
 
-    return static_cast<float>(squareDistanceSum)
-    / static_cast<float>(originalImage.cols)
-    / static_cast<float>(originalImage.rows);
+    return static_cast<double>(squareDistanceSum)
+    / static_cast<double>(originalImage.cols)
+    / static_cast<double>(originalImage.rows);
 }
 
-float GrayscaleImageProcessor::peakMeanSquareError(cv::Mat originalImage, cv::Mat newImage) {
+double GrayscaleImageProcessor::peakMeanSquareError(cv::Mat originalImage, cv::Mat newImage) {
     uchar max = 0;
 
-    for (int y = 0; y < originalImage.cols; y++) {
-        for (int x = 0; x < originalImage.rows; x++) {
-            if (originalImage.at<uchar>(y, x) > max) {
-                max = originalImage.at<uchar>(y, x);
+    for (int x = 0; x < originalImage.cols; x++) {
+        for (int y = 0; y < originalImage.rows; y++) {
+            if (originalImage.at<uchar>(x, y) > max) {
+                max = originalImage.at<uchar>(x, y);
             }
         }
     }
     return this->meanSquareError(originalImage, newImage)
-    / static_cast<float>(pow(max, 2));
+    / pow(max, 2);
 }
 
-int computeSquareSumGrayscale(cv::Mat image) {
-    int sum = 0;
+double GrayscaleImageProcessor::signalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) {
+    double squareSum = 0;
 
-    for (int y = 0; y < image.cols; y++) {
-        for (int x = 0; x < image.rows; x++) {
-            sum += pow(image.at<uchar>(y, x), 2);
+    for (int x = 0; x < originalImage.cols; x++) {
+        for (int y = 0; y < originalImage.rows; y++) {
+            squareSum += pow(originalImage.at<uchar>(x, y), 2);
         }
     }
 
-    return sum;
-}
-
-float GrayscaleImageProcessor::signalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) {
-    int sum = 0;
-
-    for (int y = 0; y < originalImage.cols; y++) {
-        for (int x = 0; x < originalImage.rows; x++) {
-            sum += pow(originalImage.at<uchar>(y, x), 2);
-        }
-    }
-
-    auto squareSum = static_cast<float>(computeSquareSumGrayscale(compareImage));
-
-    float snrBefore = 10 * std::log10(
+    return 10 * std::log10(
         squareSum
-        / computeMSEGrayscale(compareImage, originalImage));
-
-
-    if (compareImage.rows != newImage.rows) {
-        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
-    }
-
-    float snrAfter = 10 * std::log10(
-        squareSum
-        / computeMSEGrayscale(compareImage, newImage));
-
-    std::stringstream ss;
-    ss << "Signal to noise ratio before denoising: " << snrBefore << "\n"
-    << "Signal to noise ratio after denoising: " << snrAfter << "\n";
-
-    return ss.str();
+        / this->meanSquareError(originalImage, newImage));
 }
 
-unsigned long long  computeMaxSquareSumGrayscale(uchar max, int rows, int cols) {
-    unsigned long long  sum = 0;
-    for (int y = 0; y < cols; y++) {
-        for (int x = 0; x < rows; x++) {
-            sum += pow(static_cast<int>(max), 2);
-        }
-    }
-    return sum;
-}
-
-std::string GrayscaleImageProcessor::peakSignalToNoiseRatio(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
-    if (compareImage.rows != originalImage.rows) {
-        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
-    }
+double GrayscaleImageProcessor::peakSignalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) {
     uchar max = 0;
-
-    float mse = computeMSEAndSetMaxGrayscale(compareImage, originalImage, max);
-    auto maxSquareSum = static_cast<float>(computeMaxSquareSumGrayscale(max, compareImage.rows, compareImage.cols));
-
-    float psnrBefore = 10 * std::log10(
-        maxSquareSum
-        / mse);
-
-
-    if (compareImage.rows != newImage.rows) {
-        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
-    }
-
-    float psnrAfter = 10 * std::log10(
-        maxSquareSum
-        / computeMSEGrayscale(compareImage, newImage));
-
-    std::stringstream ss;
-    ss << "Peak signal to noise ratio before denoising: " << psnrBefore << "\n"
-    << "Peak signal to noise ratio after denoising: " << psnrAfter << "\n";
-
-    return ss.str();
-}
-
-uchar computeMaxGrayscale(cv::Mat image) {
-    uchar max = 0;
-    for (int y = 0; y < image.cols; y++) {
-        for (int x = 0; x < image.rows; x++) {
-            if (max < image.at<uchar>(y, x)) {
-                max = image.at<uchar>(y, x);
+    for (int x = 0; x < originalImage.cols; x++) {
+        for (int y = 0; y < originalImage.rows; y++) {
+            if (originalImage.at<uchar>(x, y) > max) {
+                max = originalImage.at<uchar>(x, y);
             }
         }
     }
 
-    return max;
+    unsigned long long  maxSquareSum = 0;
+    for (int x = 0; x < originalImage.cols; x++) {
+        for (int y = 0; y < originalImage.rows; y++) {
+            maxSquareSum += pow(static_cast<int>(max), 2);
+        }
+    }
+
+    return 10 * std::log10(
+        maxSquareSum
+        / this->meanSquareError(originalImage, newImage));
 }
 
-std::string GrayscaleImageProcessor::maximumDifference(cv::Mat compareImage, cv::Mat originalImage, cv::Mat newImage) {
-    if (compareImage.rows != originalImage.rows) {
-        originalImage = this->resize(originalImage, static_cast<float>(compareImage.rows) / static_cast<float>(originalImage.rows));
+
+double GrayscaleImageProcessor::maximumDifference(cv::Mat originalImage, cv::Mat newImage) {
+    uchar maxDifference = 0;
+    for (int x = 0; x < originalImage.cols; x++) {
+        for (int y = 0; y < originalImage.rows; y++) {
+            if (std::abs(originalImage.at<uchar>(x, y) - newImage.at<uchar>(x, y)) > maxDifference) {
+                maxDifference = std::abs(originalImage.at<uchar>(x, y) - newImage.at<uchar>(x, y));
+            }
+        }
     }
-
-    uchar compareImageMax = computeMaxGrayscale(compareImage);
-
-    int maxDifferenceBefore = abs(compareImageMax - computeMaxGrayscale(originalImage));
-
-    if (compareImage.rows != newImage.rows) {
-        newImage = this->resize(newImage, static_cast<float>(compareImage.rows) / static_cast<float>(newImage.rows));
-    }
-
-    int maxDifferenceAfter = abs(compareImageMax - computeMaxGrayscale(newImage));
-
-    std::stringstream ss;
-    ss << "Maximum difference before denoising: " << maxDifferenceBefore << "\n"
-    << "Maximum difference after denoising: " << maxDifferenceAfter << "\n";
-
-    return ss.str();
+    return maxDifference;
 }
 
 std::array<uint, UCHAR_MAX + 1> GrayscaleImageProcessor::computeHistogram(cv::Mat image, int histogramChannel, uint& histogramMaxVal) {

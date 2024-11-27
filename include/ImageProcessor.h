@@ -21,11 +21,11 @@ public:
     virtual cv::Mat resize(cv::Mat image, float factor) = 0;
     virtual cv::Mat midpointFilter(cv::Mat image, int kernelSize) = 0;
     virtual cv::Mat arithmeticMeanFilter(cv::Mat image, int kernelSize) = 0;
-    virtual float meanSquareError(cv::Mat originalImage, cv::Mat newImage) = 0;
-    virtual float peakMeanSquareError(cv::Mat originalImage, cv::Mat newImage) = 0;
-    virtual float signalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) = 0;
-    virtual float peakSignalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) = 0;
-    virtual float maximumDifference(cv::Mat originalImage, cv::Mat newImage) = 0;
+    virtual double meanSquareError(cv::Mat originalImage, cv::Mat newImage) = 0;
+    virtual double peakMeanSquareError(cv::Mat originalImage, cv::Mat newImage) = 0;
+    virtual double signalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) = 0;
+    virtual double peakSignalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) = 0;
+    virtual double maximumDifference(cv::Mat originalImage, cv::Mat newImage) = 0;
     virtual std::array<uint, UCHAR_MAX + 1> computeHistogram(cv::Mat image, int histogramChanngel, uint& histogramMaxVal) = 0;
     virtual cv::Mat histogram(cv::Mat image, int histogramChannel) = 0;
     virtual cv::Mat histogramUniform(cv::Mat image, int gMax, int gMin) = 0;
