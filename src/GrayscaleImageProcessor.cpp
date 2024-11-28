@@ -321,12 +321,13 @@ cv::Mat GrayscaleImageProcessor::histogramUniform(cv::Mat image, int gMax, int g
             );
     }
 
-    for (int x = 0; x < image.rows; x++) {
-        for (int y = 0; y < image.cols; y++) {
-            image.at<uchar>(x, y) = lut[image.at<uchar>(x, y)];
+    cv::Mat result = image.clone();
+    for (int x = 0; x < result.rows; x++) {
+        for (int y = 0; y < result.cols; y++) {
+            result.at<uchar>(x, y) = lut[result.at<uchar>(x, y)];
         }
     }
-    return image;
+    return result;
 }
 
 double GrayscaleImageProcessor::mean(std::array<uint, UCHAR_MAX + 1> imageHistogram) {

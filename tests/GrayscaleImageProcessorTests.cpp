@@ -365,3 +365,17 @@ TEST_F(GrayscaleImageProcessorTest, HistogramTest) {
         }
     }
 }
+
+TEST_F(GrayscaleImageProcessorTest, HistogramUniformTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 1;
+    blackImageGrayscale.at<uchar>(0, 1) = 1;
+    blackImageGrayscale.at<uchar>(1, 0) = 254;
+    blackImageGrayscale.at<uchar>(1, 1) = 254;
+    cv::Mat imageAfterModification = grayscaleImageProcessor->histogramUniform(blackImageGrayscale, 255, 0);
+    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
+
+    EXPECT_EQ(128, imageAfterModification.at<uchar>(0, 0));
+    EXPECT_EQ(128, imageAfterModification.at<uchar>(0, 1));
+    EXPECT_EQ(255, imageAfterModification.at<uchar>(1, 0));
+    EXPECT_EQ(255, imageAfterModification.at<uchar>(1, 1));
+}
