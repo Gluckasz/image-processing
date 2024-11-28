@@ -379,3 +379,99 @@ TEST_F(GrayscaleImageProcessorTest, HistogramUniformTest) {
     EXPECT_EQ(255, imageAfterModification.at<uchar>(1, 0));
     EXPECT_EQ(255, imageAfterModification.at<uchar>(1, 1));
 }
+
+TEST_F(GrayscaleImageProcessorTest, MeanTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 10;
+    blackImageGrayscale.at<uchar>(0, 1) = 20;
+    blackImageGrayscale.at<uchar>(1, 0) = 30;
+    blackImageGrayscale.at<uchar>(1, 1) = 40;
+    uint temp = 0;
+    std::array<uint, UCHAR_MAX + 1> histogram = grayscaleImageProcessor->computeHistogram(blackImageGrayscale, 0 , temp);
+    double mean = grayscaleImageProcessor->mean(histogram);
+
+    EXPECT_EQ(25, mean);
+}
+
+TEST_F(GrayscaleImageProcessorTest, VarianceTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 10;
+    blackImageGrayscale.at<uchar>(0, 1) = 20;
+    blackImageGrayscale.at<uchar>(1, 0) = 30;
+    blackImageGrayscale.at<uchar>(1, 1) = 40;
+    uint temp = 0;
+    std::array<uint, UCHAR_MAX + 1> histogram = grayscaleImageProcessor->computeHistogram(blackImageGrayscale, 0 , temp);
+    double variance = grayscaleImageProcessor->variance(histogram);
+
+    EXPECT_EQ(125, variance);
+}
+
+TEST_F(GrayscaleImageProcessorTest, StandardDeviationTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 10;
+    blackImageGrayscale.at<uchar>(0, 1) = 20;
+    blackImageGrayscale.at<uchar>(1, 0) = 30;
+    blackImageGrayscale.at<uchar>(1, 1) = 40;
+    uint temp = 0;
+    std::array<uint, UCHAR_MAX + 1> histogram = grayscaleImageProcessor->computeHistogram(blackImageGrayscale, 0 , temp);
+    double std = grayscaleImageProcessor->standardDeviation(histogram);
+
+    EXPECT_EQ(sqrt(125), std);
+}
+
+TEST_F(GrayscaleImageProcessorTest, Variation1Test) {
+    blackImageGrayscale.at<uchar>(0, 0) = 10;
+    blackImageGrayscale.at<uchar>(0, 1) = 20;
+    blackImageGrayscale.at<uchar>(1, 0) = 30;
+    blackImageGrayscale.at<uchar>(1, 1) = 40;
+    uint temp = 0;
+    std::array<uint, UCHAR_MAX + 1> histogram = grayscaleImageProcessor->computeHistogram(blackImageGrayscale, 0 , temp);
+    double var1 = grayscaleImageProcessor->variation1(histogram);
+
+    EXPECT_EQ(5, var1);
+}
+
+TEST_F(GrayscaleImageProcessorTest, AsymmetryTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 10;
+    blackImageGrayscale.at<uchar>(0, 1) = 20;
+    blackImageGrayscale.at<uchar>(1, 0) = 30;
+    blackImageGrayscale.at<uchar>(1, 1) = 40;
+    uint temp = 0;
+    std::array<uint, UCHAR_MAX + 1> histogram = grayscaleImageProcessor->computeHistogram(blackImageGrayscale, 0 , temp);
+    double asym = grayscaleImageProcessor->asymmetry(histogram);
+
+    EXPECT_EQ(0, asym);
+}
+
+TEST_F(GrayscaleImageProcessorTest, FlatteningTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 10;
+    blackImageGrayscale.at<uchar>(0, 1) = 20;
+    blackImageGrayscale.at<uchar>(1, 0) = 30;
+    blackImageGrayscale.at<uchar>(1, 1) = 40;
+    uint temp = 0;
+    std::array<uint, UCHAR_MAX + 1> histogram = grayscaleImageProcessor->computeHistogram(blackImageGrayscale, 0 , temp);
+    double flat = grayscaleImageProcessor->flattening(histogram);
+
+    EXPECT_EQ(-1.36, flat);
+}
+
+TEST_F(GrayscaleImageProcessorTest, Variation2Test) {
+    blackImageGrayscale.at<uchar>(0, 0) = 10;
+    blackImageGrayscale.at<uchar>(0, 1) = 20;
+    blackImageGrayscale.at<uchar>(1, 0) = 30;
+    blackImageGrayscale.at<uchar>(1, 1) = 40;
+    uint temp = 0;
+    std::array<uint, UCHAR_MAX + 1> histogram = grayscaleImageProcessor->computeHistogram(blackImageGrayscale, 0 , temp);
+    double var2 = grayscaleImageProcessor->variation2(histogram);
+
+    EXPECT_EQ(0.25, var2);
+}
+
+TEST_F(GrayscaleImageProcessorTest, EntropyTest) {
+    blackImageGrayscale.at<uchar>(0, 0) = 10;
+    blackImageGrayscale.at<uchar>(0, 1) = 20;
+    blackImageGrayscale.at<uchar>(1, 0) = 30;
+    blackImageGrayscale.at<uchar>(1, 1) = 40;
+    uint temp = 0;
+    std::array<uint, UCHAR_MAX + 1> histogram = grayscaleImageProcessor->computeHistogram(blackImageGrayscale, 0 , temp);
+    double ent = grayscaleImageProcessor->entropy(histogram);
+
+    EXPECT_EQ(2, ent);
+}
