@@ -90,7 +90,7 @@ public:
     double peakSignalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) override;
     double maximumDifference(cv::Mat originalImage, cv::Mat newImage) override;
 
-    std::array<uint, UCHAR_MAX + 1> computeHistogram(cv::Mat image, int histogramChanngel, uint& histogramMaxVal) override;
+    std::array<uint, UCHAR_MAX + 1> computeHistogram(cv::Mat image, int histogramChannel, uint& histogramMaxVal) override;
     cv::Mat histogram(cv::Mat image, int histogramChannel) override;
 
     cv::Mat histogramUniform(cv::Mat image, int gMax, int gMin) override;

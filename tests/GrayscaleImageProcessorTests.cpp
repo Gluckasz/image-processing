@@ -338,3 +338,30 @@ TEST_F(GrayscaleImageProcessorTest, MaximumDifferenceTest) {
     double expectedValue = 255;
     EXPECT_EQ(expectedValue, md);
 }
+
+TEST_F(GrayscaleImageProcessorTest, ComputeHistogramTest) {
+    uint temp = 0;
+    std::array<uint, UCHAR_MAX + 1> histogram = grayscaleImageProcessor->computeHistogram(whiteImageGrayscale, 0 , temp);
+    ASSERT_EQ(histogram[UCHAR_MAX], 4);
+    for (int i = 0; i < UCHAR_MAX; i++) {
+        EXPECT_EQ(histogram[i], 0);
+    }
+}
+
+TEST_F(GrayscaleImageProcessorTest, HistogramTest) {
+    cv::Mat histogram = grayscaleImageProcessor->histogram(whiteImageGrayscale, 0);
+    ASSERT_EQ(4, histogram.rows);
+    ASSERT_EQ(2056 , histogram.cols);
+    for (int y = 255 * 8; y < histogram.cols; y++) {
+        for (int x = 4; x < histogram.rows; x++) {
+            EXPECT_EQ(histogram.at<uchar>(x, y), 255)
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+        }
+    }
+    for (int y = 0; y < 255 * 8; y++) {
+        for (int x = 0; x < histogram.rows; x++) {
+            EXPECT_EQ(histogram.at<uchar>(x, y), 0)
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+        }
+    }
+}

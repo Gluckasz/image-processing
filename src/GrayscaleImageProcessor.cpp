@@ -293,7 +293,7 @@ cv::Mat GrayscaleImageProcessor::histogram(cv::Mat image, int histogramChannel) 
     uint histogramWidth = 256 * widthFactor;
     cv::Mat histogramImage = cv::Mat::zeros(histogramHeight, histogramWidth + widthFactor, CV_8UC1);
     for (int y = 0; y < histogramWidth; y++) {
-        for (int x = widthFactor / 2; x < histogram[y / widthFactor]; x++) {
+        for (int x = 0; x < histogram[y / widthFactor]; x++) {
             histogramImage.at<uchar>(histogramHeight - x - 1, y) = 255;
         }
     }
