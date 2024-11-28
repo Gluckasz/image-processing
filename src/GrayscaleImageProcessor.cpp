@@ -213,16 +213,19 @@ double GrayscaleImageProcessor::peakMeanSquareError(cv::Mat originalImage, cv::M
 
 double GrayscaleImageProcessor::signalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) {
     double squareSum = 0;
+    double se = 0;
 
     for (int x = 0; x < originalImage.cols; x++) {
         for (int y = 0; y < originalImage.rows; y++) {
             squareSum += pow(originalImage.at<uchar>(x, y), 2);
+            se += pow(originalImage.at<uchar>(x, y) - newImage.at<uchar>(x, y) , 2);
         }
     }
 
     return 10 * std::log10(
         squareSum
-        / this->meanSquareError(originalImage, newImage));
+        / se
+        );
 }
 
 double GrayscaleImageProcessor::peakSignalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) {
@@ -236,15 +239,17 @@ double GrayscaleImageProcessor::peakSignalToNoiseRatio(cv::Mat originalImage, cv
     }
 
     unsigned long long  maxSquareSum = 0;
+    double se = 0;
     for (int x = 0; x < originalImage.cols; x++) {
         for (int y = 0; y < originalImage.rows; y++) {
             maxSquareSum += pow(static_cast<int>(max), 2);
+            se += pow(originalImage.at<uchar>(x, y) - newImage.at<uchar>(x, y) , 2);
         }
     }
 
     return 10 * std::log10(
         maxSquareSum
-        / this->meanSquareError(originalImage, newImage));
+        / se);
 }
 
 

@@ -303,3 +303,38 @@ TEST_F(GrayscaleImageProcessorTest, ArithmeticMeanFilterTest) {
     EXPECT_EQ(expectedValue, modifiedPixel)
         << "Mismatch at pixel (" << 0 << ", " << 0 << ")";
 }
+
+TEST_F(GrayscaleImageProcessorTest, MeanSquareErrorTest) {
+    double mse = grayscaleImageProcessor->meanSquareError(blackImageGrayscale, whiteImageGrayscale);
+
+    double expectedValue = pow(255, 2);
+    EXPECT_EQ(expectedValue, mse);
+}
+
+TEST_F(GrayscaleImageProcessorTest, PeakMeanSquareErrorTest) {
+    double pmse = grayscaleImageProcessor->peakMeanSquareError(whiteImageGrayscale, blackImageGrayscale);
+
+    double expectedValue = 1;
+    EXPECT_EQ(expectedValue, pmse);
+}
+
+TEST_F(GrayscaleImageProcessorTest, SignalToNoiseRatioTest) {
+    double snr = grayscaleImageProcessor->signalToNoiseRatio(whiteImageGrayscale, blackImageGrayscale);
+
+    double expectedValue = 10 * std::log10(1);
+    EXPECT_EQ(expectedValue, snr);
+}
+
+TEST_F(GrayscaleImageProcessorTest, PeakSignalToNoiseRatioTest) {
+    double psnr = grayscaleImageProcessor->peakSignalToNoiseRatio(whiteImageGrayscale, blackImageGrayscale);
+
+    double expectedValue = 10 * std::log10(1);
+    EXPECT_EQ(expectedValue, psnr);
+}
+
+TEST_F(GrayscaleImageProcessorTest, MaximumDifferenceTest) {
+    double md = grayscaleImageProcessor->maximumDifference(whiteImageGrayscale, blackImageGrayscale);
+
+    double expectedValue = 255;
+    EXPECT_EQ(expectedValue, md);
+}
