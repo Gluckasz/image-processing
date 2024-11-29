@@ -491,9 +491,39 @@ TEST_F(GrayscaleImageProcessorTest, LaplacianFilterTest) {
     for (int x = 0; x < imageAfterModification.rows; x++) {
         for (int y = 0; y < imageAfterModification.cols; y++) {
             if (x == 1 && y == 1)
-                EXPECT_EQ(80, imageAfterModification.at<uchar>(x, y));
+                EXPECT_EQ(80, imageAfterModification.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
             else
-                EXPECT_EQ(40, imageAfterModification.at<uchar>(x, y));
+                EXPECT_EQ(40, imageAfterModification.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+        }
+    }
+
+    imageAfterModification = grayscaleImageProcessor->laplacianFilter(largerBlackImageGrayscale, 1);
+    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
+
+    for (int x = 0; x < imageAfterModification.rows; x++) {
+        for (int y = 0; y < imageAfterModification.cols; y++) {
+            if (x == 1 && y == 1)
+                EXPECT_EQ(240, imageAfterModification.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+            else
+                EXPECT_EQ(80, imageAfterModification.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+        }
+    }
+
+    imageAfterModification = grayscaleImageProcessor->laplacianFilter(largerBlackImageGrayscale, 2);
+    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
+
+    for (int x = 0; x < imageAfterModification.rows; x++) {
+        for (int y = 0; y < imageAfterModification.cols; y++) {
+            if (x == 1 && y == 1)
+                EXPECT_EQ(0, imageAfterModification.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+            else
+                EXPECT_EQ(40, imageAfterModification.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
         }
     }
 }
@@ -511,9 +541,32 @@ TEST_F(GrayscaleImageProcessorTest, OptimizedLaplacianFilterTest) {
     for (int x = 0; x < imageAfterModification.rows; x++) {
         for (int y = 0; y < imageAfterModification.cols; y++) {
             if (x == 1 && y == 1)
-                EXPECT_EQ(80, imageAfterModification.at<uchar>(x, y));
+                EXPECT_EQ(80, imageAfterModification.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
             else
-                EXPECT_EQ(40, imageAfterModification.at<uchar>(x, y));
+                EXPECT_EQ(40, imageAfterModification.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
         }
     }
+}
+
+TEST_F(GrayscaleImageProcessorTest, RobertsOperator1Test) {
+    largerBlackImageGrayscale.at<uchar>(0, 1) = 20;
+    largerBlackImageGrayscale.at<uchar>(1, 0) = 20;
+    largerBlackImageGrayscale.at<uchar>(1, 1) = 40;
+    largerBlackImageGrayscale.at<uchar>(2, 1) = 20;
+    largerBlackImageGrayscale.at<uchar>(1, 2) = 20;
+
+    cv::Mat imageAfterModification = grayscaleImageProcessor->robertsOperator1(largerBlackImageGrayscale);
+    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
+
+    EXPECT_EQ(40, imageAfterModification.at<uchar>(0, 0));
+    EXPECT_EQ(40, imageAfterModification.at<uchar>(1, 0));
+    EXPECT_EQ(40, imageAfterModification.at<uchar>(0, 1));
+    EXPECT_EQ(40, imageAfterModification.at<uchar>(1, 1));
+    EXPECT_EQ(0, imageAfterModification.at<uchar>(0, 2));
+    EXPECT_EQ(0, imageAfterModification.at<uchar>(2, 0));
+    EXPECT_EQ(20, imageAfterModification.at<uchar>(2, 1));
+    EXPECT_EQ(20, imageAfterModification.at<uchar>(1, 2));
+    EXPECT_EQ(0, imageAfterModification.at<uchar>(2, 2));
 }

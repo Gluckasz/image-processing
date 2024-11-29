@@ -444,6 +444,7 @@ cv::Mat GrayscaleImageProcessor::laplacianFilter(cv::Mat image, int laplaceMask)
     }
 
     cv::Mat paddedImage = padImageGrayscale(image, 1);
+    cv::Mat result = image.clone();
     for (int x = 1; x < paddedImage.rows - 1; x++) {
         for (int y = 1; y < paddedImage.cols - 1; y++) {
             int convolutionValue = 0;
@@ -454,11 +455,11 @@ cv::Mat GrayscaleImageProcessor::laplacianFilter(cv::Mat image, int laplaceMask)
             }
             convolutionValue = std::min(std::abs(convolutionValue), 255);
 
-            image.at<uchar>(x - 1, y - 1) = convolutionValue;
+            result.at<uchar>(x - 1, y - 1) = convolutionValue;
         }
     }
 
-    return image;
+    return result;
 }
 
 cv::Mat GrayscaleImageProcessor::optimizedLaplacianFilter(cv::Mat image) {
@@ -480,13 +481,14 @@ cv::Mat GrayscaleImageProcessor::optimizedLaplacianFilter(cv::Mat image) {
 }
 
 cv::Mat GrayscaleImageProcessor::robertsOperator1(cv::Mat image) {
+    cv::Mat result = image.clone();
     for (int x = 0; x < image.rows - 1; x++) {
         for (int y = 0; y < image.cols - 1; y++) {
-            image.at<uchar>(x, y) = std::min(std::abs(static_cast<int>(sqrt(
+            result.at<uchar>(x, y) = std::min(std::abs(static_cast<int>(sqrt(
                 pow(image.at<uchar>(x, y) - image.at<uchar>(x + 1, y + 1), 2)
                 + pow(image.at<uchar>(x, y + 1) - image.at<uchar>(x + 1, y), 2)
                 ))), 255);
         }
     }
-    return image;
+    return result;
 }
