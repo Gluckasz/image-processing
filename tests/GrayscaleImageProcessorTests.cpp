@@ -10,11 +10,13 @@ protected:
     GrayscaleImageProcessorTest() {
         grayscaleImageProcessor = std::make_unique<GrayscaleImageProcessor>();
         blackImageGrayscale = cv::Mat::zeros(cv::Size(imageWidth, imageHeight), CV_8UC1);
+        largerBlackImageGrayscale = cv::Mat::zeros(cv::Size(3, 3), CV_8UC1);
         whiteImageGrayscale = cv::Mat(cv::Size(imageWidth, imageHeight), CV_8UC1, cv::Scalar(UCHAR_MAX));
     }
 
     std::unique_ptr<GrayscaleImageProcessor> grayscaleImageProcessor;
     cv::Mat blackImageGrayscale;
+    cv::Mat largerBlackImageGrayscale;
     cv::Mat whiteImageGrayscale;
 
     const uchar imageWidth= 2;
@@ -474,4 +476,44 @@ TEST_F(GrayscaleImageProcessorTest, EntropyTest) {
     double ent = grayscaleImageProcessor->entropy(histogram);
 
     EXPECT_EQ(2, ent);
+}
+
+TEST_F(GrayscaleImageProcessorTest, LaplacianFilterTest) {
+    largerBlackImageGrayscale.at<uchar>(0, 1) = 20;
+    largerBlackImageGrayscale.at<uchar>(1, 0) = 20;
+    largerBlackImageGrayscale.at<uchar>(1, 1) = 40;
+    largerBlackImageGrayscale.at<uchar>(2, 1) = 20;
+    largerBlackImageGrayscale.at<uchar>(1, 2) = 20;
+
+    cv::Mat imageAfterModification = grayscaleImageProcessor->laplacianFilter(largerBlackImageGrayscale, 0);
+    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
+
+    for (int x = 0; x < imageAfterModification.rows; x++) {
+        for (int y = 0; y < imageAfterModification.cols; y++) {
+            if (x == 1 && y == 1)
+                EXPECT_EQ(80, imageAfterModification.at<uchar>(x, y));
+            else
+                EXPECT_EQ(40, imageAfterModification.at<uchar>(x, y));
+        }
+    }
+}
+
+TEST_F(GrayscaleImageProcessorTest, OptimizedLaplacianFilterTest) {
+    largerBlackImageGrayscale.at<uchar>(0, 1) = 20;
+    largerBlackImageGrayscale.at<uchar>(1, 0) = 20;
+    largerBlackImageGrayscale.at<uchar>(1, 1) = 40;
+    largerBlackImageGrayscale.at<uchar>(2, 1) = 20;
+    largerBlackImageGrayscale.at<uchar>(1, 2) = 20;
+
+    cv::Mat imageAfterModification = grayscaleImageProcessor->optimizedLaplacianFilter(largerBlackImageGrayscale);
+    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
+
+    for (int x = 0; x < imageAfterModification.rows; x++) {
+        for (int y = 0; y < imageAfterModification.cols; y++) {
+            if (x == 1 && y == 1)
+                EXPECT_EQ(80, imageAfterModification.at<uchar>(x, y));
+            else
+                EXPECT_EQ(40, imageAfterModification.at<uchar>(x, y));
+        }
+    }
 }
