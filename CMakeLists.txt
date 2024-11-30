@@ -32,6 +32,7 @@ enable_testing()
 
 add_executable(image_processing_tests
         tests/GrayscaleImageProcessorTests.cpp
+        tests/RGBImageProcessorTests.cpp
 )
 
 target_link_libraries(image_processing_tests

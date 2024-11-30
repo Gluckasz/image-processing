@@ -5,36 +5,38 @@
 #include "../include/RGBImageProcessor.h"
 
 cv::Mat RGBImageProcessor::modifyBrightness(cv::Mat image, int modVal) {
-    for (int x = 0; x < image.rows; x++) {
-        for (int y = 0; y < image.cols; y++) {
+    cv::Mat result = image.clone();
+    for (int x = 0; x < result.rows; x++) {
+        for (int y = 0; y < result.cols; y++) {
             for (int z = 0; z < 3; z++) {
                 if (modVal < 0) {
-                    if (image.at<cv::Vec3b>(x, y)[z] >= 0 - modVal) {
-                        image.at<cv::Vec3b>(x, y)[z] += modVal;
+                    if (result.at<cv::Vec3b>(x, y)[z] >= 0 - modVal) {
+                        result.at<cv::Vec3b>(x, y)[z] += modVal;
                     }
                     else {
-                        image.at<cv::Vec3b>(x, y)[z] = 0;
+                        result.at<cv::Vec3b>(x, y)[z] = 0;
                     }
                 }
                 else {
-                    if (image.at<cv::Vec3b>(x, y)[z]<= UCHAR_MAX - modVal) {
-                        image.at<cv::Vec3b>(x, y)[z]+= modVal;
+                    if (result.at<cv::Vec3b>(x, y)[z]<= UCHAR_MAX - modVal) {
+                        result.at<cv::Vec3b>(x, y)[z]+= modVal;
                     }
                     else {
-                        image.at<cv::Vec3b>(x, y)[z] = UCHAR_MAX;
+                        result.at<cv::Vec3b>(x, y)[z] = UCHAR_MAX;
                     }
                 }
             }
         }
     }
-    return image;
+    return result;
 }
 
 cv::Mat RGBImageProcessor::modifyContrastLinear(cv::Mat image, int modVal) {
+    cv::Mat result = image.clone();
     uchar max[3] = {0, 0, 0};
     uchar min[3] = {255, 255, 255};
-    for (int x = 0; x < image.rows; x++) {
-        for (int y = 0; y < image.cols; y++) {
+    for (int x = 0; x < result.rows; x++) {
+        for (int y = 0; y < result.cols; y++) {
             for (int z = 0; z < 3; z++) {
                 if (max[z] < image.at<cv::Vec3b>(x, y)[z]) {
                     max[z] = image.at<cv::Vec3b>(x, y)[z];
@@ -48,9 +50,9 @@ cv::Mat RGBImageProcessor::modifyContrastLinear(cv::Mat image, int modVal) {
     for (int x = 0; x < image.rows; x++) {
         for (int y = 0; y < image.cols; y++) {
             for (int z = 0; z < 3; z++) {
-                image.at<cv::Vec3b>(x, y)[z] = std::clamp(
+                result.at<cv::Vec3b>(x, y)[z] = std::clamp(
                     (image.at<cv::Vec3b>(x, y)[z] - min[z])
-                    * (max[z] - min[z] + 2 * modVal)
+                    * std::max(max[z] - min[z] + 2 * modVal, 0)
                     / (max[z] - min[z]) + min[z] - modVal,
                     0,
                     UCHAR_MAX
@@ -58,12 +60,13 @@ cv::Mat RGBImageProcessor::modifyContrastLinear(cv::Mat image, int modVal) {
             }
         }
     }
-    return image;
+    return result;
 }
 
 cv::Mat RGBImageProcessor::modifyContrastGamma(cv::Mat image, float modVal) {
-    for (int x = 0; x < image.rows; x++) {
-        for (int y = 0; y < image.cols; y++) {
+    cv::Mat result = image.clone();
+    for (int x = 0; x < result.rows; x++) {
+        for (int y = 0; y < result.cols; y++) {
             for (int z = 0; z < 3; z++) {
                 float normalizedPixelVal = static_cast<float>(image.at<cv::Vec3b>(x, y)[z]) / 255.0f;
 
@@ -71,52 +74,56 @@ cv::Mat RGBImageProcessor::modifyContrastGamma(cv::Mat image, float modVal) {
                 int gammaCorrectedPixel = round(gammaCorrectedVal * 255);
 
                 gammaCorrectedPixel = std::clamp(gammaCorrectedPixel, 0, UCHAR_MAX);
-                image.at<cv::Vec3b>(x, y)[z] = gammaCorrectedPixel;
+                result.at<cv::Vec3b>(x, y)[z] = gammaCorrectedPixel;
             }
         }
     }
-    return image;
+    return result;
 }
 
 cv::Mat RGBImageProcessor::negative(cv::Mat image) {
+    cv::Mat result = image.clone();
     for (int x = 0; x < image.rows; x++) {
         for (int y = 0; y < image.cols; y++) {
             for (int z = 0; z < 3; z++) {
-                image.at<cv::Vec3b>(x, y)[z] = 255 - image.at<cv::Vec3b>(x, y)[z];
+                result.at<cv::Vec3b>(x, y)[z] = 255 - image.at<cv::Vec3b>(x, y)[z];
             }
         }
     }
-    return image;
+    return result;
 }
 
 cv::Mat RGBImageProcessor::flipHorizontally(cv::Mat image) {
+    cv::Mat result = image.clone();
     for (int x = 0; x < image.rows; x++) {
         for (int y = 0; y < image.cols / 2; y++) {
             for (int z = 0; z < 3; z++) {
                 uchar temp = image.at<cv::Vec3b>(x, y)[z];
-                image.at<cv::Vec3b>(x, y)[z] = image.at<cv::Vec3b>(x, image.cols - y - 1)[z];
-                image.at<cv::Vec3b>(x, image.cols - y - 1)[z] = temp;
+                result.at<cv::Vec3b>(x, y)[z] = image.at<cv::Vec3b>(x, image.cols - y - 1)[z];
+                result.at<cv::Vec3b>(x, image.cols - y - 1)[z] = temp;
             }
         }
     }
-    return image;
+    return result;
 }
 
 cv::Mat RGBImageProcessor::flipVertically(cv::Mat image) {
+    cv::Mat result = image.clone();
     for (int x = 0; x < image.rows / 2; x++) {
         for (int y = 0; y < image.cols; y++) {
             for (int z = 0; z < 3; z++) {
                 uchar temp = image.at<cv::Vec3b>(x, y)[z];
-                image.at<cv::Vec3b>(x, y)[z] = image.at<cv::Vec3b>(image.rows - x - 1, y)[z];
-                image.at<cv::Vec3b>(image.rows - x - 1, y)[z] = temp;
+                result.at<cv::Vec3b>(x, y)[z] = image.at<cv::Vec3b>(image.rows - x - 1, y)[z];
+                result.at<cv::Vec3b>(image.rows - x - 1, y)[z] = temp;
             }
         }
     }
-    return image;
+    return result;
 }
 cv::Mat RGBImageProcessor::flipDiagonally(cv::Mat image) {
-    image = this->flipHorizontally(image);
-    return this->flipVertically(image);
+    cv::Mat result = image.clone();
+    result = this->flipHorizontally(image);
+    return this->flipVertically(result);
 }
 
 cv::Mat RGBImageProcessor::resize(cv::Mat image, float factor) {
@@ -137,7 +144,7 @@ cv::Mat RGBImageProcessor::resize(cv::Mat image, float factor) {
 }
 
 cv::Mat RGBImageProcessor::midpointFilter(cv::Mat image, int kernelSize) {
-    cv::Mat  newImage;
+    cv::Mat newImage;
     image.copyTo(newImage);
     int border = (kernelSize - 1) / 2;
     int leftFilterSize = -(kernelSize / 2);
@@ -223,30 +230,31 @@ double RGBImageProcessor::peakMeanSquareError(cv::Mat originalImage, cv::Mat new
             }
         }
     }
-    int maxSum = 0;
+    double maxSum = 0;
     for (uchar num : max) {
-        maxSum += num;
+        maxSum += pow(num, 2);
     }
     return this->meanSquareError(originalImage, newImage)
-    / pow(maxSum, 2)
-    / 3;
+    / maxSum
+    * 3;
 }
 
 double RGBImageProcessor::signalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) {
-    double squareSum = 0;
+    unsigned long long squareSum = 0;
+    double se = 0;
 
     for (int x = 0; x < originalImage.cols; x++) {
         for (int y = 0; y < originalImage.rows; y++) {
             for (int z = 0; z < 3; z++) {
                 squareSum += pow(originalImage.at<cv::Vec3b>(x, y)[z], 2);
+                se += pow(originalImage.at<cv::Vec3b>(x, y)[z] - newImage.at<cv::Vec3b>(x, y)[z], 2);
             }
         }
     }
 
     return 10 * std::log10(
         squareSum
-        / this->meanSquareError(originalImage, newImage)
-        / 3
+        / se
         );
 }
 
@@ -262,19 +270,20 @@ double RGBImageProcessor::peakSignalToNoiseRatio(cv::Mat originalImage, cv::Mat 
         }
     }
 
-    unsigned long long  maxSquareSum = 0;
+    unsigned long long  maxSquareSum = 0;\
+    double se = 0;
     for (int x = 0; x < originalImage.cols; x++) {
         for (int y = 0; y < originalImage.rows; y++) {
             for (int z = 0; z < 3; z++) {
                 maxSquareSum += pow(static_cast<int>(max[z]), 2);
+                se += pow(originalImage.at<cv::Vec3b>(x, y)[z] - newImage.at<cv::Vec3b>(x, y)[z], 2);
             }
         }
     }
 
     return 10 * std::log10(
         maxSquareSum
-        / 3
-        / this->meanSquareError(originalImage, newImage)
+        / se
         );
 }
 
@@ -318,7 +327,7 @@ cv::Mat RGBImageProcessor::histogram(cv::Mat image, int histogramChannel) {
     int histogramWidth = (UCHAR_MAX + 1) * widthFactor;
     cv::Mat histogramImage = cv::Mat::zeros(histogramHeight, histogramWidth + widthFactor, CV_8UC1);
     for (int y = 0; y < histogramWidth; y++) {
-        for (int x = widthFactor / 2; x < intensityCountArray[y / widthFactor]; x++) {
+        for (int x = 0; x < intensityCountArray[y / widthFactor]; x++) {
             histogramImage.at<uchar>(histogramHeight - x - 1, y) = 255;
         }
     }
@@ -327,6 +336,7 @@ cv::Mat RGBImageProcessor::histogram(cv::Mat image, int histogramChannel) {
 }
 
 cv::Mat RGBImageProcessor::histogramUniform(cv::Mat image, int gMax, int gMin) {
+    cv::Mat result = image.clone();
     for (int channel = 0; channel <= 2; channel++) {
         uint histogramHeight = 0;
         std::array<uint, UCHAR_MAX + 1> histogram = this->computeHistogram(image, channel, histogramHeight);
@@ -350,11 +360,11 @@ cv::Mat RGBImageProcessor::histogramUniform(cv::Mat image, int gMax, int gMin) {
 
         for (int x = 0; x < image.rows; x++) {
             for (int y = 0; y < image.cols; y++) {
-                image.at<cv::Vec3b>(x, y)[channel] = lut[image.at<cv::Vec3b>(x, y)[channel]];
+                result.at<cv::Vec3b>(x, y)[channel] = lut[image.at<cv::Vec3b>(x, y)[channel]];
             }
         }
     }
-    return image;
+    return result;
 }
 
 double RGBImageProcessor::mean(std::array<uint, (127 * 2 + 1) + 1> imageHistogram) {
@@ -459,6 +469,7 @@ cv::Mat padImage(const cv::Mat& image, int padValue) {
 }
 
 cv::Mat RGBImageProcessor::laplacianFilter(cv::Mat image, int laplaceMask) {
+    cv::Mat result = image.clone();
     std::array<std::array<int, 3>, 3> mask{};
     switch (laplaceMask) {
         case 0:
@@ -482,14 +493,14 @@ cv::Mat RGBImageProcessor::laplacianFilter(cv::Mat image, int laplaceMask) {
                         convolutionValue += paddedImage.at<cv::Vec3b>(x + i, y + j)[z] * mask[i + 1][j + 1];
                     }
                 }
-                convolutionValue = std::clamp(convolutionValue, 0, 255);
+                convolutionValue = std::min(std::abs(convolutionValue), 255);
 
-                image.at<cv::Vec3b>(x - 1, y - 1)[z] = convolutionValue;
+                result.at<cv::Vec3b>(x - 1, y - 1)[z] = convolutionValue;
             }
         }
     }
 
-    return image;
+    return result;
 }
 
 cv::Mat RGBImageProcessor::optimizedLaplacianFilter(cv::Mat image) {
@@ -504,7 +515,7 @@ cv::Mat RGBImageProcessor::optimizedLaplacianFilter(cv::Mat image) {
                 convolutionValue += image.at<cv::Vec3b>(x, y)[z] * 4;
                 if (y + 1 < newImage.cols) convolutionValue += image.at<cv::Vec3b>(x, y + 1)[z] * -1;
                 if (x + 1 < newImage.rows) convolutionValue += image.at<cv::Vec3b>(x + 1, y)[z] * -1;
-                convolutionValue = std::clamp(convolutionValue, 0, 255);
+                convolutionValue = std::min(std::abs(convolutionValue), 255);
 
                 newImage.at<cv::Vec3b>(x, y)[z] = convolutionValue;
             }
@@ -514,15 +525,16 @@ cv::Mat RGBImageProcessor::optimizedLaplacianFilter(cv::Mat image) {
 }
 
 cv::Mat RGBImageProcessor::robertsOperator1(cv::Mat image) {
+    cv::Mat result = image.clone();
     for (int x = 0; x < image.rows - 1; x++) {
         for (int y = 0; y < image.cols - 1; y++) {
             for (int z = 0; z < 3; z++) {
-                image.at<cv::Vec3b>(x, y)[z] = std::clamp(static_cast<int>(sqrt(
+                result.at<cv::Vec3b>(x, y)[z] = std::clamp(static_cast<int>(sqrt(
                 pow(image.at<cv::Vec3b>(x, y)[z] - image.at<cv::Vec3b>(x + 1, y + 1)[z], 2)
                 + pow(image.at<cv::Vec3b>(x, y + 1)[z] - image.at<cv::Vec3b>(x + 1, y)[z], 2)
                 )), 0, UCHAR_MAX);
             }
         }
     }
-    return image;
+    return result;
 }
