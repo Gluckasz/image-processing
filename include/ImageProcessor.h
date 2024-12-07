@@ -40,6 +40,52 @@ public:
     virtual cv::Mat laplacianFilter(cv::Mat image, int laplaceMask) = 0;
     virtual cv::Mat optimizedLaplacianFilter(cv::Mat image) = 0;
     virtual cv::Mat robertsOperator1(cv::Mat image) = 0;
+
+    cv::Mat dilation(cv::Mat image, int maskNumber);
+
+protected:
+    enum class FieldType {
+        WHITE,
+        BLACK,
+        WHITE_MARKER,
+        BLACK_MARKER,
+        INACTIVE
+    };
+    const std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMap = {
+        {1, {{FieldType::BLACK_MARKER, FieldType::BLACK}}},
+        {2, {
+            {FieldType::BLACK_MARKER},
+            {FieldType::BLACK}
+        }},
+        {3, {
+            {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK},
+            {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::BLACK},
+            {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK}
+        }},
+        {4, {
+            {FieldType::INACTIVE, FieldType::BLACK, FieldType::INACTIVE},
+            {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::BLACK},
+            {FieldType::INACTIVE, FieldType::BLACK, FieldType::INACTIVE}
+        }},
+        {5, {
+            {FieldType::BLACK_MARKER, FieldType::BLACK},
+            {FieldType::BLACK, FieldType::INACTIVE}
+        }},
+        {6, {
+            {FieldType::WHITE_MARKER, FieldType::BLACK},
+            {FieldType::BLACK, FieldType::INACTIVE}
+        }},
+        {7, {{FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::BLACK}}},
+        {8, {{FieldType::BLACK, FieldType::WHITE_MARKER, FieldType::BLACK}}},
+        {9, {
+            {FieldType::BLACK, FieldType::BLACK_MARKER},
+            {FieldType::BLACK, FieldType::INACTIVE}
+        }},
+        {10, {
+            {FieldType::BLACK, FieldType::BLACK},
+            {FieldType::BLACK_MARKER , FieldType::INACTIVE}
+        }},
+    };
 };
 
 #endif //IMAGEPROCESSOR_H

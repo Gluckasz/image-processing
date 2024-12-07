@@ -91,7 +91,10 @@ void InputProcessor::printCommands() {
             << commandToStringMap.find(CommandType::OPTIMIZED_LAPLACE)->second
             << " - apply optimized laplacian filter.\n\n"
             << commandToStringMap.find(CommandType::ROBERTS_OPERATOR)->second
-            << " - apply roberts operator I.\n\n";
+            << " - apply roberts operator I.\n\n"
+            << commandToStringMap.find(CommandType::DILATION)->second
+            << " - apply dilation.\n"
+            << "\t -mask - number of mask to choose (between 1 and 10).\n\n";
 }
 
 template<typename T>
@@ -261,49 +264,55 @@ void InputProcessor::processInput() {
 
             case CommandType::MEAN:
                 isMean = true;
-            break;
+                break;
 
             case CommandType::VARIANCE:
                 isVariance = true;
-            break;
+                break;
 
             case CommandType::STANDARD_DEVIATION:
                 isStandardDeviation = true;
-            break;
+                break;
 
             case CommandType::VARIATION_1:
                 isVariation1 = true;
-            break;
+                break;
 
             case CommandType::ASYMMETRY:
                 isAsymmetry = true;
-            break;
+                break;
 
             case CommandType::FLATTENING:
                 isFlattening = true;
-            break;
+                break;
 
             case CommandType::VARIATION_2:
                 isVariation2 = true;
-            break;
+                break;
 
             case CommandType::ENTROPY:
                 isEntropy = true;
-            break;
+                break;
 
             case CommandType::LAPLACE:
                 if (++i < argc) {
                     readParam(argv[i], "-val=", laplaceMask, "Laplace mask number must be an integer (0, 1, or 2).");
                 }
-            break;
+                break;
 
             case CommandType::OPTIMIZED_LAPLACE:
                 isOptimizedLaplacian = true;
-            break;
+                break;
 
             case CommandType::ROBERTS_OPERATOR:
                 isRobertsOperator = true;
-            break;
+                break;
+
+            case CommandType::DILATION:
+                if (++i < argc) {
+                    readParam(argv[i], "-mask=", dilationMask, "Dilation mask number must be an integer between 1 and 10.");
+                }
+                break;
 
             case CommandType::UNKNOWN:
             default:
@@ -405,6 +414,10 @@ const {
 
     if (isRobertsOperator) {
         image = imageProcessor->robertsOperator1(image);
+    }
+
+    if(dilationMask.has_value()) {
+        image = imageProcessor->dilation(image, dilationMask.value());
     }
 }
 
