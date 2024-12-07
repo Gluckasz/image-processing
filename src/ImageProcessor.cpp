@@ -9,11 +9,11 @@ cv::Mat ImageProcessor::dilation(cv::Mat image, int maskNumber) {
     std::vector<std::vector<FieldType>> mask = maskMap.find(maskNumber)->second;
     int maxMaskYSize = 0;
     for (const auto & i : mask) {
-        maxMaskYSize = std::max(static_cast<int>(i.size()), maxMaskYSize);
+        maxMaskYSize = std::max(static_cast<int>(i.size() - 1), maxMaskYSize);
     }
 
-    for (int x = 0; x < image.rows - mask.size() / 2; x++) {
-        for (int y = 0; y < image.cols - maxMaskYSize / 2; y++) {
+    for (int x = 0; x < image.rows - mask.size(); x++) {
+        for (int y = 0; y < image.cols - maxMaskYSize; y++) {
             int xMarkerOffset = 0;
             int yMarkerOffset = 0;
             uchar max = 0;
@@ -23,7 +23,10 @@ cv::Mat ImageProcessor::dilation(cv::Mat image, int maskNumber) {
                         xMarkerOffset = i;
                         yMarkerOffset = j;
                         max = std::max(image.at<uchar>(x + i, y + j), max);
-                    } else if (mask[i][j] == FieldType::BLACK) {
+                    } else if (mask[i][j] == FieldType::WHITE_MARKER) {
+                        xMarkerOffset = i;
+                        yMarkerOffset = j;
+                    }  else if (mask[i][j] == FieldType::BLACK) {
                         max = std::max(image.at<uchar>(x + i, y + j), max);
                     }
                 }
@@ -40,11 +43,10 @@ cv::Mat ImageProcessor::erosion(cv::Mat image, int maskNumber) {
     std::vector<std::vector<FieldType>> mask = maskMap.find(maskNumber)->second;
     int maxMaskYSize = 0;
     for (const auto & i : mask) {
-        maxMaskYSize = std::max(static_cast<int>(i.size()), maxMaskYSize);
+        maxMaskYSize = std::max(static_cast<int>(i.size() - 1), maxMaskYSize);
     }
-
-    for (int x = 0; x < image.rows - mask.size() / 2; x++) {
-        for (int y = 0; y < image.cols - maxMaskYSize / 2; y++) {
+    for (int x = 0; x < image.rows - mask.size(); x++) {
+        for (int y = 0; y < image.cols - maxMaskYSize; y++) {
             int xMarkerOffset = 0;
             int yMarkerOffset = 0;
             uchar min = 255;
@@ -54,6 +56,9 @@ cv::Mat ImageProcessor::erosion(cv::Mat image, int maskNumber) {
                         xMarkerOffset = i;
                         yMarkerOffset = j;
                         min = std::min(image.at<uchar>(x + i, y + j), min);
+                    } else if (mask[i][j] == FieldType::WHITE_MARKER) {
+                        xMarkerOffset = i;
+                        yMarkerOffset = j;
                     } else if (mask[i][j] == FieldType::BLACK) {
                         min = std::min(image.at<uchar>(x + i, y + j), min);
                     }
