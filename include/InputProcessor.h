@@ -66,6 +66,7 @@ private:
     bool isOptimizedLaplacian = false;
     bool isRobertsOperator = false;
     std::optional<int> dilationMask;
+    std::optional<int> erosionMask;
 
     enum class CommandType {
         HELP,
@@ -102,6 +103,7 @@ private:
         OPTIMIZED_LAPLACE,
         ROBERTS_OPERATOR,
         DILATION,
+        EROSION,
         UNKNOWN // For unrecognized commands
      };
 
@@ -140,6 +142,7 @@ private:
         {"--oslaplace", CommandType::OPTIMIZED_LAPLACE},
         {"--orobertsi", CommandType::ROBERTS_OPERATOR},
         {"--dilation", CommandType::DILATION},
+        {"--erosion", CommandType::EROSION},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -177,6 +180,7 @@ private:
         {CommandType::OPTIMIZED_LAPLACE, "--oslaplace"},
         {CommandType::ROBERTS_OPERATOR, "--orobertsi"},
         {CommandType::DILATION, "--dilation"},
+        {CommandType::EROSION, "--erosion"},
     };
 
     /**

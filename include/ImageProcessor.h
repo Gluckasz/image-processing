@@ -42,6 +42,7 @@ public:
     virtual cv::Mat robertsOperator1(cv::Mat image) = 0;
 
     cv::Mat dilation(cv::Mat image, int maskNumber);
+    cv::Mat erosion(cv::Mat image, int maskNumber);
 
 protected:
     enum class FieldType {

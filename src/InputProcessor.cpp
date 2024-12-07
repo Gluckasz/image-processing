@@ -94,6 +94,9 @@ void InputProcessor::printCommands() {
             << " - apply roberts operator I.\n\n"
             << commandToStringMap.find(CommandType::DILATION)->second
             << " - apply dilation.\n"
+            << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
+            << commandToStringMap.find(CommandType::EROSION)->second
+            << " - apply erosion.\n"
             << "\t -mask - number of mask to choose (between 1 and 10).\n\n";
 }
 
@@ -314,6 +317,12 @@ void InputProcessor::processInput() {
                 }
                 break;
 
+            case CommandType::EROSION:
+                if (++i < argc) {
+                    readParam(argv[i], "-mask=", erosionMask, "Erosion mask number must be an integer between 1 and 10.");
+                }
+            break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -418,6 +427,10 @@ const {
 
     if(dilationMask.has_value()) {
         image = imageProcessor->dilation(image, dilationMask.value());
+    }
+
+    if(erosionMask.has_value()) {
+        image = imageProcessor->erosion(image, erosionMask.value());
     }
 }
 
