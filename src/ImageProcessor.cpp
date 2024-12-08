@@ -342,11 +342,13 @@ cv::Mat ImageProcessor::hmt(cv::Mat image, int maskNumber, std::unordered_map<in
     backgroundMatch = this->erosion(backgroundMatch, maskNumber, hmtComplementMaskMap);
 
     cv::Mat result = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
+
+    result = cv::Scalar(255);
 #pragma omp parallel for collapse(2)
     for (int x = 0; x < foregroundMatch.rows; x++) {
         for (int y = 0; y < foregroundMatch.cols; y++) {
             if (foregroundMatch.at<uchar>(x, y) == UCHAR_MAX && backgroundMatch.at<uchar>(x, y) == UCHAR_MAX) {
-                result.at<uchar>(x, y) = UCHAR_MAX;
+                result.at<uchar>(x, y) = 0;
             }
         }
     }
@@ -354,18 +356,19 @@ cv::Mat ImageProcessor::hmt(cv::Mat image, int maskNumber, std::unordered_map<in
     return result;
 }
 
+// I commented out making union with original image, because it caused original image to be returned
 cv::Mat ImageProcessor::taskM4(cv::Mat image) {
     cv::Mat result = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
 
     for (int i = 1; i <= 4; i++) {
         cv::Mat previousElement = image.clone();
         cv::Mat nextElement = hmt(previousElement, i);
-        nextElement = imagesUnion(nextElement, image);
+        // nextElement = imagesUnion(nextElement, image);
 
         while (!areEqual(previousElement, nextElement)) {
             previousElement = nextElement.clone();
             nextElement = hmt(previousElement, i);
-            nextElement = imagesUnion(nextElement, image);
+            // nextElement = imagesUnion(nextElement, image);
         }
         result = imagesUnion(result, nextElement);
     };
