@@ -43,6 +43,8 @@ public:
 
     cv::Mat dilation(cv::Mat image, int maskNumber);
     cv::Mat erosion(cv::Mat image, int maskNumber);
+    cv::Mat opening(cv::Mat image, int maskNumber);
+    cv::Mat closing(cv::Mat image, int maskNumber);
 
 protected:
     enum class FieldType {

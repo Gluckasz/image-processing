@@ -97,6 +97,12 @@ void InputProcessor::printCommands() {
             << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
             << commandToStringMap.find(CommandType::EROSION)->second
             << " - apply erosion.\n"
+            << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
+            << commandToStringMap.find(CommandType::OPENING)->second
+            << " - apply opening.\n"
+            << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
+            << commandToStringMap.find(CommandType::CLOSING)->second
+            << " - apply closing.\n"
             << "\t -mask - number of mask to choose (between 1 and 10).\n\n";
 }
 
@@ -321,6 +327,18 @@ void InputProcessor::processInput() {
                 if (++i < argc) {
                     readParam(argv[i], "-mask=", erosionMask, "Erosion mask number must be an integer between 1 and 10.");
                 }
+                break;
+
+            case CommandType::OPENING:
+                if (++i < argc) {
+                    readParam(argv[i], "-mask=", openingMask, "Opening mask number must be an integer between 1 and 10.");
+                }
+                break;
+
+            case CommandType::CLOSING:
+                if (++i < argc) {
+                    readParam(argv[i], "-mask=", closingMask, "Closing mask number must be an integer between 1 and 10.");
+                }
             break;
 
             case CommandType::UNKNOWN:
@@ -431,6 +449,14 @@ const {
 
     if(erosionMask.has_value()) {
         image = imageProcessor->erosion(image, erosionMask.value());
+    }
+
+    if(openingMask.has_value()) {
+        image = imageProcessor->opening(image, openingMask.value());
+    }
+
+    if(closingMask.has_value()) {
+        image = imageProcessor->closing(image, closingMask.value());
     }
 }
 

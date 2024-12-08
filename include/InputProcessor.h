@@ -67,6 +67,8 @@ private:
     bool isRobertsOperator = false;
     std::optional<int> dilationMask;
     std::optional<int> erosionMask;
+    std::optional<int> openingMask;
+    std::optional<int> closingMask;
 
     enum class CommandType {
         HELP,
@@ -104,6 +106,8 @@ private:
         ROBERTS_OPERATOR,
         DILATION,
         EROSION,
+        OPENING,
+        CLOSING,
         UNKNOWN // For unrecognized commands
      };
 
@@ -143,6 +147,8 @@ private:
         {"--orobertsi", CommandType::ROBERTS_OPERATOR},
         {"--dilation", CommandType::DILATION},
         {"--erosion", CommandType::EROSION},
+        {"--opening", CommandType::OPENING},
+        {"--closing", CommandType::CLOSING},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -181,6 +187,8 @@ private:
         {CommandType::ROBERTS_OPERATOR, "--orobertsi"},
         {CommandType::DILATION, "--dilation"},
         {CommandType::EROSION, "--erosion"},
+        {CommandType::OPENING, "--opening"},
+        {CommandType::CLOSING, "--closing"},
     };
 
     /**

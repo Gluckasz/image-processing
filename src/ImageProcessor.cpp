@@ -70,3 +70,18 @@ cv::Mat ImageProcessor::erosion(cv::Mat image, int maskNumber) {
 
     return result;
 }
+
+cv::Mat ImageProcessor::opening(cv::Mat image, int maskNumber) {
+    cv::Mat result = image.clone();
+    result = this->erosion(result, maskNumber);
+    result = this->dilation(result, maskNumber);
+    return result;
+}
+
+cv::Mat ImageProcessor::closing(cv::Mat image, int maskNumber) {
+    cv::Mat result = image.clone();
+    result = this->dilation(result, maskNumber);
+    result = this->erosion(result, maskNumber);
+    return result;
+}
+
