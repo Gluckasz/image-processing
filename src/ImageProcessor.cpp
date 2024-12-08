@@ -3,6 +3,9 @@
 //
 
 #include "../include/ImageProcessor.h"
+
+
+
 cv::Mat ImageProcessor::complement(cv::Mat image) {
     cv::Mat result = image.clone();
     for (int x = 0; x < image.rows; x++) {
@@ -14,6 +17,32 @@ cv::Mat ImageProcessor::complement(cv::Mat image) {
     return result;
 }
 
+bool ImageProcessor::areEqual(cv::Mat image1, cv::Mat image2) {
+    if (image1.rows != image2.rows || image1.cols != image2.cols) {
+        return false;
+    }
+    for (int x = 2; x < image1.rows - 2; x++) {
+        for (int y = 2; y < image1.cols - 2; y++) {
+            if (image1.at<uchar>(x, y) != image2.at<uchar>(x, y)) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+cv::Mat ImageProcessor::imagesUnion(cv::Mat image1, cv::Mat image2) {
+    cv::Mat result = image1.clone();
+
+    for (int x = 0; x < image1.rows; x++) {
+        for (int y = 0; y < image1.cols; y++) {
+            result.at<uchar>(x, y) = std::max(image1.at<uchar>(x, y), image2.at<uchar>(x, y));
+        }
+    }
+
+    return result;
+}
 
 
 const std::unordered_map<int, std::vector<std::vector<ImageProcessor::FieldType>>> ImageProcessor::maskMap = {
@@ -178,73 +207,117 @@ const std::unordered_map<int, std::vector<std::vector<ImageProcessor::FieldType>
     }},
 };
 
-cv::Mat ImageProcessor::dilation(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping) {
-    cv::Mat result = image.clone();
+cv::Mat ImageProcessor::dilation(cv::Mat image, int maskNumber,
+    std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping) {
+
+    cv::Mat result = cv::Mat::zeros(image.size(), CV_8UC1);
     std::vector<std::vector<FieldType>> mask = maskMapping.find(maskNumber)->second;
-    int maxMaskYSize = 0;
-    for (const auto & i : mask) {
-        maxMaskYSize = std::max(static_cast<int>(i.size() - 1), maxMaskYSize);
+
+    int markerX = 0, markerY = 0;
+    bool foundMarker = false;
+    for (int i = 0; i < mask.size() && !foundMarker; i++) {
+        for (int j = 0; j < mask[i].size() && !foundMarker; j++) {
+            if (mask[i][j] == FieldType::BLACK_MARKER ||
+                mask[i][j] == FieldType::WHITE_MARKER) {
+                markerX = i;
+                markerY = j;
+                foundMarker = true;
+            }
+        }
     }
 
-    for (int x = 0; x < image.rows - mask.size(); x++) {
-        for (int y = 0; y < image.cols - maxMaskYSize; y++) {
-            int xMarkerOffset = 0;
-            int yMarkerOffset = 0;
-            uchar max = 0;
-            for (int i = 0; i < mask.size(); i++) {
-                for (int j = 0; j < mask[i].size(); j++) {
-                    if (mask[i][j] == FieldType::BLACK_MARKER) {
-                        xMarkerOffset = i;
-                        yMarkerOffset = j;
-                        max = std::max(image.at<uchar>(x + i, y + j), max);
-                    } else if (mask[i][j] == FieldType::WHITE_MARKER) {
-                        xMarkerOffset = i;
-                        yMarkerOffset = j;
-                    }  else if (mask[i][j] == FieldType::BLACK) {
-                        max = std::max(image.at<uchar>(x + i, y + j), max);
+#pragma omp parallel for collapse(2)
+    for (int x = 0; x < image.rows; x++) {
+        for (int y = 0; y < image.cols; y++) {
+            if (x + mask.size() > image.rows || y + mask[0].size() > image.cols) {
+                continue;
+            }
+
+            bool matchFound = false;
+            for (int i = 0; i < mask.size() && !matchFound; i++) {
+                for (int j = 0; j < mask[i].size() && !matchFound; j++) {
+                    if (mask[i][j] == FieldType::INACTIVE) {
+                        continue;
+                    }
+                    if (mask[i][j] == FieldType::BLACK_MARKER ||
+                        mask[i][j] == FieldType::BLACK) {
+                        if (image.at<uchar>(x + i, y + j) == 0) {
+                            matchFound = true;
+                        }
+                    }
+                    else if (mask[i][j] == FieldType::WHITE_MARKER ||
+                             mask[i][j] == FieldType::WHITE) {
+                        if (image.at<uchar>(x + i, y + j) == 255) {
+                            matchFound = true;
+                        }
                     }
                 }
             }
-            result.at<uchar>(x + xMarkerOffset, y + yMarkerOffset) = max;
+
+            if (!matchFound) {
+                result.at<uchar>(x + markerX, y + markerY) = 255;
+            }
         }
     }
 
     return result;
 }
 
-cv::Mat ImageProcessor::erosion(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping) {
-    cv::Mat result = image.clone();
+cv::Mat ImageProcessor::erosion(cv::Mat image, int maskNumber,
+    std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping) {
+
+    cv::Mat result = cv::Mat::zeros(image.size(), CV_8UC1);
     std::vector<std::vector<FieldType>> mask = maskMapping.find(maskNumber)->second;
-    int maxMaskYSize = 0;
-    for (const auto & i : mask) {
-        maxMaskYSize = std::max(static_cast<int>(i.size() - 1), maxMaskYSize);
+
+    int markerX = 0, markerY = 0;
+    bool foundMarker = false;
+    for (int i = 0; i < mask.size() && !foundMarker; i++) {
+        for (int j = 0; j < mask[i].size() && !foundMarker; j++) {
+            if (mask[i][j] == FieldType::BLACK_MARKER ||
+                mask[i][j] == FieldType::WHITE_MARKER) {
+                markerX = i;
+                markerY = j;
+                foundMarker = true;
+            }
+        }
     }
-    for (int x = 0; x < image.rows - mask.size(); x++) {
-        for (int y = 0; y < image.cols - maxMaskYSize; y++) {
-            int xMarkerOffset = 0;
-            int yMarkerOffset = 0;
-            uchar min = 255;
-            for (int i = 0; i < mask.size(); i++) {
-                for (int j = 0; j < mask[i].size(); j++) {
-                    if (mask[i][j] == FieldType::BLACK_MARKER) {
-                        xMarkerOffset = i;
-                        yMarkerOffset = j;
-                        min = std::min(image.at<uchar>(x + i, y + j), min);
-                    } else if (mask[i][j] == FieldType::WHITE_MARKER) {
-                        xMarkerOffset = i;
-                        yMarkerOffset = j;
-                    } else if (mask[i][j] == FieldType::BLACK) {
-                        min = std::min(image.at<uchar>(x + i, y + j), min);
+
+#pragma omp parallel for collapse(2)
+    for (int x = 0; x < image.rows; x++) {
+        for (int y = 0; y < image.cols; y++) {
+            if (x + mask.size() > image.rows || y + mask[0].size() > image.cols) {
+                continue;
+            }
+
+            bool match = false;
+            for (int i = 0; i < mask.size() && !match; i++) {
+                for (int j = 0; j < mask[i].size() && !match; j++) {
+                    if (mask[i][j] == FieldType::INACTIVE) {
+                        continue;
+                    }
+                    if (mask[i][j] == FieldType::BLACK_MARKER ||
+                        mask[i][j] == FieldType::BLACK) {
+                        if (image.at<uchar>(x + i, y + j) == 255) {
+                            match = true;
+                        }
+                    }
+                    else if (mask[i][j] == FieldType::WHITE_MARKER ||
+                             mask[i][j] == FieldType::WHITE) {
+                        if (image.at<uchar>(x + i, y + j) == 0) {
+                            match = true;
+                        }
                     }
                 }
             }
-            result.at<uchar>(x + xMarkerOffset, y + yMarkerOffset) = min;
+
+            if (match) {
+                result.at<uchar>(x + markerX, y + markerY) = 255;
+            }
         }
     }
 
     return result;
 }
-
 cv::Mat ImageProcessor::opening(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping) {
     cv::Mat result = image.clone();
     result = this->erosion(result, maskNumber, maskMapping);
@@ -269,6 +342,7 @@ cv::Mat ImageProcessor::hmt(cv::Mat image, int maskNumber, std::unordered_map<in
     backgroundMatch = this->erosion(backgroundMatch, maskNumber, hmtComplementMaskMap);
 
     cv::Mat result = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
+#pragma omp parallel for collapse(2)
     for (int x = 0; x < foregroundMatch.rows; x++) {
         for (int y = 0; y < foregroundMatch.cols; y++) {
             if (foregroundMatch.at<uchar>(x, y) == UCHAR_MAX && backgroundMatch.at<uchar>(x, y) == UCHAR_MAX) {
@@ -280,3 +354,20 @@ cv::Mat ImageProcessor::hmt(cv::Mat image, int maskNumber, std::unordered_map<in
     return result;
 }
 
+cv::Mat ImageProcessor::taskM4(cv::Mat image) {
+    cv::Mat result = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
+
+    for (int i = 1; i <= 4; i++) {
+        cv::Mat previousElement = image.clone();
+        cv::Mat nextElement = hmt(previousElement, i);
+        nextElement = imagesUnion(nextElement, image);
+
+        while (!areEqual(previousElement, nextElement)) {
+            previousElement = nextElement.clone();
+            nextElement = hmt(previousElement, i);
+            nextElement = imagesUnion(nextElement, image);
+        }
+        result = imagesUnion(result, nextElement);
+    };
+    return result;
+}

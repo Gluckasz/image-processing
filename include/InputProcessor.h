@@ -70,6 +70,7 @@ private:
     std::optional<int> openingMask;
     std::optional<int> closingMask;
     std::optional<int> hmtMask;
+    bool isTaskM4 = false;
 
     enum class CommandType {
         HELP,
@@ -110,6 +111,7 @@ private:
         OPENING,
         CLOSING,
         HMT,
+        TASK_M4,
         UNKNOWN // For unrecognized commands
      };
 
@@ -152,6 +154,7 @@ private:
         {"--opening", CommandType::OPENING},
         {"--closing", CommandType::CLOSING},
         {"--hmt", CommandType::HMT},
+        {"--taskM4", CommandType::TASK_M4},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -193,6 +196,7 @@ private:
         {CommandType::OPENING, "--opening"},
         {CommandType::CLOSING, "--closing"},
         {CommandType::HMT, "--hmt"},
+        {CommandType::TASK_M4, "--taskM4"},
     };
 
     /**

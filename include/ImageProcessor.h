@@ -6,9 +6,12 @@
 #define IMAGEPROCESSOR_H
 
 #include <opencv2/opencv.hpp>
+#include <thread>
 
 class ImageProcessor {
     cv::Mat complement(cv::Mat image);
+    bool areEqual(cv::Mat image1, cv::Mat image2);
+    cv::Mat imagesUnion(cv::Mat image1, cv::Mat image2);
 public:
     virtual ~ImageProcessor() = default;
 
@@ -59,6 +62,7 @@ public:
     cv::Mat opening(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping = maskMap);
     cv::Mat closing(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping = maskMap);
     cv::Mat hmt(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping = hmtMaskMap);
+    cv::Mat taskM4(cv::Mat image);
 };
 
 #endif //IMAGEPROCESSOR_H

@@ -106,7 +106,9 @@ void InputProcessor::printCommands() {
             << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
             << commandToStringMap.find(CommandType::HMT)->second
             << " - apply HMT.\n"
-            << "\t -mask - number of mask to choose (between 1 and 10).\n\n";
+            << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
+            << commandToStringMap.find(CommandType::TASK_M4)->second
+            << " - complete task M4.\n\n";
 }
 
 template<typename T>
@@ -350,6 +352,10 @@ void InputProcessor::processInput() {
                 }
                 break;
 
+            case CommandType::TASK_M4:
+                isTaskM4 = true;
+                break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -470,6 +476,10 @@ const {
 
     if(hmtMask.has_value()) {
         image = imageProcessor->hmt(image, hmtMask.value());
+    }
+
+    if(isTaskM4) {
+        image = imageProcessor->taskM4(image);
     }
 }
 
