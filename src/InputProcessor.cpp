@@ -103,6 +103,9 @@ void InputProcessor::printCommands() {
             << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
             << commandToStringMap.find(CommandType::CLOSING)->second
             << " - apply closing.\n"
+            << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
+            << commandToStringMap.find(CommandType::HMT)->second
+            << " - apply HMT.\n"
             << "\t -mask - number of mask to choose (between 1 and 10).\n\n";
 }
 
@@ -339,7 +342,13 @@ void InputProcessor::processInput() {
                 if (++i < argc) {
                     readParam(argv[i], "-mask=", closingMask, "Closing mask number must be an integer between 1 and 10.");
                 }
-            break;
+                break;
+
+            case CommandType::HMT:
+                if (++i < argc) {
+                    readParam(argv[i], "-mask=", hmtMask, "HMT mask number must be an integer between 1 and 10.");
+                }
+                break;
 
             case CommandType::UNKNOWN:
             default:
@@ -457,6 +466,10 @@ const {
 
     if(closingMask.has_value()) {
         image = imageProcessor->closing(image, closingMask.value());
+    }
+
+    if(hmtMask.has_value()) {
+        image = imageProcessor->hmt(image, hmtMask.value());
     }
 }
 

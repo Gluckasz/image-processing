@@ -8,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 
 class ImageProcessor {
+    cv::Mat complement(cv::Mat image);
 public:
     virtual ~ImageProcessor() = default;
 
@@ -41,12 +42,6 @@ public:
     virtual cv::Mat optimizedLaplacianFilter(cv::Mat image) = 0;
     virtual cv::Mat robertsOperator1(cv::Mat image) = 0;
 
-    cv::Mat dilation(cv::Mat image, int maskNumber);
-    cv::Mat erosion(cv::Mat image, int maskNumber);
-    cv::Mat opening(cv::Mat image, int maskNumber);
-    cv::Mat closing(cv::Mat image, int maskNumber);
-
-protected:
     enum class FieldType {
         WHITE,
         BLACK,
@@ -54,41 +49,16 @@ protected:
         BLACK_MARKER,
         INACTIVE
     };
-    const std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMap = {
-        {1, {{FieldType::BLACK_MARKER, FieldType::BLACK}}},
-        {2, {
-            {FieldType::BLACK_MARKER},
-            {FieldType::BLACK}
-        }},
-        {3, {
-            {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK},
-            {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::BLACK},
-            {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK}
-        }},
-        {4, {
-            {FieldType::INACTIVE, FieldType::BLACK, FieldType::INACTIVE},
-            {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::BLACK},
-            {FieldType::INACTIVE, FieldType::BLACK, FieldType::INACTIVE}
-        }},
-        {5, {
-            {FieldType::BLACK_MARKER, FieldType::BLACK},
-            {FieldType::BLACK, FieldType::INACTIVE}
-        }},
-        {6, {
-            {FieldType::WHITE_MARKER, FieldType::BLACK},
-            {FieldType::BLACK, FieldType::INACTIVE}
-        }},
-        {7, {{FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::BLACK}}},
-        {8, {{FieldType::BLACK, FieldType::WHITE_MARKER, FieldType::BLACK}}},
-        {9, {
-            {FieldType::BLACK, FieldType::BLACK_MARKER},
-            {FieldType::BLACK, FieldType::INACTIVE}
-        }},
-        {10, {
-            {FieldType::BLACK, FieldType::BLACK},
-            {FieldType::BLACK_MARKER , FieldType::INACTIVE}
-        }},
-    };
+
+    static const std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMap;
+    static const std::unordered_map<int, std::vector<std::vector<FieldType>>> hmtMaskMap;
+    static const std::unordered_map<int, std::vector<std::vector<FieldType>>> hmtComplementMaskMap;
+
+    cv::Mat dilation(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping = maskMap);
+    cv::Mat erosion(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping = maskMap);
+    cv::Mat opening(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping = maskMap);
+    cv::Mat closing(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping = maskMap);
+    cv::Mat hmt(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping = hmtMaskMap);
 };
 
 #endif //IMAGEPROCESSOR_H

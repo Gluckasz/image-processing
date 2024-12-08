@@ -69,6 +69,7 @@ private:
     std::optional<int> erosionMask;
     std::optional<int> openingMask;
     std::optional<int> closingMask;
+    std::optional<int> hmtMask;
 
     enum class CommandType {
         HELP,
@@ -108,6 +109,7 @@ private:
         EROSION,
         OPENING,
         CLOSING,
+        HMT,
         UNKNOWN // For unrecognized commands
      };
 
@@ -149,6 +151,7 @@ private:
         {"--erosion", CommandType::EROSION},
         {"--opening", CommandType::OPENING},
         {"--closing", CommandType::CLOSING},
+        {"--hmt", CommandType::HMT},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -189,6 +192,7 @@ private:
         {CommandType::EROSION, "--erosion"},
         {CommandType::OPENING, "--opening"},
         {CommandType::CLOSING, "--closing"},
+        {CommandType::HMT, "--hmt"},
     };
 
     /**
