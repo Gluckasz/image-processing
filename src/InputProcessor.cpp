@@ -674,6 +674,9 @@ void InputProcessor::processImage() const {
         cv::Mat segmentedImage = imageProcessor->regionGrowing(newImage);
         saveImage(segmentedImage, outputFileName.substr(0, outputFileName.length() - 4) +
                                         "_segmentation.bmp");
+        cv::Mat segmentedColorImage = imageProcessor->applyColorMap(segmentedImage, imageProcessor->createColorMap());
+        saveImage(segmentedColorImage, outputFileName.substr(0, outputFileName.length() - 4) +
+                                        "_segmentation_colored.bmp");
     }
 }
 

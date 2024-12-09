@@ -374,3 +374,26 @@ cv::Mat ImageProcessor::taskM4(cv::Mat image) {
     };
     return result;
 }
+
+std::vector<cv::Vec3b> ImageProcessor::createColorMap() {
+    std::vector<cv::Vec3b> colorMap(256, cv::Vec3b(0, 0, 0));
+    for (int i = 1; i <= 255; ++i) {
+        int hue = (i * 179) / 255;
+        cv::Mat hsv(1, 1, CV_8UC3, cv::Scalar(hue, 255, 255));
+        cv::Mat rgb;
+        cv::cvtColor(hsv, rgb, cv::COLOR_HSV2BGR);
+        colorMap[i] = rgb.at<cv::Vec3b>(0, 0);
+    }
+    return colorMap;
+}
+
+cv::Mat ImageProcessor::applyColorMap(const cv::Mat &grayscaleMask, const std::vector<cv::Vec3b> &colorMap) {
+    cv::Mat colorMask(grayscaleMask.size(), CV_8UC3);
+    for (int x = 0; x < grayscaleMask.rows; ++x) {
+        for (int y = 0; y < grayscaleMask.cols; ++y) {
+            int grayValue = grayscaleMask.at<uchar>(x, y);
+            colorMask.at<cv::Vec3b>(x, y) = colorMap[grayValue];
+        }
+    }
+    return colorMask;
+}

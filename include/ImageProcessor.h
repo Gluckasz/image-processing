@@ -65,6 +65,9 @@ public:
     cv::Mat closing(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping = maskMap);
     cv::Mat hmt(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping = hmtMaskMap);
     cv::Mat taskM4(cv::Mat image);
+
+    std::vector<cv::Vec3b> createColorMap();
+    cv::Mat applyColorMap(const cv::Mat& grayscaleMask, const std::vector<cv::Vec3b>& colorMap);
 };
 
 #endif //IMAGEPROCESSOR_H
