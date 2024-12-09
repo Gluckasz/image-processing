@@ -108,7 +108,9 @@ void InputProcessor::printCommands() {
             << " - apply HMT.\n"
             << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
             << commandToStringMap.find(CommandType::TASK_M4)->second
-            << " - complete task M4.\n\n";
+            << " - complete task M4.\n\n"
+            << commandToStringMap.find(CommandType::REGION_GROWING)->second
+            << " - make image segmentation using region growing method.\n\n";
 }
 
 template<typename T>
@@ -354,6 +356,10 @@ void InputProcessor::processInput() {
 
             case CommandType::TASK_M4:
                 isTaskM4 = true;
+                break;
+
+            case CommandType::REGION_GROWING:
+                isRegionGrowing = true;
                 break;
 
             case CommandType::UNKNOWN:
@@ -663,6 +669,12 @@ void InputProcessor::processImage() const {
     }
 
     calculateAndSaveImageStats(newImage, imageProcessor);
+
+    if (isRegionGrowing) {
+        cv::Mat segmentedImage = imageProcessor->regionGrowing(newImage);
+        saveImage(segmentedImage, outputFileName.substr(0, outputFileName.length() - 4) +
+                                        "_segmentation.bmp");
+    }
 }
 
 

@@ -4,6 +4,7 @@
 
 #include "../include/RGBImageProcessor.h"
 
+
 cv::Mat RGBImageProcessor::modifyBrightness(cv::Mat image, int modVal) {
     cv::Mat result = image.clone();
     for (int x = 0; x < result.rows; x++) {
@@ -538,3 +539,69 @@ cv::Mat RGBImageProcessor::robertsOperator1(cv::Mat image) {
     }
     return result;
 }
+
+cv::Mat RGBImageProcessor::regionGrowing(cv::Mat image) {
+    cv::Mat imageSegmentationMasks = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
+    int seedXGridSpacing = image.rows / 20;
+    int seedYGridSpacing = image.cols / 20;
+    int currentMask = 0;
+    const double thresholdK = 0.1;
+    std::array<std::array<int, 2>, 4> dirs = {
+        {
+            {1, 0},
+            {-1, 0},
+            {0, 1},
+            {0, -1}
+        }
+    };
+    for (int seedX = seedXGridSpacing; seedX < image.rows - seedXGridSpacing; seedX += seedXGridSpacing) {
+        for (int seedY = seedYGridSpacing; seedY < image.cols - seedYGridSpacing; seedY+= seedYGridSpacing) {
+            if (imageSegmentationMasks.at<uchar>(seedX, seedY) == 0) {
+                currentMask++;
+                imageSegmentationMasks.at<uchar>(seedX, seedY) = currentMask;
+                double regionMean = 0;
+                for (int z = 0; z < 3; z++) {
+                    regionMean += image.at<cv::Vec3b>(seedX, seedY)[z];
+                }
+                int regionCount = 1;
+                std::queue<std::pair<int, int>> queue;
+                struct pairHash {
+                    inline std::size_t operator()(const std::pair<int,int> & v) const {
+                        return v.first*31+v.second;
+                    }
+                };
+                std::unordered_set<std::pair<int, int>, pairHash> visited{std::make_pair(seedX, seedY)};
+                queue.emplace(seedX, seedY);
+                while (!queue.empty()) {
+                    std::pair<int, int> currentPixel = queue.front();
+                    int currentX = currentPixel.first;
+                    int currentY = currentPixel.second;
+                    queue.pop();
+                    for(auto& dir: dirs) {
+                        int newX = currentX + dir[0];
+                        int newY = currentY + dir[1];
+                        if (newX >= 0 && newX < image.rows && newY >= 0 && newY < image.cols
+                        && !visited.contains(std::make_pair(newX, newY))
+                        && std::abs(regionMean
+                            - static_cast<double>(image.at<cv::Vec3b>(newX, newY)[0])
+                            - static_cast<double>(image.at<cv::Vec3b>(newX, newY)[1])
+                            - static_cast<double>(image.at<cv::Vec3b>(newX, newY)[2]))
+                            <= regionMean * thresholdK) {
+                            queue.emplace(newX, newY);
+                            visited.insert(std::make_pair(newX, newY));
+                            imageSegmentationMasks.at<uchar>(newX, newY) = currentMask;
+                            double regionSum = regionMean * regionCount;
+                            regionCount++;
+                            for (int z = 0; z < 3; z++) {
+                                regionSum += image.at<cv::Vec3b>(newX, newY)[z];
+                            }
+                            regionMean = regionSum / regionCount;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return imageSegmentationMasks;
+}
+

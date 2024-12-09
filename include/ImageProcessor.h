@@ -7,6 +7,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <thread>
+#include <unordered_set>
 
 class ImageProcessor {
     cv::Mat complement(cv::Mat image);
@@ -44,6 +45,7 @@ public:
     virtual cv::Mat laplacianFilter(cv::Mat image, int laplaceMask) = 0;
     virtual cv::Mat optimizedLaplacianFilter(cv::Mat image) = 0;
     virtual cv::Mat robertsOperator1(cv::Mat image) = 0;
+    virtual cv::Mat regionGrowing(cv::Mat image) = 0;
 
     enum class FieldType {
         WHITE,

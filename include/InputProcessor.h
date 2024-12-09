@@ -71,6 +71,7 @@ private:
     std::optional<int> closingMask;
     std::optional<int> hmtMask;
     bool isTaskM4 = false;
+    bool isRegionGrowing = false;
 
     enum class CommandType {
         HELP,
@@ -112,6 +113,7 @@ private:
         CLOSING,
         HMT,
         TASK_M4,
+        REGION_GROWING,
         UNKNOWN // For unrecognized commands
      };
 
@@ -155,6 +157,7 @@ private:
         {"--closing", CommandType::CLOSING},
         {"--hmt", CommandType::HMT},
         {"--taskM4", CommandType::TASK_M4},
+        {"--regionGrowing", CommandType::REGION_GROWING},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -197,6 +200,7 @@ private:
         {CommandType::CLOSING, "--closing"},
         {CommandType::HMT, "--hmt"},
         {CommandType::TASK_M4, "--taskM4"},
+        {CommandType::REGION_GROWING, "--regionGrowing"},
     };
 
     /**
