@@ -496,8 +496,8 @@ cv::Mat GrayscaleImageProcessor::robertsOperator1(cv::Mat image) {
 
 cv::Mat GrayscaleImageProcessor::regionGrowing(cv::Mat image) {
     cv::Mat imageSegmentationMasks = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
-    int seedXGridSpacing = image.rows / 20;
-    int seedYGridSpacing = image.cols / 20;
+    int seedXGridSpacing = image.rows / 10;
+    int seedYGridSpacing = image.cols / 10;
     int currentMask = 0;
     const double thresholdK = 0.1;
     std::array<std::array<int, 2>, 4> dirs = {
@@ -516,12 +516,6 @@ cv::Mat GrayscaleImageProcessor::regionGrowing(cv::Mat image) {
                 double regionMean = image.at<uchar>(seedX, seedY);
                 int regionCount = 1;
                 std::queue<std::pair<int, int>> queue;
-                struct pairHash {
-                    inline std::size_t operator()(const std::pair<int,int> & v) const {
-                        return v.first*31+v.second;
-                    }
-                };
-                std::unordered_set<std::pair<int, int>, pairHash> visited{std::make_pair(seedX, seedY)};
                 queue.emplace(seedX, seedY);
                 while (!queue.empty()) {
                     std::pair<int, int> currentPixel = queue.front();
@@ -532,11 +526,10 @@ cv::Mat GrayscaleImageProcessor::regionGrowing(cv::Mat image) {
                         int newX = currentX + dir[0];
                         int newY = currentY + dir[1];
                         if (newX >= 0 && newX < image.rows && newY >= 0 && newY < image.cols
-                        && !visited.contains(std::make_pair(newX, newY))
+                        && imageSegmentationMasks.at<uchar>(newX, newY) == 0
                         && std::abs(regionMean - static_cast<double>(image.at<uchar>(newX, newY)))
                             <= regionMean * thresholdK) {
                             queue.emplace(newX, newY);
-                            visited.insert(std::make_pair(newX, newY));
                             imageSegmentationMasks.at<uchar>(newX, newY) = currentMask;
                             double regionSum = regionMean * regionCount;
                             regionCount++;
