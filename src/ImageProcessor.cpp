@@ -352,13 +352,10 @@ cv::Mat ImageProcessor::hmt(cv::Mat image, int maskNumber, std::unordered_map<in
 cv::Mat ImageProcessor::taskM4(cv::Mat image) {
     cv::Mat result = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
     const int MAX_ITERATIONS = 10;
-    std::vector<cv::Mat> partialResults(4);
 
-#pragma omp parallel for num_threads(4) schedule(dynamic)
     for (int i = 1; i <= 4; i++) {
         cv::Mat currentElement = image.clone();
         cv::Mat nextElement;
-        int threadIndex = i - 1;
 
         int iterations = 0;
         do {
@@ -377,12 +374,8 @@ cv::Mat ImageProcessor::taskM4(cv::Mat image) {
             std::cout << "Warning: Maximum iterations reached for element " << i << std::endl;
         }
 
-        partialResults[threadIndex] = nextElement;
+        result = imagesUnion(result, nextElement);
     }
-    for (const auto& partial : partialResults) {
-        result = imagesUnion(result, partial);
-    }
-
     return result;
 }
 
