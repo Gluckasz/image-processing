@@ -46,105 +46,42 @@ cv::Mat ImageProcessor::imagesUnion(cv::Mat image1, cv::Mat image2) {
 
 
 const std::unordered_map<int, std::vector<std::vector<ImageProcessor::FieldType>>> ImageProcessor::maskMap = {
-    {1, {{FieldType::BLACK_MARKER, FieldType::BLACK}}},
+    {1, {{FieldType::WHITE_MARKER, FieldType::WHITE}}},
     {2, {
-        {FieldType::BLACK_MARKER},
-        {FieldType::BLACK}
+            {FieldType::WHITE_MARKER},
+            {FieldType::WHITE}
     }},
     {3, {
-        {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK},
-        {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::BLACK},
-        {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK}
+            {FieldType::WHITE, FieldType::WHITE, FieldType::WHITE},
+            {FieldType::WHITE, FieldType::WHITE_MARKER, FieldType::WHITE},
+            {FieldType::WHITE, FieldType::WHITE, FieldType::WHITE}
     }},
     {4, {
-        {FieldType::INACTIVE, FieldType::BLACK, FieldType::INACTIVE},
-        {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::BLACK},
-        {FieldType::INACTIVE, FieldType::BLACK, FieldType::INACTIVE}
+            {FieldType::INACTIVE, FieldType::WHITE, FieldType::INACTIVE},
+            {FieldType::WHITE, FieldType::WHITE_MARKER, FieldType::WHITE},
+            {FieldType::INACTIVE, FieldType::WHITE, FieldType::INACTIVE}
     }},
     {5, {
-        {FieldType::BLACK_MARKER, FieldType::BLACK},
-        {FieldType::BLACK, FieldType::INACTIVE}
+            {FieldType::WHITE_MARKER, FieldType::WHITE},
+            {FieldType::WHITE, FieldType::INACTIVE}
     }},
     {6, {
-        {FieldType::WHITE_MARKER, FieldType::BLACK},
-        {FieldType::BLACK, FieldType::INACTIVE}
+            {FieldType::BLACK_MARKER, FieldType::WHITE},
+            {FieldType::WHITE, FieldType::INACTIVE}
     }},
-    {7, {{FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::BLACK}}},
-    {8, {{FieldType::BLACK, FieldType::WHITE_MARKER, FieldType::BLACK}}},
+    {7, {{FieldType::WHITE, FieldType::WHITE_MARKER, FieldType::WHITE}}},
+    {8, {{FieldType::WHITE, FieldType::BLACK_MARKER, FieldType::WHITE}}},
     {9, {
-        {FieldType::BLACK, FieldType::BLACK_MARKER},
-        {FieldType::BLACK, FieldType::INACTIVE}
+            {FieldType::WHITE, FieldType::WHITE_MARKER},
+            {FieldType::WHITE, FieldType::INACTIVE}
     }},
     {10, {
-        {FieldType::BLACK, FieldType::BLACK},
-        {FieldType::BLACK_MARKER , FieldType::INACTIVE}
+            {FieldType::WHITE, FieldType::WHITE},
+            {FieldType::WHITE_MARKER, FieldType::INACTIVE}
     }},
 };
 
 const std::unordered_map<int, std::vector<std::vector<ImageProcessor::FieldType>>> ImageProcessor::hmtMaskMap = {
-    {1, {
-        {FieldType::BLACK, FieldType::INACTIVE, FieldType::INACTIVE},
-        {FieldType::BLACK, FieldType::WHITE_MARKER, FieldType::INACTIVE},
-        {FieldType::BLACK, FieldType::INACTIVE, FieldType::INACTIVE}
-    }},
-    {2, {
-        {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK},
-        {FieldType::INACTIVE, FieldType::WHITE_MARKER, FieldType::INACTIVE},
-        {FieldType::INACTIVE, FieldType::INACTIVE, FieldType::INACTIVE}
-    }},
-    {3, {
-        {FieldType::INACTIVE, FieldType::INACTIVE, FieldType::BLACK},
-        {FieldType::INACTIVE, FieldType::WHITE_MARKER, FieldType::BLACK},
-        {FieldType::INACTIVE, FieldType::INACTIVE, FieldType::BLACK}
-    }},
-    {4, {
-        {FieldType::INACTIVE, FieldType::INACTIVE, FieldType::INACTIVE},
-        {FieldType::INACTIVE, FieldType::WHITE_MARKER, FieldType::INACTIVE},
-        {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK}
-    }},
-    {5, {
-        {FieldType::WHITE, FieldType::WHITE, FieldType::WHITE},
-        {FieldType::INACTIVE, FieldType::BLACK_MARKER, FieldType::INACTIVE},
-        {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK}
-    }},
-    {6, {
-        {FieldType::INACTIVE, FieldType::WHITE, FieldType::WHITE},
-        {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::WHITE},
-        {FieldType::BLACK, FieldType::BLACK, FieldType::INACTIVE}
-    }},
-    {7, {
-        {FieldType::BLACK, FieldType::INACTIVE, FieldType::WHITE},
-        {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::WHITE},
-        {FieldType::BLACK, FieldType::INACTIVE, FieldType::WHITE}
-    }},
-    {8, {
-        {FieldType::BLACK, FieldType::BLACK, FieldType::INACTIVE},
-        {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::WHITE},
-        {FieldType::INACTIVE, FieldType::WHITE, FieldType::WHITE}
-    }},
-    {9, {
-        {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK},
-        {FieldType::INACTIVE, FieldType::BLACK_MARKER, FieldType::INACTIVE},
-        {FieldType::WHITE, FieldType::WHITE, FieldType::WHITE}
-    }},
-    {10, {
-        {FieldType::INACTIVE, FieldType::BLACK, FieldType::BLACK},
-        {FieldType::WHITE, FieldType::BLACK_MARKER, FieldType::BLACK},
-        {FieldType::WHITE, FieldType::WHITE, FieldType::INACTIVE}
-    }},
-    {11, {
-        {FieldType::WHITE, FieldType::INACTIVE, FieldType::BLACK},
-        {FieldType::WHITE, FieldType::BLACK_MARKER, FieldType::BLACK},
-        {FieldType::WHITE, FieldType::INACTIVE, FieldType::BLACK}
-    }},
-    {12, {
-        {FieldType::WHITE, FieldType::WHITE, FieldType::INACTIVE},
-        {FieldType::WHITE, FieldType::BLACK_MARKER, FieldType::BLACK},
-        {FieldType::INACTIVE, FieldType::BLACK, FieldType::BLACK}
-    }},
-};
-
-const std::unordered_map<int, std::vector<std::vector<ImageProcessor::FieldType>>> ImageProcessor::hmtComplementMaskMap = {
     {1, {
         {FieldType::WHITE, FieldType::INACTIVE, FieldType::INACTIVE},
         {FieldType::WHITE, FieldType::BLACK_MARKER, FieldType::INACTIVE},
@@ -207,6 +144,69 @@ const std::unordered_map<int, std::vector<std::vector<ImageProcessor::FieldType>
     }},
 };
 
+const std::unordered_map<int, std::vector<std::vector<ImageProcessor::FieldType>>> ImageProcessor::hmtComplementMaskMap = {
+    {1, {
+            {FieldType::BLACK, FieldType::INACTIVE, FieldType::INACTIVE},
+            {FieldType::BLACK, FieldType::WHITE_MARKER, FieldType::INACTIVE},
+            {FieldType::BLACK, FieldType::INACTIVE, FieldType::INACTIVE}
+    }},
+    {2, {
+            {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK},
+            {FieldType::INACTIVE, FieldType::WHITE_MARKER, FieldType::INACTIVE},
+            {FieldType::INACTIVE, FieldType::INACTIVE, FieldType::INACTIVE}
+    }},
+    {3, {
+            {FieldType::INACTIVE, FieldType::INACTIVE, FieldType::BLACK},
+            {FieldType::INACTIVE, FieldType::WHITE_MARKER, FieldType::BLACK},
+            {FieldType::INACTIVE, FieldType::INACTIVE, FieldType::BLACK}
+    }},
+    {4, {
+            {FieldType::INACTIVE, FieldType::INACTIVE, FieldType::INACTIVE},
+            {FieldType::INACTIVE, FieldType::WHITE_MARKER, FieldType::INACTIVE},
+            {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK}
+    }},
+    {5, {
+            {FieldType::WHITE, FieldType::WHITE, FieldType::WHITE},
+            {FieldType::INACTIVE, FieldType::BLACK_MARKER, FieldType::INACTIVE},
+            {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK}
+    }},
+    {6, {
+            {FieldType::INACTIVE, FieldType::WHITE, FieldType::WHITE},
+            {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::WHITE},
+            {FieldType::BLACK, FieldType::BLACK, FieldType::INACTIVE}
+    }},
+    {7, {
+            {FieldType::BLACK, FieldType::INACTIVE, FieldType::WHITE},
+            {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::WHITE},
+            {FieldType::BLACK, FieldType::INACTIVE, FieldType::WHITE}
+    }},
+    {8, {
+            {FieldType::BLACK, FieldType::BLACK, FieldType::INACTIVE},
+            {FieldType::BLACK, FieldType::BLACK_MARKER, FieldType::WHITE},
+            {FieldType::INACTIVE, FieldType::WHITE, FieldType::WHITE}
+    }},
+    {9, {
+            {FieldType::BLACK, FieldType::BLACK, FieldType::BLACK},
+            {FieldType::INACTIVE, FieldType::BLACK_MARKER, FieldType::INACTIVE},
+            {FieldType::WHITE, FieldType::WHITE, FieldType::WHITE}
+    }},
+    {10, {
+            {FieldType::INACTIVE, FieldType::BLACK, FieldType::BLACK},
+            {FieldType::WHITE, FieldType::BLACK_MARKER, FieldType::BLACK},
+            {FieldType::WHITE, FieldType::WHITE, FieldType::INACTIVE}
+    }},
+    {11, {
+            {FieldType::WHITE, FieldType::INACTIVE, FieldType::BLACK},
+            {FieldType::WHITE, FieldType::BLACK_MARKER, FieldType::BLACK},
+            {FieldType::WHITE, FieldType::INACTIVE, FieldType::BLACK}
+    }},
+    {12, {
+            {FieldType::WHITE, FieldType::WHITE, FieldType::INACTIVE},
+            {FieldType::WHITE, FieldType::BLACK_MARKER, FieldType::BLACK},
+            {FieldType::INACTIVE, FieldType::BLACK, FieldType::BLACK}
+    }},
+};
+
 cv::Mat ImageProcessor::dilation(cv::Mat image, int maskNumber,
     std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping) {
 
@@ -233,30 +233,28 @@ cv::Mat ImageProcessor::dilation(cv::Mat image, int maskNumber,
                 continue;
             }
 
-            bool matchFound = false;
-            for (int i = 0; i < mask.size() && !matchFound; i++) {
-                for (int j = 0; j < mask[i].size() && !matchFound; j++) {
+            bool shouldDilate = false;
+            for (int i = 0; i < mask.size() && !shouldDilate; i++) {
+                for (int j = 0; j < mask[i].size() && !shouldDilate; j++) {
                     if (mask[i][j] == FieldType::INACTIVE) {
                         continue;
                     }
                     if (mask[i][j] == FieldType::BLACK_MARKER ||
                         mask[i][j] == FieldType::BLACK) {
-                        if (image.at<uchar>(x + i, y + j) == 255) {
-                            matchFound = true;
+                        if (image.at<uchar>(x + i, y + j) == 0) {
+                            shouldDilate = true;
                         }
                     }
                     else if (mask[i][j] == FieldType::WHITE_MARKER ||
                              mask[i][j] == FieldType::WHITE) {
-                        if (image.at<uchar>(x + i, y + j) == 0) {
-                            matchFound = true;
+                        if (image.at<uchar>(x + i, y + j) == 255) {
+                            shouldDilate = true;
                         }
                     }
                 }
             }
 
-            if (matchFound) {
-                result.at<uchar>(x + markerX, y + markerY) = 255;
-            }
+            result.at<uchar>(x + markerX, y + markerY) = shouldDilate ? 255 : 0;
         }
     }
 
@@ -289,30 +287,28 @@ cv::Mat ImageProcessor::erosion(cv::Mat image, int maskNumber,
                 continue;
             }
 
-            bool match = false;
-            for (int i = 0; i < mask.size() && !match; i++) {
-                for (int j = 0; j < mask[i].size() && !match; j++) {
+            bool shouldErode = false;
+            for (int i = 0; i < mask.size() && !shouldErode; i++) {
+                for (int j = 0; j < mask[i].size() && !shouldErode; j++) {
                     if (mask[i][j] == FieldType::INACTIVE) {
                         continue;
                     }
                     if (mask[i][j] == FieldType::BLACK_MARKER ||
                         mask[i][j] == FieldType::BLACK) {
-                        if (image.at<uchar>(x + i, y + j) == 0) {
-                            match = true;
+                        if (image.at<uchar>(x + i, y + j) == 255) {
+                            shouldErode = true;
                         }
                     }
                     else if (mask[i][j] == FieldType::WHITE_MARKER ||
                              mask[i][j] == FieldType::WHITE) {
-                        if (image.at<uchar>(x + i, y + j) == 255) {
-                            match = true;
+                        if (image.at<uchar>(x + i, y + j) == 0) {
+                            shouldErode = true;
                         }
                     }
                 }
             }
 
-            if (!match) {
-                result.at<uchar>(x + markerX, y + markerY) = 255;
-            }
+            result.at<uchar>(x + markerX, y + markerY) = shouldErode ? 0 : 255;
         }
     }
 
