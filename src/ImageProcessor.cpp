@@ -21,14 +21,13 @@ bool ImageProcessor::areEqual(cv::Mat image1, cv::Mat image2) {
     if (image1.rows != image2.rows || image1.cols != image2.cols) {
         return false;
     }
-    for (int x = 2; x < image1.rows - 2; x++) {
-        for (int y = 2; y < image1.cols - 2; y++) {
+    for (int x = 0; x < image1.rows; x++) {
+        for (int y = 0; y < image1.cols; y++) {
             if (image1.at<uchar>(x, y) != image2.at<uchar>(x, y)) {
                 return false;
             }
         }
     }
-
     return true;
 }
 
@@ -338,13 +337,11 @@ cv::Mat ImageProcessor::hmt(cv::Mat image, int maskNumber, std::unordered_map<in
     backgroundMatch = this->erosion(backgroundMatch, maskNumber, hmtComplementMaskMap);
 
     cv::Mat result = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
-
-    result = cv::Scalar(255);
 #pragma omp parallel for collapse(2)
     for (int x = 0; x < foregroundMatch.rows; x++) {
         for (int y = 0; y < foregroundMatch.cols; y++) {
             if (foregroundMatch.at<uchar>(x, y) == UCHAR_MAX && backgroundMatch.at<uchar>(x, y) == UCHAR_MAX) {
-                result.at<uchar>(x, y) = 0;
+                result.at<uchar>(x, y) = 255;
             }
         }
     }
@@ -352,22 +349,40 @@ cv::Mat ImageProcessor::hmt(cv::Mat image, int maskNumber, std::unordered_map<in
     return result;
 }
 
-// I commented out making union with original image, because it caused original image to be returned
 cv::Mat ImageProcessor::taskM4(cv::Mat image) {
     cv::Mat result = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
+    const int MAX_ITERATIONS = 10;
+    std::vector<cv::Mat> partialResults(4);
 
+#pragma omp parallel for num_threads(4) schedule(dynamic)
     for (int i = 1; i <= 4; i++) {
-        cv::Mat previousElement = image.clone();
-        cv::Mat nextElement = hmt(previousElement, i);
-        // nextElement = imagesUnion(nextElement, image);
+        cv::Mat currentElement = image.clone();
+        cv::Mat nextElement;
+        int threadIndex = i - 1;
 
-        while (!areEqual(previousElement, nextElement)) {
-            previousElement = nextElement.clone();
-            nextElement = hmt(previousElement, i);
-            // nextElement = imagesUnion(nextElement, image);
+        int iterations = 0;
+        do {
+            nextElement = hmt(currentElement, i);
+            nextElement = imagesUnion(nextElement, image);
+
+            if (areEqual(currentElement, nextElement)) {
+                break;
+            }
+
+            currentElement = nextElement.clone();
+            iterations++;
+        } while (iterations < MAX_ITERATIONS);
+
+        if (iterations >= MAX_ITERATIONS) {
+            std::cout << "Warning: Maximum iterations reached for element " << i << std::endl;
         }
-        result = imagesUnion(result, nextElement);
-    };
+
+        partialResults[threadIndex] = nextElement;
+    }
+    for (const auto& partial : partialResults) {
+        result = imagesUnion(result, partial);
+    }
+
     return result;
 }
 
