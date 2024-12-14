@@ -241,20 +241,20 @@ cv::Mat ImageProcessor::dilation(cv::Mat image, int maskNumber,
                     }
                     if (mask[i][j] == FieldType::BLACK_MARKER ||
                         mask[i][j] == FieldType::BLACK) {
-                        if (image.at<uchar>(x + i, y + j) == 0) {
+                        if (image.at<uchar>(x + i, y + j) == 255) {
                             matchFound = true;
                         }
                     }
                     else if (mask[i][j] == FieldType::WHITE_MARKER ||
                              mask[i][j] == FieldType::WHITE) {
-                        if (image.at<uchar>(x + i, y + j) == 255) {
+                        if (image.at<uchar>(x + i, y + j) == 0) {
                             matchFound = true;
                         }
                     }
                 }
             }
 
-            if (!matchFound) {
+            if (matchFound) {
                 result.at<uchar>(x + markerX, y + markerY) = 255;
             }
         }
@@ -297,20 +297,20 @@ cv::Mat ImageProcessor::erosion(cv::Mat image, int maskNumber,
                     }
                     if (mask[i][j] == FieldType::BLACK_MARKER ||
                         mask[i][j] == FieldType::BLACK) {
-                        if (image.at<uchar>(x + i, y + j) == 255) {
+                        if (image.at<uchar>(x + i, y + j) == 0) {
                             match = true;
                         }
                     }
                     else if (mask[i][j] == FieldType::WHITE_MARKER ||
                              mask[i][j] == FieldType::WHITE) {
-                        if (image.at<uchar>(x + i, y + j) == 0) {
+                        if (image.at<uchar>(x + i, y + j) == 255) {
                             match = true;
                         }
                     }
                 }
             }
 
-            if (match) {
+            if (!match) {
                 result.at<uchar>(x + markerX, y + markerY) = 255;
             }
         }
