@@ -494,12 +494,14 @@ cv::Mat GrayscaleImageProcessor::robertsOperator1(cv::Mat image) {
     return result;
 }
 
-cv::Mat GrayscaleImageProcessor::regionGrowing(cv::Mat image) {
+cv::Mat GrayscaleImageProcessor::regionGrowing(cv::Mat image, int criterion) {
     cv::Mat imageSegmentationMasks = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
     int seedXGridSpacing = image.rows / 10;
     int seedYGridSpacing = image.cols / 10;
     int currentMask = 0;
     const double thresholdK = 0.1;
+    const double thresholdMean = 20;
+    const double thresholdAbs = 20;
     std::array<std::array<int, 2>, 4> dirs = {
         {
             {1, 0},
@@ -525,10 +527,16 @@ cv::Mat GrayscaleImageProcessor::regionGrowing(cv::Mat image) {
                     for(auto& dir: dirs) {
                         int newX = currentX + dir[0];
                         int newY = currentY + dir[1];
-                        if (newX >= 0 && newX < image.rows && newY >= 0 && newY < image.cols
+                        if (
+                            newX >= 0 && newX < image.rows && newY >= 0 && newY < image.cols
                         && imageSegmentationMasks.at<uchar>(newX, newY) == 0
-                        && std::abs(regionMean - static_cast<double>(image.at<uchar>(newX, newY)))
-                            <= regionMean * thresholdK) {
+                        && ((std::abs(regionMean - static_cast<double>(image.at<uchar>(newX, newY)))
+                            <= regionMean * thresholdK && criterion == 0)
+                        || (std::abs(regionMean - static_cast<double>(image.at<uchar>(newX, newY)))
+                            <= thresholdMean && criterion == 1)
+                        || (std::abs(image.at<uchar>(seedX, seedY) - static_cast<double>(image.at<uchar>(newX, newY)))
+                            <= thresholdAbs && criterion == 2))
+                            ) {
                             queue.emplace(newX, newY);
                             imageSegmentationMasks.at<uchar>(newX, newY) = currentMask;
                             double regionSum = regionMean * regionCount;

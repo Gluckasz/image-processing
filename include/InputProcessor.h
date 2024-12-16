@@ -71,7 +71,7 @@ private:
     std::optional<int> closingMask;
     std::optional<int> hmtMask;
     bool isTaskM4 = false;
-    bool isRegionGrowing = false;
+    std::optional<int> regionGrowing;
 
     enum class CommandType {
         HELP,

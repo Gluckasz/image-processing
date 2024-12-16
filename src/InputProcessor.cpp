@@ -110,7 +110,8 @@ void InputProcessor::printCommands() {
             << commandToStringMap.find(CommandType::TASK_M4)->second
             << " - complete task M4.\n\n"
             << commandToStringMap.find(CommandType::REGION_GROWING)->second
-            << " - make image segmentation using region growing method.\n\n";
+            << " - make image segmentation using region growing method.\n"
+            << "\t -criterion - criterion to choose (0- adaptive mean distance, 1- fixed mean distance, 2- absolute distance)\n\n";
 }
 
 template<typename T>
@@ -359,7 +360,9 @@ void InputProcessor::processInput() {
                 break;
 
             case CommandType::REGION_GROWING:
-                isRegionGrowing = true;
+                if (++i < argc) {
+                    readParam(argv[i], "-criterion=", regionGrowing, "Criterion must be an integer between 0 and 2.");
+                }
                 break;
 
             case CommandType::UNKNOWN:
@@ -670,8 +673,8 @@ void InputProcessor::processImage() const {
 
     calculateAndSaveImageStats(newImage, imageProcessor);
 
-    if (isRegionGrowing) {
-        cv::Mat segmentedImage = imageProcessor->regionGrowing(newImage);
+    if (regionGrowing.has_value()) {
+        cv::Mat segmentedImage = imageProcessor->regionGrowing(newImage, regionGrowing.value());
         saveImage(segmentedImage, outputFileName.substr(0, outputFileName.length() - 4) +
                                         "_segmentation.bmp");
         cv::Mat segmentedColorImage = imageProcessor->applyColorMap(segmentedImage, imageProcessor->createColorMap());
