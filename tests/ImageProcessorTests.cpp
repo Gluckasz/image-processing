@@ -231,3 +231,48 @@ TEST_F(ImageProcessorTest, ClosingTest) {
         }
     }
 }
+
+TEST_F(ImageProcessorTest, HmtTest) {
+    blackImageGrayscale.at<uchar>(1, 1) = 255;
+    whiteImageGrayscale.at<uchar>(1, 1) = 0;
+
+    cv::Mat blackAfterHmt = grayscaleImageProcessor->hmt(blackImageGrayscale, 1);
+    cv::Mat whiteAfterHmt = grayscaleImageProcessor->hmt(whiteImageGrayscale, 1);
+
+    for (int x = 0; x < blackImageGrayscale.rows; x++) {
+        for (int y = 0; y < blackImageGrayscale.cols; y++) {
+            EXPECT_EQ(0, blackAfterHmt.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+            if (x == 1 && y == 1)
+                EXPECT_EQ(255, whiteAfterHmt.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            else
+                EXPECT_EQ(0, whiteAfterHmt.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+        }
+    }
+}
+
+TEST_F(ImageProcessorTest, TaskM4Test) {
+    blackImageGrayscale.at<uchar>(1, 1) = 255;
+    whiteImageGrayscale.at<uchar>(1, 1) = 0;
+
+    cv::Mat blackAfterTaskM4 = grayscaleImageProcessor->taskM4(blackImageGrayscale);
+    cv::Mat whiteAfterTaskM4 = grayscaleImageProcessor->taskM4(whiteImageGrayscale);
+
+    for (int x = 0; x < blackImageGrayscale.rows; x++) {
+        for (int y = 0; y < blackImageGrayscale.cols; y++) {
+            if (x == 1 && y == 1) {
+                EXPECT_EQ(255, blackAfterTaskM4.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+                EXPECT_EQ(0, whiteAfterTaskM4.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            } else {
+                EXPECT_EQ(0, blackAfterTaskM4.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+                EXPECT_EQ(255, whiteAfterTaskM4.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            }
+        }
+    }
+}
