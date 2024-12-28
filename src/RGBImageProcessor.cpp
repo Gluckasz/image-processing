@@ -612,4 +612,3 @@ cv::Mat RGBImageProcessor::regionGrowing(cv::Mat image, int criterion) {
     }
     return imageSegmentationMasks;
 }
-
