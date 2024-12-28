@@ -208,8 +208,21 @@ const std::unordered_map<int, std::vector<std::vector<ImageProcessor::FieldType>
 
 cv::Mat ImageProcessor::dilation(cv::Mat image, int maskNumber,
     std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping) {
+    if (image.empty()) {
+        throw std::invalid_argument("Image cannot be empty");
+    }
+    if (maskMapping == maskMap) {
+        if (maskNumber < 1 || maskNumber > 10) {
+            throw std::out_of_range("Mask number has to be between 1 and 10 inclusive for maskMap");
+        }
+    } else {
+        if (maskNumber < 1 || maskNumber > 12) {
+            throw std::out_of_range("Mask number has to be between 1 and 12 inclusive for hmtMaskMap");
+        }
+    }
 
-    cv::Mat result = cv::Mat::zeros(image.size(), CV_8UC1);
+
+    cv::Mat result = image.clone();
     std::vector<std::vector<FieldType>> mask = maskMapping.find(maskNumber)->second;
 
     int markerX = 0, markerY = 0;
@@ -240,13 +253,13 @@ cv::Mat ImageProcessor::dilation(cv::Mat image, int maskNumber,
                     }
                     if (mask[i][j] == FieldType::BLACK_MARKER ||
                         mask[i][j] == FieldType::BLACK) {
-                        if (image.at<uchar>(x + i, y + j) == 0) {
+                        if (image.at<uchar>(x + j, y + i) == 0) {
                             shouldDilate = true;
                         }
                     }
                     else if (mask[i][j] == FieldType::WHITE_MARKER ||
                              mask[i][j] == FieldType::WHITE) {
-                        if (image.at<uchar>(x + i, y + j) == 255) {
+                        if (image.at<uchar>(x + j, y + i) == 255) {
                             shouldDilate = true;
                         }
                     }
@@ -262,8 +275,20 @@ cv::Mat ImageProcessor::dilation(cv::Mat image, int maskNumber,
 
 cv::Mat ImageProcessor::erosion(cv::Mat image, int maskNumber,
     std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping) {
+    if (image.empty()) {
+        throw std::invalid_argument("Image cannot be empty");
+    }
+    if (maskMapping == maskMap) {
+        if (maskNumber < 1 || maskNumber > 10) {
+            throw std::out_of_range("Mask number has to be between 1 and 10 inclusive for maskMap");
+        }
+    } else {
+        if (maskNumber < 1 || maskNumber > 12) {
+            throw std::out_of_range("Mask number has to be between 1 and 12 inclusive for hmtMaskMap");
+        }
+    }
 
-    cv::Mat result = cv::Mat::zeros(image.size(), CV_8UC1);
+    cv::Mat result = image.clone();
     std::vector<std::vector<FieldType>> mask = maskMapping.find(maskNumber)->second;
 
     int markerX = 0, markerY = 0;
@@ -313,6 +338,7 @@ cv::Mat ImageProcessor::erosion(cv::Mat image, int maskNumber,
 
     return result;
 }
+
 cv::Mat ImageProcessor::opening(cv::Mat image, int maskNumber, std::unordered_map<int, std::vector<std::vector<FieldType>>> maskMapping) {
     cv::Mat result = image.clone();
     result = this->erosion(result, maskNumber, maskMapping);
