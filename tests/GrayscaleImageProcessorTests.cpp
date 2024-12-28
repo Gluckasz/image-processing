@@ -576,3 +576,25 @@ TEST_F(GrayscaleImageProcessorTest, RobertsOperator1Test) {
     EXPECT_EQ(20, imageAfterModification.at<uchar>(1, 2));
     EXPECT_EQ(0, imageAfterModification.at<uchar>(2, 2));
 }
+
+TEST_F(GrayscaleImageProcessorTest, RegionGrowingTest) {
+    cv::Mat image = cv::Mat::zeros(cv::Size(40, 40), CV_8UC1);
+    image.at<uchar>(20, 19) = 99;
+    image.at<uchar>(20, 20) = 100;
+    image.at<uchar>(20, 21) = 255;
+
+    for (int i = 0; i < 3; i++) {
+        cv::Mat segmentationMasks = grayscaleImageProcessor->regionGrowing(image, i);
+        for (int x = 0; x < image.rows; x++) {
+            for (int y = 0; y < image.cols; y++) {
+                if ((x == 20 && y == 20) || (x == 20 && y == 19)) {
+                    EXPECT_EQ(2, segmentationMasks.at<uchar>(x, y));
+                } else if (x == 20 && y == 21) {
+                    EXPECT_EQ(0, segmentationMasks.at<uchar>(x, y));
+                } else {
+                    EXPECT_EQ(1, segmentationMasks.at<uchar>(x, y));
+                }
+            }
+        }
+    }
+}

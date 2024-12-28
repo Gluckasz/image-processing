@@ -649,3 +649,25 @@ TEST_F(RGBImageProcessorTest, RobertsOperator1Test) {
         EXPECT_EQ(0, imageAfterModification.at<cv::Vec3b>(2, 2)[z]);
     }
 }
+
+TEST_F(RGBImageProcessorTest, RegionGrowingTest) {
+    cv::Mat image = cv::Mat::zeros(cv::Size(40, 40), CV_8UC3);
+    image.at<cv::Vec3b>(20, 19) = 99;
+    image.at<cv::Vec3b>(20, 20) = 100;
+    image.at<cv::Vec3b>(20, 21) = 255;
+
+    for (int i = 0; i < 3; i++) {
+        cv::Mat segmentationMasks = rgbImageProcessor->regionGrowing(image, i);
+        for (int x = 0; x < image.rows; x++) {
+            for (int y = 0; y < image.cols; y++) {
+                if ((x == 20 && y == 20) || (x == 20 && y == 19)) {
+                    EXPECT_EQ(2, segmentationMasks.at<uchar>(x, y));
+                } else if (x == 20 && y == 21) {
+                    EXPECT_EQ(0, segmentationMasks.at<uchar>(x, y));
+                } else {
+                    EXPECT_EQ(1, segmentationMasks.at<uchar>(x, y));
+                }
+            }
+        }
+    }
+}
