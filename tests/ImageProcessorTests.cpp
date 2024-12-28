@@ -12,13 +12,11 @@ protected:
     ImageProcessorTest() {
         grayscaleImageProcessor = std::make_unique<GrayscaleImageProcessor>();
         blackImageGrayscale = cv::Mat::zeros(cv::Size(imageWidth, imageHeight), CV_8UC1);
-        largerBlackImageGrayscale = cv::Mat::zeros(cv::Size(imageWidth * 2, imageHeight * 2), CV_8UC1);
         whiteImageGrayscale = cv::Mat(cv::Size(imageWidth, imageHeight), CV_8UC1, cv::Scalar(UCHAR_MAX));
     }
 
     std::unique_ptr<ImageProcessor> grayscaleImageProcessor;
     cv::Mat blackImageGrayscale;
-    cv::Mat largerBlackImageGrayscale;
     cv::Mat whiteImageGrayscale;
 
     const uchar imageWidth= 4;
