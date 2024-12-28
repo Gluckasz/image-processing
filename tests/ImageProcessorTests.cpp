@@ -197,3 +197,37 @@ TEST_F(ImageProcessorTest, ErosionErrorConditionsTest) {
     EXPECT_THROW(grayscaleImageProcessor->erosion(blackImageGrayscale, invalidMaskNumber,
         ImageProcessor::hmtMaskMap), std::out_of_range);
 }
+
+TEST_F(ImageProcessorTest, OpeningTest) {
+    blackImageGrayscale.at<uchar>(1, 1) = 255;
+    whiteImageGrayscale.at<uchar>(1, 1) = 0;
+
+    cv::Mat blackAfterOpening = grayscaleImageProcessor->opening(blackImageGrayscale, 1);
+    cv::Mat whiteAfterOpening = grayscaleImageProcessor->opening(whiteImageGrayscale, 1);
+
+    for (int x = 0; x < blackImageGrayscale.rows; x++) {
+        for (int y = 0; y < blackImageGrayscale.cols; y++) {
+            EXPECT_EQ(0, blackAfterOpening.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+            EXPECT_EQ(255, whiteAfterOpening.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+        }
+    }
+}
+
+TEST_F(ImageProcessorTest, ClosingTest) {
+    blackImageGrayscale.at<uchar>(1, 1) = 255;
+    whiteImageGrayscale.at<uchar>(1, 1) = 0;
+
+    cv::Mat blackAfterClosing = grayscaleImageProcessor->closing(blackImageGrayscale, 1);
+    cv::Mat whiteAfterClosing = grayscaleImageProcessor->closing(whiteImageGrayscale, 1);
+
+    for (int x = 0; x < blackImageGrayscale.rows; x++) {
+        for (int y = 0; y < blackImageGrayscale.cols; y++) {
+            EXPECT_EQ(0, blackAfterClosing.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+            EXPECT_EQ(255, whiteAfterClosing.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
+        }
+    }
+}
