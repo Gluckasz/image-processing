@@ -111,7 +111,9 @@ void InputProcessor::printCommands() {
             << " - complete task M4.\n\n"
             << commandToStringMap.find(CommandType::REGION_GROWING)->second
             << " - make image segmentation using region growing method.\n"
-            << "\t -criterion - criterion to choose (0- adaptive mean distance, 1- fixed mean distance, 2- absolute distance)\n\n";
+            << "\t -criterion - criterion to choose (0- adaptive mean distance, 1- fixed mean distance, 2- absolute distance)\n\n"
+            << commandToStringMap.find(CommandType::FOURIER_TRANSFORM)->second
+            << " - do the fourier transform and then inverse fourier transform.\n\n";
 }
 
 template<typename T>
@@ -365,6 +367,10 @@ void InputProcessor::processInput() {
                 }
                 break;
 
+            case CommandType::FOURIER_TRANSFORM:
+                isFourierTransform = true;
+                break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -489,6 +495,16 @@ const {
 
     if(isTaskM4) {
         image = imageProcessor->taskM4(image);
+    }
+
+    if (!std::filesystem::is_directory(OUTPUT_DIR_NAME) || !std::filesystem::exists(OUTPUT_DIR_NAME)) {
+        std::filesystem::create_directory(OUTPUT_DIR_NAME);
+    }
+
+    if(isFourierTransform) {
+        image = imageProcessor->fourierTransform(image,
+            OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + "_fourier_visualization" + ".bmp");
+        image = imageProcessor->inverseFourierTransform(image);
     }
 }
 

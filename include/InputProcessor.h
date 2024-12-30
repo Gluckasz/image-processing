@@ -72,6 +72,7 @@ private:
     std::optional<int> hmtMask;
     bool isTaskM4 = false;
     std::optional<int> regionGrowing;
+    bool isFourierTransform = false;
 
     enum class CommandType {
         HELP,
@@ -114,6 +115,7 @@ private:
         HMT,
         TASK_M4,
         REGION_GROWING,
+        FOURIER_TRANSFORM,
         UNKNOWN // For unrecognized commands
      };
 
@@ -158,6 +160,7 @@ private:
         {"--hmt", CommandType::HMT},
         {"--taskM4", CommandType::TASK_M4},
         {"--regionGrowing", CommandType::REGION_GROWING},
+        {"--fourierTransform", CommandType::FOURIER_TRANSFORM},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -201,6 +204,7 @@ private:
         {CommandType::HMT, "--hmt"},
         {CommandType::TASK_M4, "--taskM4"},
         {CommandType::REGION_GROWING, "--regionGrowing"},
+        {CommandType::FOURIER_TRANSFORM, "--fourierTransform"},
     };
 
     /**
