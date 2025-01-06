@@ -47,7 +47,6 @@ public:
     virtual cv::Mat optimizedLaplacianFilter(cv::Mat image) = 0;
     virtual cv::Mat robertsOperator1(cv::Mat image) = 0;
     virtual cv::Mat regionGrowing(cv::Mat image, int criterion) = 0;
-    virtual cv::Mat fourierTransform(cv::Mat image, std::string fourierVisPath) = 0;
     virtual cv::Mat inverseFourierTransform(cv::Mat image) = 0;
 
     enum class FieldType {
@@ -71,6 +70,8 @@ public:
 
     std::vector<cv::Vec3b> createColorMap();
     cv::Mat applyColorMap(const cv::Mat& grayscaleMask, const std::vector<cv::Vec3b>& colorMap);
+
+    cv::Mat fourierTransform(cv::Mat image, const std::string& fourierVisPath);
 };
 
 #endif //IMAGEPROCESSOR_H

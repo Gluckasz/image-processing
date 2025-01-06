@@ -613,10 +613,6 @@ cv::Mat RGBImageProcessor::regionGrowing(cv::Mat image, int criterion) {
     return imageSegmentationMasks;
 }
 
-cv::Mat RGBImageProcessor::fourierTransform(cv::Mat image, std::string fourierVisPath) {
-    return image;
-}
-
 cv::Mat RGBImageProcessor::inverseFourierTransform(cv::Mat image) {
     return image;
 }

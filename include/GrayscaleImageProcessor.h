@@ -108,7 +108,6 @@ public:
     cv::Mat optimizedLaplacianFilter(cv::Mat image) override;
     cv::Mat robertsOperator1(cv::Mat image) override;
     cv::Mat regionGrowing(cv::Mat image, int criterion) override;
-    cv::Mat fourierTransform(cv::Mat image, std::string fourierVisPath) override;
     cv::Mat inverseFourierTransform(cv::Mat image) override;
 };
 
