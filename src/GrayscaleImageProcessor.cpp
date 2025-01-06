@@ -552,83 +552,53 @@ cv::Mat GrayscaleImageProcessor::regionGrowing(cv::Mat image, int criterion) {
     return imageSegmentationMasks;
 }
 
-cv::Mat GrayscaleImageProcessor::inverseFourierTransform(std::vector<cv::Mat> image) {
-    int M = image[0].rows;
-    int N = image[0].cols;
-
-    cv::Mat shiftedInput = image[0].clone();
-    #pragma omp parallel for
-    for (int u = 0; u < M / 2; u++) {
-        for (int v = 0; v < N / 2; v++) {
-            cv::Vec2d temp = shiftedInput.at<cv::Vec2d>(u, v);
-            shiftedInput.at<cv::Vec2d>(u, v) = shiftedInput.at<cv::Vec2d>(u + M/2, v + N/2);
-            shiftedInput.at<cv::Vec2d>(u + M/2, v + N/2) = temp;
-
-            temp = shiftedInput.at<cv::Vec2d>(u + M/2, v);
-            shiftedInput.at<cv::Vec2d>(u + M/2, v) = shiftedInput.at<cv::Vec2d>(u, v + N/2);
-            shiftedInput.at<cv::Vec2d>(u, v + N/2) = temp;
-        }
-    }
-
-    cv::Mat complexResult = cv::Mat::zeros(M, N, CV_64FC2);
+cv::Mat GrayscaleImageProcessor::inverseFourierTransform(std::vector<cv::Mat> fourierImages) {
+    int M = fourierImages[0].rows;
+    int N = fourierImages[0].cols;
+    cv::Mat result = cv::Mat::zeros(M, N, CV_8UC1);
 
     std::vector<std::complex<double>> rowExps(M * M), colExps(N * N);
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int u = 0; u < M; u++) {
         for (int x = 0; x < M; x++) {
             rowExps[u * M + x] = std::exp(std::complex<double>(0, 2.0 * std::numbers::pi * (static_cast<double>(u * x) / M)));
         }
     }
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int v = 0; v < N; v++) {
         for (int y = 0; y < N; y++) {
             colExps[v * N + y] = std::exp(std::complex<double>(0, 2.0 * std::numbers::pi * (static_cast<double>(v * y) / N)));
         }
     }
 
-    #pragma omp parallel for
-    for (int u = 0; u < M; u++) {
-        for (int v = 0; v < N; v++) {
+    cv::Mat shiftedInput = fourierImages[0].clone();
+
+    for (int u = 0; u < M / 2; u++) {
+        for (int v = 0; v < N / 2; v++) {
+            std::swap(shiftedInput.at<cv::Vec2d>(u, v), shiftedInput.at<cv::Vec2d>(u + M/2, v + N/2));
+            std::swap(shiftedInput.at<cv::Vec2d>(u + M/2, v), shiftedInput.at<cv::Vec2d>(u, v + N/2));
+        }
+    }
+
+#pragma omp parallel for collapse(2)
+    for (int x = 0; x < M; x++) {
+        for (int y = 0; y < N; y++) {
             std::complex<double> sum(0, 0);
-            for (int x = 0; x < M; x++) {
+            for (int u = 0; u < M; u++) {
                 const auto factorX = rowExps[u * M + x];
-                for (int y = 0; y < N; y++) {
-                    cv::Vec2d value = shiftedInput.at<cv::Vec2d>(x, y);
+                for (int v = 0; v < N; v++) {
+                    cv::Vec2d value = shiftedInput.at<cv::Vec2d>(u, v);
                     std::complex<double> input(value[0], value[1]);
                     sum += input * factorX * colExps[v * N + y];
                 }
             }
-            complexResult.at<cv::Vec2d>(u, v)[0] = sum.real() / (M * N);
-            complexResult.at<cv::Vec2d>(u, v)[1] = sum.imag() / (M * N);
-        }
-        std::cout << "Done: " << u << " u iterations." << "\n";
-    }
-
-    cv::Mat result = cv::Mat::zeros(M, N, CV_8UC1);
-    double minVal = DBL_MAX, maxVal = -DBL_MAX;
-
-    #pragma omp parallel for collapse(2) reduction(min:minVal) reduction(max:maxVal)
-    for(int u = 0; u < M; u++) {
-        for(int v = 0; v < N; v++) {
-            double magnitude = std::sqrt(
-                std::pow(complexResult.at<cv::Vec2d>(u, v)[0], 2) +
-                std::pow(complexResult.at<cv::Vec2d>(u, v)[1], 2)
+            double pixelValue = std::abs(sum) / (M * N);
+            result.at<uchar>(x, y) = static_cast<uchar>(
+                std::min(255.0, std::max(0.0, std::round(pixelValue)))
             );
-            minVal = std::min(minVal, magnitude);
-            maxVal = std::max(maxVal, magnitude);
         }
-    }
-
-    #pragma omp parallel for collapse(2)
-    for(int u = 0; u < M; u++) {
-        for(int v = 0; v < N; v++) {
-            double magnitude = std::sqrt(
-                std::pow(complexResult.at<cv::Vec2d>(u, v)[0], 2) +
-                std::pow(complexResult.at<cv::Vec2d>(u, v)[1], 2)
-            );
-            result.at<uchar>(u, v) = static_cast<uchar>((magnitude - minVal) * 255.0 / (maxVal - minVal));
-        }
+        std::cout << "Done: " << x << " u iterations." << "\n";
     }
 
     return result;
