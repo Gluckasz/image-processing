@@ -47,7 +47,7 @@ public:
     virtual cv::Mat optimizedLaplacianFilter(cv::Mat image) = 0;
     virtual cv::Mat robertsOperator1(cv::Mat image) = 0;
     virtual cv::Mat regionGrowing(cv::Mat image, int criterion) = 0;
-    virtual cv::Mat inverseFourierTransform(cv::Mat image) = 0;
+    virtual cv::Mat inverseFourierTransform(std::vector<cv::Mat> image) = 0;
 
     enum class FieldType {
         WHITE,

@@ -552,11 +552,11 @@ cv::Mat GrayscaleImageProcessor::regionGrowing(cv::Mat image, int criterion) {
     return imageSegmentationMasks;
 }
 
-cv::Mat GrayscaleImageProcessor::inverseFourierTransform(cv::Mat image) {
-    int M = image.rows;
-    int N = image.cols;
+cv::Mat GrayscaleImageProcessor::inverseFourierTransform(std::vector<cv::Mat> image) {
+    int M = image[0].rows;
+    int N = image[0].cols;
 
-    cv::Mat shiftedInput = image.clone();
+    cv::Mat shiftedInput = image[0].clone();
     #pragma omp parallel for
     for (int u = 0; u < M / 2; u++) {
         for (int v = 0; v < N / 2; v++) {
