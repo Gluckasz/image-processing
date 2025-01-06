@@ -502,9 +502,23 @@ const {
     }
 
     if(isFourierTransform) {
-        image = imageProcessor->fourierTransform(image,
-            OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + "_fourier_visualization" + ".bmp");
-        image = imageProcessor->inverseFourierTransform(image);
+        if (imreadMode == cv::IMREAD_COLOR) {
+            std::vector<cv::Mat> channels, fourierImages;
+            cv::split(image, channels);
+            for (int i = 0; i < 3; i++) {
+                fourierImages.push_back(imageProcessor->fourierTransform(channels[i],
+                OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
+                + "_fourier_visualization_channel" + std::to_string(i) + ".bmp"));
+            }
+
+            image = imageProcessor->inverseFourierTransform(fourierImages);
+        } else {
+            std::vector<cv::Mat> fourierImages;
+            fourierImages.push_back(imageProcessor->fourierTransform(image,
+                OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
+                + "_fourier_visualization_channel0" + ".bmp"));
+            image = imageProcessor->inverseFourierTransform(fourierImages);
+        }
     }
 }
 

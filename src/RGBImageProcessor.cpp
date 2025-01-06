@@ -613,8 +613,56 @@ cv::Mat RGBImageProcessor::regionGrowing(cv::Mat image, int criterion) {
     return imageSegmentationMasks;
 }
 
-cv::Mat RGBImageProcessor::inverseFourierTransform(cv::Mat image) {
-    return image;
+cv::Mat RGBImageProcessor::inverseFourierTransform(std::vector<cv::Mat> fourierImages) {
+    int M = fourierImages[0].rows;
+    int N = fourierImages[0].cols;
+    cv::Mat result = cv::Mat::zeros(M, N, CV_8UC3);
+
+    std::vector<std::complex<double>> rowExps(M * M), colExps(N * N);
+#pragma omp parallel for
+    for (int u = 0; u < M; u++) {
+        for (int x = 0; x < M; x++) {
+            rowExps[u * M + x] = std::exp(std::complex<double>(0, 2.0 * std::numbers::pi * (static_cast<double>(u * x) / M)));
+        }
+    }
+
+#pragma omp parallel for
+    for (int v = 0; v < N; v++) {
+        for (int y = 0; y < N; y++) {
+            colExps[v * N + y] = std::exp(std::complex<double>(0, 2.0 * std::numbers::pi * (static_cast<double>(v * y) / N)));
+        }
+    }
+
+    for (int channel = 0; channel < fourierImages.size(); channel++) {
+        cv::Mat shiftedInput = fourierImages[channel].clone();
+
+        for (int u = 0; u < M / 2; u++) {
+            for (int v = 0; v < N / 2; v++) {
+                std::swap(shiftedInput.at<cv::Vec2d>(u, v), shiftedInput.at<cv::Vec2d>(u + M/2, v + N/2));
+                std::swap(shiftedInput.at<cv::Vec2d>(u + M/2, v), shiftedInput.at<cv::Vec2d>(u, v + N/2));
+            }
+        }
+
+#pragma omp parallel for collapse(2)
+        for (int x = 0; x < M; x++) {
+            for (int y = 0; y < N; y++) {
+                std::complex<double> sum(0, 0);
+                for (int u = 0; u < M; u++) {
+                    const auto factorX = rowExps[u * M + x];
+                    for (int v = 0; v < N; v++) {
+                        cv::Vec2d value = shiftedInput.at<cv::Vec2d>(u, v);
+                        std::complex<double> input(value[0], value[1]);
+                        sum += input * factorX * colExps[v * N + y];
+                    }
+                }
+                double pixelValue = std::abs(sum) / (M * N);
+                result.at<cv::Vec3b>(x, y)[channel] = static_cast<uchar>(
+                    std::min(255.0, std::max(0.0, std::round(pixelValue)))
+                );
+            }
+            std::cout << "Done: " << x << " u iterations." << "\n";
+        }
+    }
+
+    return result;
 }
-
-
