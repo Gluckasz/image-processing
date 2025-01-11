@@ -79,6 +79,9 @@ private:
     bool isBandPass = false;
     std::optional<int> lowCut;
     std::optional<int> highCut;
+    bool isBandCut = false;
+    std::optional<int> lowPass;
+    std::optional<int> highPass;
 
     enum class CommandType {
         HELP,
@@ -126,6 +129,7 @@ private:
         FFT_LOW_PASS,
         FFT_HIGH_PASS,
         FFT_BAND_PASS,
+        FFT_BAND_CUT,
         UNKNOWN // For unrecognized commands
      };
 
@@ -175,6 +179,7 @@ private:
         {"--fftLowPass", CommandType::FFT_LOW_PASS},
         {"--fftHighPass", CommandType::FFT_HIGH_PASS},
         {"--fftBandPass", CommandType::FFT_BAND_PASS},
+        {"--fftBandCut", CommandType::FFT_BAND_CUT},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -223,6 +228,7 @@ private:
         {CommandType::FFT_LOW_PASS, "--fftLowPass"},
         {CommandType::FFT_HIGH_PASS, "--fftHighPass"},
         {CommandType::FFT_BAND_PASS, "--fftBandPass"},
+        {CommandType::FFT_BAND_CUT, "--fftBandCut"},
     };
 
     /**

@@ -125,7 +125,11 @@ void InputProcessor::printCommands() {
     << commandToStringMap.find(CommandType::FFT_BAND_PASS)->second
     << " - do the band pass filter after fast fourier transform and then inverse fast fourier transform.\n"
     << "\t -lowCut - radius of the lower bound circle, which will be cut (with high pass filter)\n"
-    << "\t -highCut - radius of the upper bound circle up to which the fourier image will be preserved (with low pass filter).\n\n";
+    << "\t -highCut - radius of the upper bound circle up to which the fourier image will be preserved (with low pass filter).\n\n"
+    << commandToStringMap.find(CommandType::FFT_BAND_CUT)->second
+    << " - do the band cut filter after fast fourier transform and then inverse fast fourier transform.\n"
+    << "\t -lowPass- radius of the larger circle. Between its edge and the smaller circle the area will be cut.\n"
+    << "\t -highPass - radius of the smaller circle. Between its edge and the larger circle the area will be cut\n\n";
 }
 
 template<typename T>
@@ -412,6 +416,17 @@ void InputProcessor::processInput() {
                 }
                 break;
 
+            case CommandType::FFT_BAND_CUT:
+                isFastFourierTransform = true;
+                isBandCut = true;
+                if (++i < argc) {
+                    readParam(argv[i], "-lowPass=", lowPass, "Band value must be an integer.");
+                }
+                if (++i < argc) {
+                    readParam(argv[i], "-highPass=", highPass, "Band value must be an integer.");
+                }
+                break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -454,6 +469,15 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
                     fourierVisPath + std::to_string(i) + "_after_band_pass.bmp"
                     );
             }
+
+            if (isBandCut) {
+                fourierImage = imageProcessor->fftBandCut(
+                    fourierImage,
+                    lowPass.value(),
+                    highPass.value(),
+                    fourierVisPath + std::to_string(i) + "_after_band_cut.bmp"
+                    );
+            }
             fourierImages.push_back(fourierImage);
         }
 
@@ -482,6 +506,14 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
                 lowCut.value(),
                 highCut.value(),
                 fourierVisPath + "0_after_band_pass.bmp"
+                );
+        }
+        if (isBandCut) {
+            fourierImage = imageProcessor->fftBandCut(
+                fourierImage,
+                lowPass.value(),
+                highPass.value(),
+                fourierVisPath + "0_after_band_cut.bmp"
                 );
         }
         fourierImages.push_back(fourierImage);
