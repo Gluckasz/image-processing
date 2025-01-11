@@ -12,10 +12,12 @@
 
 class ImageProcessor {
     cv::Mat complement(cv::Mat image);
-    bool areEqual(cv::Mat image1, cv::Mat image2);
     cv::Mat imagesUnion(cv::Mat image1, cv::Mat image2);
     void visualizeFourier(cv::Mat fourierImage, const std::string& fourierVisPath);
+protected:
+    bool areEqual(cv::Mat image1, cv::Mat image2);
     void fft1D(cv::Mat row);
+    void ifft1D(cv::Mat row);
 public:
     virtual ~ImageProcessor() = default;
 
@@ -50,6 +52,7 @@ public:
     virtual cv::Mat robertsOperator1(cv::Mat image) = 0;
     virtual cv::Mat regionGrowing(cv::Mat image, int criterion) = 0;
     virtual cv::Mat inverseFourierTransform(std::vector<cv::Mat> fourierImages) = 0;
+    virtual cv::Mat inverseFastFourierTransform(std::vector<cv::Mat> fourierImages) = 0;
 
     enum class FieldType {
         WHITE,

@@ -566,6 +566,48 @@ void ImageProcessor::fft1D(cv::Mat row) {
     }
 }
 
+void ImageProcessor::ifft1D(cv::Mat row) {
+    int n = row.cols;
+
+    int j = 0;
+    for (int i = 0; i < n; i++) {
+        if (i < j) {
+            std::swap(row.at<cv::Vec2d>(i)[0], row.at<cv::Vec2d>(j)[0]);
+            std::swap(row.at<cv::Vec2d>(i)[1], row.at<cv::Vec2d>(j)[1]);
+        }
+        int bit = n >> 1;
+        while (j & bit) {
+            j ^= bit;
+            bit >>= 1;
+        }
+        j |= bit;
+    }
+
+    for (int len = 2; len <= n; len <<= 1) {
+        double theta = 2.0f * std::numbers::pi / len;
+        std::complex<double> wlen(std::cos(theta), std::sin(theta));
+        for (int i = 0; i < n; i += len) {
+            std::complex<double> w(1, 0);
+            for (int k = 0; k < len / 2; k++) {
+                std::complex<double> u(row.at<cv::Vec2d>(i + k)[0], row.at<cv::Vec2d>(i + k)[1]);
+
+                std::complex<double> t(row.at<cv::Vec2d>(i + k + len / 2)[0], row.at<cv::Vec2d>(i + k + len / 2)[1]);
+                t *= w;
+
+                std::complex<double> result1 = (u + t);
+                std::complex<double> result2 = (u - t);
+
+                row.at<cv::Vec2d>(i + k)[0] = result1.real() / n;
+                row.at<cv::Vec2d>(i + k)[1] = result1.imag() / n;
+
+                row.at<cv::Vec2d>(i + k + len / 2)[0] = result2.real() / n;
+                row.at<cv::Vec2d>(i + k + len / 2)[1] = result2.imag() / n;
+                w *= wlen;
+            }
+        }
+    }
+}
+
 
 cv::Mat ImageProcessor::fastFourierTransform(cv::Mat image, const std::string &fourierVisPath) {
     const int M = image.rows;
@@ -603,6 +645,7 @@ cv::Mat ImageProcessor::fastFourierTransform(cv::Mat image, const std::string &f
             cv::Mat col = cv::Mat::zeros(1, M, CV_64FC2);
             for (int x = 0; x < M; x++) {
                 col.at<cv::Vec2d>(y)[0] = fourierImage.at<cv::Vec2d>(x, y)[0];
+                col.at<cv::Vec2d>(y)[1] = fourierImage.at<cv::Vec2d>(x, y)[1];
             }
             fft1D(col);
             for (int x = 0; x < M; x++) {
