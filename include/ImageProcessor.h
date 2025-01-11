@@ -15,6 +15,7 @@ class ImageProcessor {
     bool areEqual(cv::Mat image1, cv::Mat image2);
     cv::Mat imagesUnion(cv::Mat image1, cv::Mat image2);
     void visualizeFourier(cv::Mat fourierImage, const std::string& fourierVisPath);
+    void fft1D(cv::Mat row);
 public:
     virtual ~ImageProcessor() = default;
 
