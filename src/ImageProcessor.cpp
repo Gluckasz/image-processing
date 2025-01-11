@@ -597,11 +597,11 @@ void ImageProcessor::ifft1D(cv::Mat row) {
                 std::complex<double> result1 = (u + t);
                 std::complex<double> result2 = (u - t);
 
-                row.at<cv::Vec2d>(i + k)[0] = result1.real() / n;
-                row.at<cv::Vec2d>(i + k)[1] = result1.imag() / n;
+                row.at<cv::Vec2d>(i + k)[0] = result1.real();
+                row.at<cv::Vec2d>(i + k)[1] = result1.imag();
 
-                row.at<cv::Vec2d>(i + k + len / 2)[0] = result2.real() / n;
-                row.at<cv::Vec2d>(i + k + len / 2)[1] = result2.imag() / n;
+                row.at<cv::Vec2d>(i + k + len / 2)[0] = result2.real();
+                row.at<cv::Vec2d>(i + k + len / 2)[1] = result2.imag();
                 w *= wlen;
             }
         }
@@ -623,37 +623,37 @@ cv::Mat ImageProcessor::fastFourierTransform(cv::Mat image, const std::string &f
     }
 
 #pragma omp parallel
-    {
+{
 #pragma omp for
-        for (int x = 0; x < M; x++) {
-            cv::Mat row = cv::Mat::zeros(1, N, CV_64FC2);
-            for (int y = 0; y < N; y++) {
-                row.at<cv::Vec2d>(y)[0] = fourierImage.at<cv::Vec2d>(x, y)[0];
-            }
-            fft1D(row);
-            for (int y = 0; y < N; y++) {
-                fourierImage.at<cv::Vec2d>(x, y)[0] = row.at<cv::Vec2d>(y)[0];
-                fourierImage.at<cv::Vec2d>(x, y)[1] = row.at<cv::Vec2d>(y)[1];
-            }
+    for (int x = 0; x < M; x++) {
+        cv::Mat row = cv::Mat::zeros(1, N, CV_64FC2);
+        for (int y = 0; y < N; y++) {
+            row.at<cv::Vec2d>(0, y)[0] = fourierImage.at<cv::Vec2d>(x, y)[0];
+        }
+        fft1D(row);
+        for (int y = 0; y < N; y++) {
+            fourierImage.at<cv::Vec2d>(x, y)[0] = row.at<cv::Vec2d>(0, y)[0];
+            fourierImage.at<cv::Vec2d>(x, y)[1] = row.at<cv::Vec2d>(0, y)[1];
         }
     }
+}
 
 #pragma omp parallel
-    {
+{
 #pragma omp for
-        for (int y = 0; y < N; y++) {
-            cv::Mat col = cv::Mat::zeros(1, M, CV_64FC2);
-            for (int x = 0; x < M; x++) {
-                col.at<cv::Vec2d>(y)[0] = fourierImage.at<cv::Vec2d>(x, y)[0];
-                col.at<cv::Vec2d>(y)[1] = fourierImage.at<cv::Vec2d>(x, y)[1];
-            }
-            fft1D(col);
-            for (int x = 0; x < M; x++) {
-                fourierImage.at<cv::Vec2d>(x, y)[0] = col.at<cv::Vec2d>(y)[0];
-                fourierImage.at<cv::Vec2d>(x, y)[1] = col.at<cv::Vec2d>(y)[1];
-            }
+    for (int y = 0; y < N; y++) {
+        cv::Mat col = cv::Mat::zeros(1, M, CV_64FC2);
+        for (int x = 0; x < M; x++) {
+            col.at<cv::Vec2d>(0, x)[0] = fourierImage.at<cv::Vec2d>(x, y)[0];
+            col.at<cv::Vec2d>(0, x)[1] = fourierImage.at<cv::Vec2d>(x, y)[1];
+        }
+        fft1D(col);
+        for (int x = 0; x < M; x++) {
+            fourierImage.at<cv::Vec2d>(x, y)[0] = col.at<cv::Vec2d>(0, x)[0];
+            fourierImage.at<cv::Vec2d>(x, y)[1] = col.at<cv::Vec2d>(0, x)[1];
         }
     }
+}
 
 #pragma omp parallel for
     for (int u = 0; u < M / 2; u++) {
