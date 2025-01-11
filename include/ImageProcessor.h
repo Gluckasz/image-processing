@@ -79,6 +79,7 @@ public:
     cv::Mat fourierTransform(cv::Mat image, const std::string& fourierVisPath);
     cv::Mat fastFourierTransform(cv::Mat image, const std::string& fourierVisPath);
     cv::Mat fftLowPass(cv::Mat fourierImage, int lowPassBandSize, const std::string& fourierVisPath);
+    cv::Mat fftHighPass(cv::Mat fourierImage, int lowPassBandSize, const std::string& fourierVisPath);
 };
 
 #endif //IMAGEPROCESSOR_H

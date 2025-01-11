@@ -118,7 +118,10 @@ void InputProcessor::printCommands() {
             << " - do the fast fourier transform and then inverse fast fourier transform.\n\n"
             << commandToStringMap.find(CommandType::FFT_LOW_PASS)->second
             << " - do the low pass filter after fast fourier transform and then inverse fast fourier transform.\n"
-            << "\t -bandValue - radius of the circle which will be preserved.\n\n";
+            << "\t -bandValue - radius of the circle which will be preserved.\n\n"
+            << commandToStringMap.find(CommandType::FFT_HIGH_PASS)->second
+            << " - do the high pass filter after fast fourier transform and then inverse fast fourier transform.\n"
+            << "\t -bandValue - radius of the circle which will not be preserved.\n\n";
 }
 
 template<typename T>
@@ -387,6 +390,13 @@ void InputProcessor::processInput() {
                 }
                 break;
 
+            case CommandType::FFT_HIGH_PASS:
+                isFastFourierTransform = true;
+                if (++i < argc) {
+                    readParam(argv[i], "-bandValue=", highPassBandSize, "Band value must be an integer.");
+                }
+                break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -413,6 +423,13 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
                     fourierVisPath + std::to_string(i) + "_after_low_pass.bmp"
                     );
             }
+            if (highPassBandSize.has_value()) {
+                fourierImage = imageProcessor->fftHighPass(
+                    fourierImage,
+                    highPassBandSize.value(),
+                    fourierVisPath + std::to_string(i) + "_after_low_pass.bmp"
+                    );
+            }
             fourierImages.push_back(fourierImage);
         }
 
@@ -425,6 +442,13 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
             fourierImage = imageProcessor->fftLowPass(
                 fourierImage,
                 lowPassBandSize.value(),
+                fourierVisPath + "_after_low_pass.bmp"
+                );
+        }
+        if (highPassBandSize.has_value()) {
+            fourierImage = imageProcessor->fftHighPass(
+                fourierImage,
+                highPassBandSize.value(),
                 fourierVisPath + "_after_low_pass.bmp"
                 );
         }
