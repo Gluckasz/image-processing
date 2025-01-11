@@ -74,6 +74,7 @@ private:
     std::optional<int> regionGrowing;
     bool isFourierTransform = false;
     bool isFastFourierTransform = false;
+    std::optional<int> lowPassBandSize;
 
     enum class CommandType {
         HELP,
@@ -118,6 +119,7 @@ private:
         REGION_GROWING,
         FOURIER_TRANSFORM,
         FAST_FOURIER_TRANSFORM,
+        FFT_LOW_PASS,
         UNKNOWN // For unrecognized commands
      };
 
@@ -164,6 +166,7 @@ private:
         {"--regionGrowing", CommandType::REGION_GROWING},
         {"--fourierTransform", CommandType::FOURIER_TRANSFORM},
         {"--fastFourierTransform", CommandType::FAST_FOURIER_TRANSFORM},
+        {"--fftLowPass", CommandType::FFT_LOW_PASS},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -209,6 +212,7 @@ private:
         {CommandType::REGION_GROWING, "--regionGrowing"},
         {CommandType::FOURIER_TRANSFORM, "--fourierTransform"},
         {CommandType::FAST_FOURIER_TRANSFORM, "--fastFourierTransform"},
+        {CommandType::FFT_LOW_PASS, "--fftLowPass"},
     };
 
     /**
@@ -241,6 +245,8 @@ private:
      * Saves given image to the output/outputFileName file.
     */
     void saveImage(cv::Mat image, std::string outputFileName) const;
+
+    cv::Mat applyFastFourier(cv::Mat image, const std::string& fourierVisPath, std::unique_ptr<ImageProcessor> &imageProcessor) const;
 };
 
 

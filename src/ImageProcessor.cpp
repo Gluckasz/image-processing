@@ -673,3 +673,18 @@ cv::Mat ImageProcessor::fastFourierTransform(cv::Mat image, const std::string &f
     return fourierImage;
 }
 
+cv::Mat ImageProcessor::fftLowPass(cv::Mat fourierImage, int lowPassBandSize, const std::string& fourierVisPath) {
+    cv::Mat result = fourierImage.clone();
+    for (int x = 0; x < fourierImage.rows; x++) {
+        for (int y = 0; y < fourierImage.cols; y++) {
+            if (sqrt(pow(fourierImage.rows / 2 - x, 2) + pow(fourierImage.cols / 2 - y, 2)) >= lowPassBandSize) {
+                result.at<cv::Vec2d>(x, y) = 0;
+            }
+        }
+    }
+
+    visualizeFourier(result, fourierVisPath);
+
+    return result;
+}
+

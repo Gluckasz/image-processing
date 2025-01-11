@@ -115,7 +115,10 @@ void InputProcessor::printCommands() {
             << commandToStringMap.find(CommandType::FOURIER_TRANSFORM)->second
             << " - do the fourier transform and then inverse fourier transform.\n\n"
             << commandToStringMap.find(CommandType::FAST_FOURIER_TRANSFORM)->second
-            << " - do the fast fourier transform and then inverse fast fourier transform.\n\n";
+            << " - do the fast fourier transform and then inverse fast fourier transform.\n\n"
+            << commandToStringMap.find(CommandType::FFT_LOW_PASS)->second
+            << " - do the low pass filter after fast fourier transform and then inverse fast fourier transform.\n"
+            << "\t -bandValue - radius of the circle which will be preserved.\n\n";
 }
 
 template<typename T>
@@ -375,7 +378,14 @@ void InputProcessor::processInput() {
 
             case CommandType::FAST_FOURIER_TRANSFORM:
                 isFastFourierTransform = true;
-            break;
+                break;
+
+            case CommandType::FFT_LOW_PASS:
+                isFastFourierTransform = true;
+                if (++i < argc) {
+                    readParam(argv[i], "-bandValue=", lowPassBandSize, "Band value must be an integer.");
+                }
+                break;
 
             case CommandType::UNKNOWN:
             default:
@@ -386,6 +396,45 @@ void InputProcessor::processInput() {
         }
     }
 }
+
+cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fourierVisPath, std::unique_ptr<ImageProcessor> &imageProcessor) const {
+    cv::Mat result = image.clone();
+    if (imreadMode == cv::IMREAD_COLOR) {
+        std::vector<cv::Mat> channels, fourierImages;
+        cv::split(image, channels);
+        for (int i = 0; i < 3; i++) {
+            cv::Mat fourierImage = imageProcessor->fastFourierTransform(channels[i],
+            fourierVisPath + std::to_string(i) + ".bmp");
+
+            if (lowPassBandSize.has_value()) {
+                fourierImage = imageProcessor->fftLowPass(
+                    fourierImage,
+                    lowPassBandSize.value(),
+                    fourierVisPath + std::to_string(i) + "_after_low_pass.bmp"
+                    );
+            }
+            fourierImages.push_back(fourierImage);
+        }
+
+        result = imageProcessor->inverseFastFourierTransform(fourierImages);
+    } else {
+        std::vector<cv::Mat> fourierImages;
+        cv::Mat fourierImage = imageProcessor->fastFourierTransform(image,
+           fourierVisPath + "0.bmp");
+        if (lowPassBandSize.has_value()) {
+            fourierImage = imageProcessor->fftLowPass(
+                fourierImage,
+                lowPassBandSize.value(),
+                fourierVisPath + "_after_low_pass.bmp"
+                );
+        }
+        fourierImages.push_back(fourierImage);
+        result = imageProcessor->inverseFastFourierTransform(fourierImages);
+    }
+
+    return result;
+}
+
 
 void InputProcessor::applyImageTransformations(cv::Mat &image,
                                                std::unique_ptr<ImageProcessor> &imageProcessor)
@@ -514,7 +563,7 @@ const {
             for (int i = 0; i < 3; i++) {
                 fourierImages.push_back(imageProcessor->fourierTransform(channels[i],
                 OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
-                + "_fourier_visualization_channel" + std::to_string(i) + ".bmp"));
+                + "_slow_fourier_visualization_channel" + std::to_string(i) + ".bmp"));
             }
 
             image = imageProcessor->inverseFourierTransform(fourierImages);
@@ -522,29 +571,18 @@ const {
             std::vector<cv::Mat> fourierImages;
             fourierImages.push_back(imageProcessor->fourierTransform(image,
                 OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
-                + "_fourier_visualization_channel0" + ".bmp"));
+                + "_slow_fourier_visualization_channel0" + ".bmp"));
             image = imageProcessor->inverseFourierTransform(fourierImages);
         }
     }
 
     if(isFastFourierTransform) {
-        if (imreadMode == cv::IMREAD_COLOR) {
-            std::vector<cv::Mat> channels, fourierImages;
-            cv::split(image, channels);
-            for (int i = 0; i < 3; i++) {
-                fourierImages.push_back(imageProcessor->fastFourierTransform(channels[i],
-                OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
-                + "_fourier_visualization_channel" + std::to_string(i) + ".bmp"));
-            }
-
-            image = imageProcessor->inverseFastFourierTransform(fourierImages);
-        } else {
-            std::vector<cv::Mat> fourierImages;
-            fourierImages.push_back(imageProcessor->fastFourierTransform(image,
-                OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
-                + "_fourier_visualization_channel0" + ".bmp"));
-            image = imageProcessor->inverseFastFourierTransform(fourierImages);
-        }
+        image = applyFastFourier(
+            image, OUTPUT_DIR_NAME + "/"
+            + outputFileName.substr(0, outputFileName.length() - 4)
+            + "_fast_fourier_visualization_channel",
+            imageProcessor
+            );
     }
 }
 
