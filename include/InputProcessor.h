@@ -76,6 +76,9 @@ private:
     bool isFastFourierTransform = false;
     std::optional<int> lowPassBandSize;
     std::optional<int> highPassBandSize;
+    bool isBandPass = false;
+    std::optional<int> lowCut;
+    std::optional<int> highCut;
 
     enum class CommandType {
         HELP,
@@ -122,6 +125,7 @@ private:
         FAST_FOURIER_TRANSFORM,
         FFT_LOW_PASS,
         FFT_HIGH_PASS,
+        FFT_BAND_PASS,
         UNKNOWN // For unrecognized commands
      };
 
@@ -170,6 +174,7 @@ private:
         {"--fastFourierTransform", CommandType::FAST_FOURIER_TRANSFORM},
         {"--fftLowPass", CommandType::FFT_LOW_PASS},
         {"--fftHighPass", CommandType::FFT_HIGH_PASS},
+        {"--fftBandPass", CommandType::FFT_BAND_PASS},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -217,6 +222,7 @@ private:
         {CommandType::FAST_FOURIER_TRANSFORM, "--fastFourierTransform"},
         {CommandType::FFT_LOW_PASS, "--fftLowPass"},
         {CommandType::FFT_HIGH_PASS, "--fftHighPass"},
+        {CommandType::FFT_BAND_PASS, "--fftBandPass"},
     };
 
     /**

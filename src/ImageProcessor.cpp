@@ -710,3 +710,13 @@ cv::Mat ImageProcessor::fftHighPass(cv::Mat fourierImage, int highPassBandSize, 
     return result;
 }
 
+cv::Mat ImageProcessor::fftBandPass(cv::Mat fourierImage, int lowCut, int highCut, const std::string &fourierVisPath) {
+    cv::Mat result = fourierImage.clone();
+    result = fftHighPass(result, lowCut, fourierVisPath);
+    result = fftLowPass(result, highCut, fourierVisPath);
+
+    visualizeFourier(result, fourierVisPath);
+
+    return result;
+}
+

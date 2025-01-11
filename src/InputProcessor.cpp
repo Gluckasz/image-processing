@@ -11,117 +11,121 @@ InputProcessor::InputProcessor(int argc, char **argv) {
 
 void InputProcessor::printCommands() {
     std::cout
-            << "Available commands:\n"
-            << commandToStringMap.find(CommandType::HELP)->second
-            << " - print list of all the available commands with detailed description of their arguments.\n\n"
-            << commandToStringMap.find(CommandType::OUTPUT)->second
-            << "[-fileName=value] - provide output file name.\n"
-            << "\t -fileName - output file name (default is output.bmp).\n\n"
-            << commandToStringMap.find(CommandType::GRAYSCALE)->second
-            << " - read image in grayscale.\n\n"
-            << commandToStringMap.find(CommandType::BRIGHTNESS)->second
-            << "[-val=value] - modify brightness of an image.\n"
-            << "\t -val - integral value to add to each pixel (can be negative).\n\n"
-            << commandToStringMap.find(CommandType::CONTRAST_LINEAR)->second
-            << "[-val=value] - modify contrast of an image using linear contrast stretching.\n"
-            << "\t -val - new value added and subtracted from upper and lower boundary.\n\n"
-            << commandToStringMap.find(CommandType::CONTRAST_GAMMA)->second
-            << "[-val=value] - modify contrast of an image using gamma correction.\n"
-            << "\t -val - floating-point value of gamma variable.\n\n"
-            << commandToStringMap.find(CommandType::NEGATIVE)->second
-            << " - take negative of an image.\n\n"
-            << commandToStringMap.find(CommandType::HORIZONTAL_FLIP)->second
-            << " - flip the image horizontally.\n\n"
-            << commandToStringMap.find(CommandType::VERTICAL_FLIP)->second
-            << " - flip the image vertically.\n\n"
-            << commandToStringMap.find(CommandType::DIAGONAL_FLIP)->second
-            << " - flip the image diagonally.\n\n"
-            << commandToStringMap.find(CommandType::SHRINK)->second
-            << "[-val=value] - shrink an image using nearest Neighbor Method.\n"
-            << "\t -val - floating-point scale factor of new image (has to be between 0 and 1 non-inclusive).\n\n"
-            << commandToStringMap.find(CommandType::ENLARGE)->second
-            << "[-val=value] - enlarge an image using nearest Neighbor Method.\n"
-            << "\t -val - floating-point scale factor of new image (has to be greater than 1).\n\n"
-            << commandToStringMap.find(CommandType::MIDPOINT_FILTER)->second
-            << "[-val=value] - apply midpoint filter.\n"
-            << "\t -val - integer kernel size value.\n\n"
-            << commandToStringMap.find(CommandType::ARITHMETIC_MEAN_FILTER)->second
-            << " - apply arithmetic mean filter.\n"
-            << "\t -val - integer kernel size value.\n\n"
-            << commandToStringMap.find(CommandType::NO_NOISE_IMAGE)->second
-            << "[-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
-            << "\t -fileName - file name of the image with no noise.\n\n"
-            << commandToStringMap.find(CommandType::MSE)->second
-            << "- compute mean square error.\n\n"
-            << commandToStringMap.find(CommandType::PMSE)->second
-            << " - compute peak mean square error.\n\n"
-            << commandToStringMap.find(CommandType::SNR)->second
-            << " - compute signal to noise ratio.\n\n"
-            << commandToStringMap.find(CommandType::PSNR)->second
-            << " - compute peak signal to noise ratio.\n\n"
-            << commandToStringMap.find(CommandType::MAXIMUM_DIFFERENCE)->second
-            << " - compute maximum difference.\n\n"
-            << commandToStringMap.find(CommandType::HISTOGRAM)->second
-            << " - save histogram of an image to output_file_name_histogram.bmp\n"
-            << "\t -val - channel of an image for which to compute and save histogram. "
-            << "For grayscale images channel does not matter.\n\n"
-            << commandToStringMap.find(CommandType::HISTOGRAM_UNIFORM)->second
-            << " - improve the quality of an image based on its histogram.\n"
-            << "\t -gMax - output image maximum intensity.\n"
-            << "\t -gMin - output image minimum intensity.\n\n"
-            << commandToStringMap.find(CommandType::MEAN)->second
-            << " - compute mean.\n\n"
-            << commandToStringMap.find(CommandType::VARIANCE)->second
-            << " - compute variance.\n\n"
-            << commandToStringMap.find(CommandType::STANDARD_DEVIATION)->second
-            << " - compute standard deviation.\n\n"
-            << commandToStringMap.find(CommandType::VARIATION_1)->second
-            << " - compute variation coefficient I.\n\n"
-            << commandToStringMap.find(CommandType::ASYMMETRY)->second
-            << " - compute asymmetry coefficient.\n\n"
-            << commandToStringMap.find(CommandType::FLATTENING)->second
-            << " - compute flattening coefficient.\n\n"
-            << commandToStringMap.find(CommandType::VARIATION_2)->second
-            << " - compute variation coefficient II.\n\n"
-            << commandToStringMap.find(CommandType::ENTROPY)->second
-            << " - compute information source entropy.\n\n"
-            << commandToStringMap.find(CommandType::LAPLACE)->second
-            << " - apply laplacian filter.\n"
-            << "\t -val - number of mask to choose (between 0 and 2).\n\n"
-            << commandToStringMap.find(CommandType::OPTIMIZED_LAPLACE)->second
-            << " - apply optimized laplacian filter.\n\n"
-            << commandToStringMap.find(CommandType::ROBERTS_OPERATOR)->second
-            << " - apply roberts operator I.\n\n"
-            << commandToStringMap.find(CommandType::DILATION)->second
-            << " - apply dilation.\n"
-            << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
-            << commandToStringMap.find(CommandType::EROSION)->second
-            << " - apply erosion.\n"
-            << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
-            << commandToStringMap.find(CommandType::OPENING)->second
-            << " - apply opening.\n"
-            << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
-            << commandToStringMap.find(CommandType::CLOSING)->second
-            << " - apply closing.\n"
-            << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
-            << commandToStringMap.find(CommandType::HMT)->second
-            << " - apply HMT.\n"
-            << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
-            << commandToStringMap.find(CommandType::TASK_M4)->second
-            << " - complete task M4.\n\n"
-            << commandToStringMap.find(CommandType::REGION_GROWING)->second
-            << " - make image segmentation using region growing method.\n"
-            << "\t -criterion - criterion to choose (0- adaptive mean distance, 1- fixed mean distance, 2- absolute distance)\n\n"
-            << commandToStringMap.find(CommandType::FOURIER_TRANSFORM)->second
-            << " - do the fourier transform and then inverse fourier transform.\n\n"
-            << commandToStringMap.find(CommandType::FAST_FOURIER_TRANSFORM)->second
-            << " - do the fast fourier transform and then inverse fast fourier transform.\n\n"
-            << commandToStringMap.find(CommandType::FFT_LOW_PASS)->second
-            << " - do the low pass filter after fast fourier transform and then inverse fast fourier transform.\n"
-            << "\t -bandValue - radius of the circle which will be preserved.\n\n"
-            << commandToStringMap.find(CommandType::FFT_HIGH_PASS)->second
-            << " - do the high pass filter after fast fourier transform and then inverse fast fourier transform.\n"
-            << "\t -bandValue - radius of the circle which will not be preserved.\n\n";
+    << "Available commands:\n"
+    << commandToStringMap.find(CommandType::HELP)->second
+    << " - print list of all the available commands with detailed description of their arguments.\n\n"
+    << commandToStringMap.find(CommandType::OUTPUT)->second
+    << "[-fileName=value] - provide output file name.\n"
+    << "\t -fileName - output file name (default is output.bmp).\n\n"
+    << commandToStringMap.find(CommandType::GRAYSCALE)->second
+    << " - read image in grayscale.\n\n"
+    << commandToStringMap.find(CommandType::BRIGHTNESS)->second
+    << "[-val=value] - modify brightness of an image.\n"
+    << "\t -val - integral value to add to each pixel (can be negative).\n\n"
+    << commandToStringMap.find(CommandType::CONTRAST_LINEAR)->second
+    << "[-val=value] - modify contrast of an image using linear contrast stretching.\n"
+    << "\t -val - new value added and subtracted from upper and lower boundary.\n\n"
+    << commandToStringMap.find(CommandType::CONTRAST_GAMMA)->second
+    << "[-val=value] - modify contrast of an image using gamma correction.\n"
+    << "\t -val - floating-point value of gamma variable.\n\n"
+    << commandToStringMap.find(CommandType::NEGATIVE)->second
+    << " - take negative of an image.\n\n"
+    << commandToStringMap.find(CommandType::HORIZONTAL_FLIP)->second
+    << " - flip the image horizontally.\n\n"
+    << commandToStringMap.find(CommandType::VERTICAL_FLIP)->second
+    << " - flip the image vertically.\n\n"
+    << commandToStringMap.find(CommandType::DIAGONAL_FLIP)->second
+    << " - flip the image diagonally.\n\n"
+    << commandToStringMap.find(CommandType::SHRINK)->second
+    << "[-val=value] - shrink an image using nearest Neighbor Method.\n"
+    << "\t -val - floating-point scale factor of new image (has to be between 0 and 1 non-inclusive).\n\n"
+    << commandToStringMap.find(CommandType::ENLARGE)->second
+    << "[-val=value] - enlarge an image using nearest Neighbor Method.\n"
+    << "\t -val - floating-point scale factor of new image (has to be greater than 1).\n\n"
+    << commandToStringMap.find(CommandType::MIDPOINT_FILTER)->second
+    << "[-val=value] - apply midpoint filter.\n"
+    << "\t -val - integer kernel size value.\n\n"
+    << commandToStringMap.find(CommandType::ARITHMETIC_MEAN_FILTER)->second
+    << " - apply arithmetic mean filter.\n"
+    << "\t -val - integer kernel size value.\n\n"
+    << commandToStringMap.find(CommandType::NO_NOISE_IMAGE)->second
+    << "[-fileName=value] - provide image with no noise to compare with noisy and denoised image.\n"
+    << "\t -fileName - file name of the image with no noise.\n\n"
+    << commandToStringMap.find(CommandType::MSE)->second
+    << "- compute mean square error.\n\n"
+    << commandToStringMap.find(CommandType::PMSE)->second
+    << " - compute peak mean square error.\n\n"
+    << commandToStringMap.find(CommandType::SNR)->second
+    << " - compute signal to noise ratio.\n\n"
+    << commandToStringMap.find(CommandType::PSNR)->second
+    << " - compute peak signal to noise ratio.\n\n"
+    << commandToStringMap.find(CommandType::MAXIMUM_DIFFERENCE)->second
+    << " - compute maximum difference.\n\n"
+    << commandToStringMap.find(CommandType::HISTOGRAM)->second
+    << " - save histogram of an image to output_file_name_histogram.bmp\n"
+    << "\t -val - channel of an image for which to compute and save histogram. "
+    << "For grayscale images channel does not matter.\n\n"
+    << commandToStringMap.find(CommandType::HISTOGRAM_UNIFORM)->second
+    << " - improve the quality of an image based on its histogram.\n"
+    << "\t -gMax - output image maximum intensity.\n"
+    << "\t -gMin - output image minimum intensity.\n\n"
+    << commandToStringMap.find(CommandType::MEAN)->second
+    << " - compute mean.\n\n"
+    << commandToStringMap.find(CommandType::VARIANCE)->second
+    << " - compute variance.\n\n"
+    << commandToStringMap.find(CommandType::STANDARD_DEVIATION)->second
+    << " - compute standard deviation.\n\n"
+    << commandToStringMap.find(CommandType::VARIATION_1)->second
+    << " - compute variation coefficient I.\n\n"
+    << commandToStringMap.find(CommandType::ASYMMETRY)->second
+    << " - compute asymmetry coefficient.\n\n"
+    << commandToStringMap.find(CommandType::FLATTENING)->second
+    << " - compute flattening coefficient.\n\n"
+    << commandToStringMap.find(CommandType::VARIATION_2)->second
+    << " - compute variation coefficient II.\n\n"
+    << commandToStringMap.find(CommandType::ENTROPY)->second
+    << " - compute information source entropy.\n\n"
+    << commandToStringMap.find(CommandType::LAPLACE)->second
+    << " - apply laplacian filter.\n"
+    << "\t -val - number of mask to choose (between 0 and 2).\n\n"
+    << commandToStringMap.find(CommandType::OPTIMIZED_LAPLACE)->second
+    << " - apply optimized laplacian filter.\n\n"
+    << commandToStringMap.find(CommandType::ROBERTS_OPERATOR)->second
+    << " - apply roberts operator I.\n\n"
+    << commandToStringMap.find(CommandType::DILATION)->second
+    << " - apply dilation.\n"
+    << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
+    << commandToStringMap.find(CommandType::EROSION)->second
+    << " - apply erosion.\n"
+    << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
+    << commandToStringMap.find(CommandType::OPENING)->second
+    << " - apply opening.\n"
+    << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
+    << commandToStringMap.find(CommandType::CLOSING)->second
+    << " - apply closing.\n"
+    << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
+    << commandToStringMap.find(CommandType::HMT)->second
+    << " - apply HMT.\n"
+    << "\t -mask - number of mask to choose (between 1 and 10).\n\n"
+    << commandToStringMap.find(CommandType::TASK_M4)->second
+    << " - complete task M4.\n\n"
+    << commandToStringMap.find(CommandType::REGION_GROWING)->second
+    << " - make image segmentation using region growing method.\n"
+    << "\t -criterion - criterion to choose (0- adaptive mean distance, 1- fixed mean distance, 2- absolute distance)\n\n"
+    << commandToStringMap.find(CommandType::FOURIER_TRANSFORM)->second
+    << " - do the fourier transform and then inverse fourier transform.\n\n"
+    << commandToStringMap.find(CommandType::FAST_FOURIER_TRANSFORM)->second
+    << " - do the fast fourier transform and then inverse fast fourier transform.\n\n"
+    << commandToStringMap.find(CommandType::FFT_LOW_PASS)->second
+    << " - do the low pass filter after fast fourier transform and then inverse fast fourier transform.\n"
+    << "\t -bandValue - radius of the circle which will be preserved.\n\n"
+    << commandToStringMap.find(CommandType::FFT_HIGH_PASS)->second
+    << " - do the high pass filter after fast fourier transform and then inverse fast fourier transform.\n"
+    << "\t -bandValue - radius of the circle which will not be preserved.\n\n"
+    << commandToStringMap.find(CommandType::FFT_BAND_PASS)->second
+    << " - do the band pass filter after fast fourier transform and then inverse fast fourier transform.\n"
+    << "\t -lowCut - radius of the lower bound circle, which will be cut (with high pass filter)\n"
+    << "\t -highCut - radius of the upper bound circle up to which the fourier image will be preserved (with low pass filter).\n\n";
 }
 
 template<typename T>
@@ -397,6 +401,17 @@ void InputProcessor::processInput() {
                 }
                 break;
 
+            case CommandType::FFT_BAND_PASS:
+                isFastFourierTransform = true;
+                isBandPass = true;
+                if (++i < argc) {
+                    readParam(argv[i], "-lowCut=", lowCut, "Band value must be an integer.");
+                }
+                if (++i < argc) {
+                    readParam(argv[i], "-highCut=", highCut, "Band value must be an integer.");
+                }
+                break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -427,7 +442,16 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
                 fourierImage = imageProcessor->fftHighPass(
                     fourierImage,
                     highPassBandSize.value(),
-                    fourierVisPath + std::to_string(i) + "_after_low_pass.bmp"
+                    fourierVisPath + std::to_string(i) + "_after_high_pass.bmp"
+                    );
+            }
+
+            if (isBandPass) {
+                fourierImage = imageProcessor->fftBandPass(
+                    fourierImage,
+                    lowCut.value(),
+                    highCut.value(),
+                    fourierVisPath + std::to_string(i) + "_after_band_pass.bmp"
                     );
             }
             fourierImages.push_back(fourierImage);
@@ -442,14 +466,22 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
             fourierImage = imageProcessor->fftLowPass(
                 fourierImage,
                 lowPassBandSize.value(),
-                fourierVisPath + "_after_low_pass.bmp"
+                fourierVisPath + "0_after_low_pass.bmp"
                 );
         }
         if (highPassBandSize.has_value()) {
             fourierImage = imageProcessor->fftHighPass(
                 fourierImage,
                 highPassBandSize.value(),
-                fourierVisPath + "_after_low_pass.bmp"
+                fourierVisPath + "0_after_high_pass.bmp"
+                );
+        }
+        if (isBandPass) {
+            fourierImage = imageProcessor->fftBandPass(
+                fourierImage,
+                lowCut.value(),
+                highCut.value(),
+                fourierVisPath + "0_after_band_pass.bmp"
                 );
         }
         fourierImages.push_back(fourierImage);
