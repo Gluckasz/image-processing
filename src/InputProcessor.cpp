@@ -113,7 +113,9 @@ void InputProcessor::printCommands() {
             << " - make image segmentation using region growing method.\n"
             << "\t -criterion - criterion to choose (0- adaptive mean distance, 1- fixed mean distance, 2- absolute distance)\n\n"
             << commandToStringMap.find(CommandType::FOURIER_TRANSFORM)->second
-            << " - do the fourier transform and then inverse fourier transform.\n\n";
+            << " - do the fourier transform and then inverse fourier transform.\n\n"
+            << commandToStringMap.find(CommandType::FAST_FOURIER_TRANSFORM)->second
+            << " - do the fast fourier transform and then inverse fast fourier transform.\n\n";
 }
 
 template<typename T>
@@ -371,6 +373,10 @@ void InputProcessor::processInput() {
                 isFourierTransform = true;
                 break;
 
+            case CommandType::FAST_FOURIER_TRANSFORM:
+                isFastFourierTransform = true;
+            break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -518,6 +524,26 @@ const {
                 OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
                 + "_fourier_visualization_channel0" + ".bmp"));
             image = imageProcessor->inverseFourierTransform(fourierImages);
+        }
+    }
+
+    if(isFastFourierTransform) {
+        if (imreadMode == cv::IMREAD_COLOR) {
+            std::vector<cv::Mat> channels, fourierImages;
+            cv::split(image, channels);
+            for (int i = 0; i < 3; i++) {
+                fourierImages.push_back(imageProcessor->fastFourierTransform(channels[i],
+                OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
+                + "_fourier_visualization_channel" + std::to_string(i) + ".bmp"));
+            }
+
+            image = imageProcessor->inverseFastFourierTransform(fourierImages);
+        } else {
+            std::vector<cv::Mat> fourierImages;
+            fourierImages.push_back(imageProcessor->fastFourierTransform(image,
+                OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
+                + "_fourier_visualization_channel0" + ".bmp"));
+            image = imageProcessor->inverseFastFourierTransform(fourierImages);
         }
     }
 }

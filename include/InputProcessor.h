@@ -73,6 +73,7 @@ private:
     bool isTaskM4 = false;
     std::optional<int> regionGrowing;
     bool isFourierTransform = false;
+    bool isFastFourierTransform = false;
 
     enum class CommandType {
         HELP,
@@ -116,6 +117,7 @@ private:
         TASK_M4,
         REGION_GROWING,
         FOURIER_TRANSFORM,
+        FAST_FOURIER_TRANSFORM,
         UNKNOWN // For unrecognized commands
      };
 
@@ -161,6 +163,7 @@ private:
         {"--taskM4", CommandType::TASK_M4},
         {"--regionGrowing", CommandType::REGION_GROWING},
         {"--fourierTransform", CommandType::FOURIER_TRANSFORM},
+        {"--fastFourierTransform", CommandType::FAST_FOURIER_TRANSFORM},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -205,6 +208,7 @@ private:
         {CommandType::TASK_M4, "--taskM4"},
         {CommandType::REGION_GROWING, "--regionGrowing"},
         {CommandType::FOURIER_TRANSFORM, "--fourierTransform"},
+        {CommandType::FAST_FOURIER_TRANSFORM, "--fastFourierTransform"},
     };
 
     /**
