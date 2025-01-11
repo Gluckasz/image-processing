@@ -743,3 +743,25 @@ cv::Mat ImageProcessor::fftBandCut(cv::Mat fourierImage, int lowPass, int highPa
     return result;
 }
 
+cv::Mat ImageProcessor::fftHighPassDirection(cv::Mat fourierImage, cv::Mat mask, const std::string &fourierVisPath) {
+    cv::Mat result = fourierImage.clone();
+    std::complex<double> DCComponent(
+        fourierImage.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[0],
+        fourierImage.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[1]
+        );
+    for (int x = 0; x < fourierImage.rows; x++) {
+        for (int y = 0; y < fourierImage.cols; y++) {
+            if (mask.at<uchar>(x, y) == 0) {
+                result.at<cv::Vec2d>(x, y) = 0;
+            }
+        }
+    }
+
+    result.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[0] = DCComponent.real();
+    result.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[1] = DCComponent.imag();
+
+    visualizeFourier(result, fourierVisPath);
+
+    return result;
+}
+

@@ -128,8 +128,11 @@ void InputProcessor::printCommands() {
     << "\t -highCut - radius of the upper bound circle up to which the fourier image will be preserved (with low pass filter).\n\n"
     << commandToStringMap.find(CommandType::FFT_BAND_CUT)->second
     << " - do the band cut filter after fast fourier transform and then inverse fast fourier transform.\n"
-    << "\t -lowPass- radius of the larger circle. Between its edge and the smaller circle the area will be cut.\n"
-    << "\t -highPass - radius of the smaller circle. Between its edge and the larger circle the area will be cut\n\n";
+    << "\t -lowPass - radius of the larger circle. Between its edge and the smaller circle the area will be cut.\n"
+    << "\t -highPass - radius of the smaller circle. Between its edge and the larger circle the area will be cut\n\n"
+    << commandToStringMap.find(CommandType::FFT_HIGH_PASS_DIRECTION)->second
+    << " - do the high-pass filter with detection of edge direction after fast fourier transform and then inverse fast fourier transform.\n"
+    << "\t -mask - number of mask to choose (1 or 2)\n\n";
 }
 
 template<typename T>
@@ -427,6 +430,13 @@ void InputProcessor::processInput() {
                 }
                 break;
 
+            case CommandType::FFT_HIGH_PASS_DIRECTION:
+                isFastFourierTransform = true;
+                if (++i < argc) {
+                    readParam(argv[i], "-mask=", highPassDirectionMask, "Criterion must be an integer between 0 and 2.");
+                }
+                break;
+
             case CommandType::UNKNOWN:
             default:
                 if (i > 1) {
@@ -478,6 +488,20 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
                     fourierVisPath + std::to_string(i) + "_after_band_cut.bmp"
                     );
             }
+
+            if (highPassDirectionMask.has_value()) {
+                cv::Mat mask;
+                if (highPassDirectionMask.value() == 1) {
+                    mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask1.png", cv::IMREAD_GRAYSCALE);
+                } else {
+                    mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask2.png", cv::IMREAD_GRAYSCALE);
+                }
+                fourierImage = imageProcessor->fftHighPassDirection(
+                    fourierImage,
+                    mask,
+                    fourierVisPath + std::to_string(i) + "_after_high_pass_direction.bmp"
+                    );
+            }
             fourierImages.push_back(fourierImage);
         }
 
@@ -514,6 +538,19 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
                 lowPass.value(),
                 highPass.value(),
                 fourierVisPath + "0_after_band_cut.bmp"
+                );
+        }
+        if (highPassDirectionMask.has_value()) {
+            cv::Mat mask;
+            if (highPassDirectionMask.value() == 1) {
+                mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask1.png", cv::IMREAD_GRAYSCALE);
+            } else {
+                mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask2.png", cv::IMREAD_GRAYSCALE);
+            }
+            fourierImage = imageProcessor->fftHighPassDirection(
+                fourierImage,
+                mask,
+                fourierVisPath + "0_after_high_pass_direction.bmp"
                 );
         }
         fourierImages.push_back(fourierImage);
