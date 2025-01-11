@@ -14,6 +14,7 @@ class ImageProcessor {
     cv::Mat complement(cv::Mat image);
     bool areEqual(cv::Mat image1, cv::Mat image2);
     cv::Mat imagesUnion(cv::Mat image1, cv::Mat image2);
+    void visualizeFourier(cv::Mat fourierImage, const std::string& fourierVisPath);
 public:
     virtual ~ImageProcessor() = default;
 
@@ -72,6 +73,7 @@ public:
     cv::Mat applyColorMap(const cv::Mat& grayscaleMask, const std::vector<cv::Vec3b>& colorMap);
 
     cv::Mat fourierTransform(cv::Mat image, const std::string& fourierVisPath);
+    cv::Mat fastFourierTransform(cv::Mat image, const std::string& fourierVisPath);
 };
 
 #endif //IMAGEPROCESSOR_H

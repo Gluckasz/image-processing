@@ -428,9 +428,50 @@ cv::Mat ImageProcessor::applyColorMap(const cv::Mat &grayscaleMask, const std::v
     return colorMask;
 }
 
+void ImageProcessor::visualizeFourier(cv::Mat fourierImage, const std::string& fourierVisPath) {
+    int M = fourierImage.rows;
+    int N = fourierImage.cols;
+
+    cv::Mat magnitudeSpectrum = cv::Mat::zeros(M, N, CV_64FC1);
+#pragma omp parallel for collapse(2)
+    for (int u = 0; u < M; u++) {
+        for (int v = 0; v < N; v++) {
+            magnitudeSpectrum.at<double>(u, v) = std::log(1
+            + std::sqrt(std::pow(fourierImage.at<cv::Vec2d>(u, v)[0], 2)
+                + std::pow(fourierImage.at<cv::Vec2d>(u, v)[1], 2)));
+        }
+    }
+
+    cv::Mat visualization = cv::Mat::zeros(M, N, CV_8UC1);
+
+    double minVal = DBL_MAX;
+    double maxVal = -DBL_MAX;
+
+#pragma omp parallel for collapse(2) reduction(min:minVal) reduction(max:maxVal)
+    for(int u = 0; u < M; u++) {
+        for(int v = 0; v < N; v++) {
+            double val = magnitudeSpectrum.at<double>(u, v);
+            minVal = std::min(minVal, val);
+            maxVal = std::max(maxVal, val);
+        }
+    }
+
+#pragma omp parallel for collapse(2)
+    for(int u = 0; u < M; u++) {
+        for(int v = 0; v < N; v++) {
+            double val = magnitudeSpectrum.at<double>(u, v);
+            double scaledValue = (val - minVal) / (maxVal - minVal) * 255.0;
+            visualization.at<uchar>(u, v) = static_cast<uchar>(scaledValue);
+        }
+    }
+
+    imwrite(fourierVisPath, visualization);
+}
+
+
 cv::Mat ImageProcessor::fourierTransform(cv::Mat image, const std::string& fourierVisPath) {
-    int M = image.rows;
-    int N = image.cols;
+    const int M = image.rows;
+    const int N = image.cols;
 
     cv::Mat fourierImage = cv::Mat::zeros(M, N, CV_64FC2);
 
@@ -479,39 +520,14 @@ cv::Mat ImageProcessor::fourierTransform(cv::Mat image, const std::string& fouri
         }
     }
 
-    cv::Mat magnitudeSpectrum = cv::Mat::zeros(M, N, CV_64FC1);
-#pragma omp parallel for collapse(2)
-    for (int u = 0; u < M; u++) {
-        for (int v = 0; v < N; v++) {
-            magnitudeSpectrum.at<double>(u, v) = std::log(1
-            + std::sqrt(std::pow(fourierImage.at<cv::Vec2d>(u, v)[0], 2)
-                + std::pow(fourierImage.at<cv::Vec2d>(u, v)[1], 2)));
-        }
-    }
+    visualizeFourier(fourierImage, fourierVisPath);
 
-    cv::Mat visualization = cv::Mat::zeros(M, N, CV_8UC1);
-
-    double minVal = DBL_MAX;
-    double maxVal = -DBL_MAX;
-
-#pragma omp parallel for collapse(2) reduction(min:minVal) reduction(max:maxVal)
-    for(int u = 0; u < M; u++) {
-        for(int v = 0; v < N; v++) {
-            double val = magnitudeSpectrum.at<double>(u, v);
-            minVal = std::min(minVal, val);
-            maxVal = std::max(maxVal, val);
-        }
-    }
-
-#pragma omp parallel for collapse(2)
-    for(int u = 0; u < M; u++) {
-        for(int v = 0; v < N; v++) {
-            double val = magnitudeSpectrum.at<double>(u, v);
-            double scaledValue = (val - minVal) / (maxVal - minVal) * 255.0;
-            visualization.at<uchar>(u, v) = static_cast<uchar>(scaledValue);
-        }
-    }
-
-    imwrite(fourierVisPath, visualization);
     return fourierImage;
 }
+
+cv::Mat ImageProcessor::fastFourierTransform(cv::Mat image, const std::string &fourierVisPath) {
+    const int M = image.rows;
+    const int N = image.cols;
+
+}
+
