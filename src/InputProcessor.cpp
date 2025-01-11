@@ -132,7 +132,11 @@ void InputProcessor::printCommands() {
     << "\t -highPass - radius of the smaller circle. Between its edge and the larger circle the area will be cut\n\n"
     << commandToStringMap.find(CommandType::FFT_HIGH_PASS_DIRECTION)->second
     << " - do the high-pass filter with detection of edge direction after fast fourier transform and then inverse fast fourier transform.\n"
-    << "\t -mask - number of mask to choose (1 or 2)\n\n";
+    << "\t -mask - number of mask to choose (1 or 2)\n\n"
+    << commandToStringMap.find(CommandType::FFT_PHASE_MODIFYING)->second
+    << " - do the phase modifying filter after fast fourier transform and then inverse fast fourier transform.\n"
+    << "\t -k - k coefficient in task F6.\n"
+    << "\t -l - l coefficient in task F6.\n\n";
 }
 
 template<typename T>
@@ -433,9 +437,20 @@ void InputProcessor::processInput() {
             case CommandType::FFT_HIGH_PASS_DIRECTION:
                 isFastFourierTransform = true;
                 if (++i < argc) {
-                    readParam(argv[i], "-mask=", highPassDirectionMask, "Criterion must be an integer between 0 and 2.");
+                    readParam(argv[i], "-mask=", highPassDirectionMask, "Mask must be an integer between 0 and 1.");
                 }
                 break;
+
+            case CommandType::FFT_PHASE_MODIFYING:
+                isFastFourierTransform = true;
+                if (++i < argc) {
+                    readParam(argv[i], "-k=", taskF6k, "K must be an integer.");
+                }
+                if (++i < argc) {
+                    readParam(argv[i], "-l=", taskF6l, "K must be an integer.");
+                }
+                break;
+
 
             case CommandType::UNKNOWN:
             default:
@@ -502,6 +517,15 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
                     fourierVisPath + std::to_string(i) + "_after_high_pass_direction.bmp"
                     );
             }
+
+            if (taskF6k.has_value() && taskF6l.has_value()) {
+                fourierImage = imageProcessor->fftPhaseModifying(
+                    fourierImage,
+                    taskF6k.value(),
+                    taskF6l.value(),
+                    fourierVisPath + std::to_string(i) + "_after_phase_modifying.bmp"
+                    );
+            }
             fourierImages.push_back(fourierImage);
         }
 
@@ -551,6 +575,14 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
                 fourierImage,
                 mask,
                 fourierVisPath + "0_after_high_pass_direction.bmp"
+                );
+        }
+        if (taskF6k.has_value() && taskF6l.has_value()) {
+            fourierImage = imageProcessor->fftPhaseModifying(
+                fourierImage,
+                taskF6k.value(),
+                taskF6l.value(),
+                fourierVisPath + "0_after_phase_modifying.bmp"
                 );
         }
         fourierImages.push_back(fourierImage);

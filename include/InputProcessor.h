@@ -83,6 +83,8 @@ private:
     std::optional<int> lowPass;
     std::optional<int> highPass;
     std::optional<int> highPassDirectionMask;
+    std::optional<int> taskF6k;
+    std::optional<int> taskF6l;
 
     enum class CommandType {
         HELP,
@@ -132,6 +134,7 @@ private:
         FFT_BAND_PASS,
         FFT_BAND_CUT,
         FFT_HIGH_PASS_DIRECTION,
+        FFT_PHASE_MODIFYING,
         UNKNOWN // For unrecognized commands
      };
 
@@ -183,6 +186,7 @@ private:
         {"--fftBandPass", CommandType::FFT_BAND_PASS},
         {"--fftBandCut", CommandType::FFT_BAND_CUT},
         {"--fftHighPassDirection", CommandType::FFT_HIGH_PASS_DIRECTION},
+        {"--fftPhaseModifying", CommandType::FFT_PHASE_MODIFYING},
     };
 
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
@@ -233,6 +237,7 @@ private:
         {CommandType::FFT_BAND_PASS, "--fftBandPass"},
         {CommandType::FFT_BAND_CUT, "--fftBandCut"},
         {CommandType::FFT_HIGH_PASS_DIRECTION, "--fftHighPassDirection"},
+        {CommandType::FFT_PHASE_MODIFYING, "--fftPhaseModifying"},
     };
 
     /**

@@ -83,6 +83,7 @@ public:
     cv::Mat fftBandPass(cv::Mat fourierImage, int lowCut, int highCut, const std::string& fourierVisPath);
     cv::Mat fftBandCut(cv::Mat fourierImage, int lowPass, int highPass, const std::string& fourierVisPath);
     cv::Mat fftHighPassDirection(cv::Mat fourierImage, cv::Mat mask, const std::string& fourierVisPath);
+    cv::Mat fftPhaseModifying(cv::Mat fourierImage, int k, int l, const std::string& fourierVisPath);
 };
 
 #endif //IMAGEPROCESSOR_H

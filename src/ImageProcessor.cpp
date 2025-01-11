@@ -765,3 +765,36 @@ cv::Mat ImageProcessor::fftHighPassDirection(cv::Mat fourierImage, cv::Mat mask,
     return result;
 }
 
+cv::Mat ImageProcessor::fftPhaseModifying(cv::Mat fourierImage, int k, int l, const std::string &fourierVisPath) {
+    cv::Mat mask = cv::Mat::zeros(fourierImage.rows, fourierImage.cols, CV_64FC2);
+    for (int n = 0; n < fourierImage.rows; n++) {
+        for (int m = 0; m < fourierImage.cols; m++) {
+            std::complex<double> complexResult = exp(std::complex<double>(
+                0,
+                -n * k * 2 * std::numbers::pi / fourierImage.rows
+                + -m * l * 2 * std::numbers::pi / fourierImage.cols
+                + (k + l) * std::numbers::pi
+                ));
+            mask.at<cv::Vec2d>(n, m)[0] = complexResult.real();
+            mask.at<cv::Vec2d>(n, m)[1] = complexResult.imag();
+        }
+    }
+
+    cv::Mat result = fourierImage.clone();
+    for (int n = 0; n < fourierImage.rows; n++) {
+        for (int m = 0; m < fourierImage.cols; m++) {
+            double a = fourierImage.at<cv::Vec2d>(n, m)[0];
+            double b = fourierImage.at<cv::Vec2d>(n, m)[1];
+            double c = mask.at<cv::Vec2d>(n, m)[0];
+            double d = mask.at<cv::Vec2d>(n, m)[1];
+
+            result.at<cv::Vec2d>(n, m)[0] = a*c - b*d;
+            result.at<cv::Vec2d>(n, m)[1] = a*d + b*c;
+        }
+    }
+
+    visualizeFourier(result, fourierVisPath);
+
+    return result;
+}
+
