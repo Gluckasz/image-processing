@@ -108,6 +108,7 @@ public:
     cv::Mat robertsOperator1(cv::Mat image) override;
     cv::Mat regionGrowing(cv::Mat image, int criterion) override;
     cv::Mat inverseFourierTransform(std::vector<cv::Mat> fourierImages) override;
+    cv::Mat inverseFastFourierTransform(std::vector<cv::Mat> fourierImages) override;
 };
 
 

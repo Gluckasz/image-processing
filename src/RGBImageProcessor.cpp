@@ -666,3 +666,74 @@ cv::Mat RGBImageProcessor::inverseFourierTransform(std::vector<cv::Mat> fourierI
 
     return result;
 }
+
+cv::Mat RGBImageProcessor::inverseFastFourierTransform(std::vector<cv::Mat> fourierImages) {
+    int M = fourierImages[0].rows;
+    int N = fourierImages[0].cols;
+
+    cv::Mat result = cv::Mat::zeros(M, N, CV_8UC3);
+
+    for (int i = 0; i < 3; i++) {
+        cv::Mat shiftedInput = fourierImages[i].clone();
+
+        for (int u = 0; u < M / 2; u++) {
+            for (int v = 0; v < N / 2; v++) {
+                std::swap(shiftedInput.at<cv::Vec2d>(u, v), shiftedInput.at<cv::Vec2d>(u + M/2, v + N/2));
+                std::swap(shiftedInput.at<cv::Vec2d>(u + M/2, v), shiftedInput.at<cv::Vec2d>(u, v + N/2));
+            }
+        }
+
+#pragma omp parallel
+        {
+#pragma omp for
+            for (int x = 0; x < M; x++) {
+                cv::Mat row = cv::Mat::zeros(1, N, CV_64FC2);
+                for (int y = 0; y < N; y++) {
+                    row.at<cv::Vec2d>(0, y)[0] = shiftedInput.at<cv::Vec2d>(x, y)[0];
+                    row.at<cv::Vec2d>(0, y)[1] = shiftedInput.at<cv::Vec2d>(x, y)[1];
+                }
+                ifft1D(row);
+                for (int y = 0; y < N; y++) {
+                    shiftedInput.at<cv::Vec2d>(x, y)[0] = row.at<cv::Vec2d>(0, y)[0];
+                    shiftedInput.at<cv::Vec2d>(x, y)[1] = row.at<cv::Vec2d>(0, y)[1];
+                }
+            }
+        }
+
+#pragma omp parallel
+{
+#pragma omp for
+    for (int y = 0; y < N; y++) {
+        cv::Mat col = cv::Mat::zeros(1, M, CV_64FC2);
+        for (int x = 0; x < M; x++) {
+            col.at<cv::Vec2d>(0, x)[0] = shiftedInput.at<cv::Vec2d>(x, y)[0];
+            col.at<cv::Vec2d>(0, x)[1] = shiftedInput.at<cv::Vec2d>(x, y)[1];
+        }
+        ifft1D(col);
+        for (int x = 0; x < M; x++) {
+            shiftedInput.at<cv::Vec2d>(x, y)[0] = col.at<cv::Vec2d>(0, x)[0];
+            shiftedInput.at<cv::Vec2d>(x, y)[1] = col.at<cv::Vec2d>(0, x)[1];
+        }
+    }
+}
+
+
+
+#pragma omp parallel for collapse(2)
+        for (int x = 0; x < M; x++) {
+            for (int y = 0; y < N; y++) {
+                std::complex<double> complexPixelValue(
+                    shiftedInput.at<cv::Vec2d>(x, y)[0],
+                    shiftedInput.at<cv::Vec2d>(x, y)[1]
+                    );
+                double pixelValue = std::abs(complexPixelValue) / M / N;
+                result.at<cv::Vec3b>(x, y)[i] = static_cast<uchar>(
+                    std::clamp(std::round(pixelValue), 0.0, 255.0)
+                    );
+            }
+        }
+    }
+
+    return result;
+}
+
