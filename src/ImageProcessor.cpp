@@ -525,7 +525,7 @@ cv::Mat ImageProcessor::fourierTransform(cv::Mat image, const std::string& fouri
     return fourierImage;
 }
 
-void ImageProcessor::fft1D(cv::Mat row) {
+void ImageProcessor::FFT1D(cv::Mat row) {
     int n = row.cols;
     int j = 0;
     for (int i = 0; i < n; i++) {
@@ -566,7 +566,7 @@ void ImageProcessor::fft1D(cv::Mat row) {
     }
 }
 
-void ImageProcessor::ifft1D(cv::Mat row) {
+void ImageProcessor::iFFT1D(cv::Mat row) {
     int n = row.cols;
 
     int j = 0;
@@ -630,7 +630,7 @@ cv::Mat ImageProcessor::fastFourierTransform(cv::Mat image, const std::string &f
         for (int y = 0; y < N; y++) {
             row.at<cv::Vec2d>(0, y)[0] = fourierImage.at<cv::Vec2d>(x, y)[0];
         }
-        fft1D(row);
+        FFT1D(row);
         for (int y = 0; y < N; y++) {
             fourierImage.at<cv::Vec2d>(x, y)[0] = row.at<cv::Vec2d>(0, y)[0];
             fourierImage.at<cv::Vec2d>(x, y)[1] = row.at<cv::Vec2d>(0, y)[1];
@@ -647,7 +647,7 @@ cv::Mat ImageProcessor::fastFourierTransform(cv::Mat image, const std::string &f
             col.at<cv::Vec2d>(0, x)[0] = fourierImage.at<cv::Vec2d>(x, y)[0];
             col.at<cv::Vec2d>(0, x)[1] = fourierImage.at<cv::Vec2d>(x, y)[1];
         }
-        fft1D(col);
+        FFT1D(col);
         for (int x = 0; x < M; x++) {
             fourierImage.at<cv::Vec2d>(x, y)[0] = col.at<cv::Vec2d>(0, x)[0];
             fourierImage.at<cv::Vec2d>(x, y)[1] = col.at<cv::Vec2d>(0, x)[1];

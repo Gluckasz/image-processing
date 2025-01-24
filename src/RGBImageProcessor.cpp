@@ -692,7 +692,7 @@ cv::Mat RGBImageProcessor::inverseFastFourierTransform(std::vector<cv::Mat> four
                     row.at<cv::Vec2d>(0, y)[0] = shiftedInput.at<cv::Vec2d>(x, y)[0];
                     row.at<cv::Vec2d>(0, y)[1] = shiftedInput.at<cv::Vec2d>(x, y)[1];
                 }
-                ifft1D(row);
+                iFFT1D(row);
                 for (int y = 0; y < N; y++) {
                     shiftedInput.at<cv::Vec2d>(x, y)[0] = row.at<cv::Vec2d>(0, y)[0];
                     shiftedInput.at<cv::Vec2d>(x, y)[1] = row.at<cv::Vec2d>(0, y)[1];
@@ -709,7 +709,7 @@ cv::Mat RGBImageProcessor::inverseFastFourierTransform(std::vector<cv::Mat> four
             col.at<cv::Vec2d>(0, x)[0] = shiftedInput.at<cv::Vec2d>(x, y)[0];
             col.at<cv::Vec2d>(0, x)[1] = shiftedInput.at<cv::Vec2d>(x, y)[1];
         }
-        ifft1D(col);
+        iFFT1D(col);
         for (int x = 0; x < M; x++) {
             shiftedInput.at<cv::Vec2d>(x, y)[0] = col.at<cv::Vec2d>(0, x)[0];
             shiftedInput.at<cv::Vec2d>(x, y)[1] = col.at<cv::Vec2d>(0, x)[1];

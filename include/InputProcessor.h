@@ -17,22 +17,48 @@
 #include "../include/RGBImageProcessor.h"
 #include "../include/GrayscaleImageProcessor.h"
 
-// Constants
 constexpr int INPUT_IMAGE_POS = 1;
 
+/**
+ * @brief Processes command-line input for image manipulation operations.
+ *
+ * This class handles parsing and validation of command-line arguments,
+ * manages image processing operations, and coordinates output generation.
+ */
 class InputProcessor {
 public:
+    /**
+     * @brief Construct a new Input Processor object
+     * @param argc Number of command-line arguments
+     * @param argv Array of command-line argument strings
+     */
     InputProcessor(int argc, char **argv);
-    // Process user input from command-line.
+
+    /**
+     * @brief Process command-line arguments and set corresponding flags
+     */
     void processInput();
+
+    /**
+     * @brief Execute image processing operations based on set flags
+     */
     void processImage() const;
+
 private:
-    // Command-line input variables
+    // Command-line input state
     int argc;
     char **argv;
+
+    /**
+     * @brief Output configuration
+     */
     std::string outputFileName = "output.bmp";
     const std::string OUTPUT_DIR_NAME = "output";
     cv::ImreadModes imreadMode = cv::IMREAD_COLOR;
+
+    /**
+     * @brief Basic image transformation parameters
+     */
     std::optional<int> brightnessModVal;
     std::optional<int> contrastLinearModVal;
     std::optional<float> contrastGammaModVal;
@@ -42,8 +68,16 @@ private:
     bool isDiagonalFlip = false;
     std::optional<float> shrinkModVal;
     std::optional<float> enlargeModVal;
+
+    /**
+     * @brief Filter parameters
+     */
     std::optional<int> midpointKernelSize;
     std::optional<int> arithmeticMeanKernelSize;
+
+    /**
+     * @brief Image comparison parameters
+     */
     bool isNoNoise = false;
     std::string noNoiseImage;
     bool isMeanSquareError = false;
@@ -51,6 +85,10 @@ private:
     bool isSignalToNoise = false;
     bool isPeakSignalToNoise = false;
     bool isMaximumDifference = false;
+
+    /**
+     * @brief Histogram and statistical parameters
+     */
     std::optional<int> histogramChannel;
     std::optional<int> histogramUniformGMax;
     std::optional<int> histogramUniformGMin;
@@ -62,6 +100,10 @@ private:
     bool isFlattening = false;
     bool isVariation2 = false;
     bool isEntropy = false;
+
+    /**
+     * @brief Edge detection and morphological parameters
+     */
     std::optional<int> laplaceMask;
     bool isOptimizedLaplacian = false;
     bool isRobertsOperator = false;
@@ -70,10 +112,18 @@ private:
     std::optional<int> openingMask;
     std::optional<int> closingMask;
     std::optional<int> hmtMask;
+
+    /**
+     * @brief Advanced processing parameters
+     */
     bool isTaskM4 = false;
     std::optional<int> regionGrowing;
     bool isFourierTransform = false;
     bool isFastFourierTransform = false;
+
+    /**
+     * @brief Frequency domain processing parameters
+     */
     std::optional<int> lowPassBandSize;
     std::optional<int> highPassBandSize;
     bool isBandPass = false;
@@ -86,6 +136,9 @@ private:
     std::optional<int> taskF6k;
     std::optional<int> taskF6l;
 
+    /**
+     * @brief Command type enumeration for argument parsing
+     */
     enum class CommandType {
         HELP,
         OUTPUT,
@@ -136,8 +189,11 @@ private:
         FFT_HIGH_PASS_DIRECTION,
         FFT_PHASE_MODIFYING,
         UNKNOWN // For unrecognized commands
-     };
+    };
 
+    /**
+     * @brief Maps command strings to CommandType enum values
+     */
     const std::unordered_map<std::string, CommandType> commandMap = {
         {"--help", CommandType::HELP},
         {"--output", CommandType::OUTPUT},
@@ -189,6 +245,9 @@ private:
         {"--fftPhaseModifying", CommandType::FFT_PHASE_MODIFYING},
     };
 
+    /**
+     * @brief Maps CommandType enum values to their string representations
+     */
     const std::unordered_map<CommandType, std::string> commandToStringMap = {
         {CommandType::HELP, "--help"},
         {CommandType::OUTPUT, "--output"},
@@ -241,39 +300,64 @@ private:
     };
 
     /**
-     * Prints the information about all the available functions.
-    */
+     * @brief Print usage information and available commands
+     */
     void printCommands();
 
+    /**
+     * @brief Template function to read and validate numeric parameters
+     * @tparam T Parameter type (int or float)
+     */
     template<typename T>
     bool readParam(const std::string &arg, const std::string &prefix, std::optional<T> &result,
-                               const std::string &errorMsg);
+                   const std::string &errorMsg);
 
+    /**
+     * @brief Read and validate string parameters
+     */
     static bool readStringParam(const std::string &arg, const std::string &prefix, std::string &result,
-                               const std::string &errorMsg);
+                                const std::string &errorMsg);
 
+    /**
+     * @brief Apply selected image transformations to the input image
+     */
     void applyImageTransformations(cv::Mat &image, std::unique_ptr<ImageProcessor> &imageProcessor) const;
 
+    /**
+     * @brief Calculate and save image comparison statistics
+     */
     void calculateAndSaveComparisonImageStatistics(
         const cv::Mat &compareImage,
         const cv::Mat &originalImage,
         const cv::Mat &newImage,
         std::unique_ptr<ImageProcessor> &imageProcessor
-        ) const;
-
-    void calculateAndSaveImageStats(
-    const cv::Mat &newImage,
-    std::unique_ptr<ImageProcessor> &imageProcessor
     ) const;
 
     /**
-     * Saves given image to the output/outputFileName file.
-    */
+     * @brief Calculate and save image statistics
+     */
+    void calculateAndSaveImageStats(
+        const cv::Mat &newImage,
+        std::unique_ptr<ImageProcessor> &imageProcessor
+    ) const;
+
+    /**
+     * @brief Save processed image to output directory
+     * @param image Image to save
+     * @param outputFileName Name of output file
+     */
     void saveImage(cv::Mat image, std::string outputFileName) const;
 
-    cv::Mat applyFastFourier(cv::Mat image, const std::string& fourierVisPath, std::unique_ptr<ImageProcessor> &imageProcessor) const;
+    /**
+     * @brief Apply Fast Fourier Transform and save visualization
+     * @param image Input image
+     * @param fourierVisPath Path to save FFT visualization
+     * @param imageProcessor Image processor instance
+     * @return Transformed image
+     */
+    cv::Mat applyFastFourier(cv::Mat image, const std::string &fourierVisPath,
+                             std::unique_ptr<ImageProcessor> &imageProcessor) const;
 };
-
 
 
 #endif //INPUTPROCESSOR_H
