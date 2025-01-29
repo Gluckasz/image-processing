@@ -11,27 +11,6 @@
 #include <complex>
 
 class ImageProcessor {
-    /**
-     * Visualize Fourier transform result.
-     * @param fourierImage Fourier transform result
-     * @param fourierVisPath Path to save visualization
-     */
-    void visualizeFourier(cv::Mat fourierImage, const std::string &fourierVisPath);
-
-protected:
-
-    /**
-     * Perform 1D Fast Fourier Transform on image row.
-     * @param row Image row to transform
-     */
-    void FFT1D(cv::Mat row);
-
-    /**
-     * Perform 1D Inverse Fast Fourier Transform on image row.
-     * @param row Image row to transform
-     */
-    void iFFT1D(cv::Mat row);
-
 public:
     virtual ~ImageProcessor() = default;
 
@@ -101,84 +80,6 @@ public:
      * @return Segmented image
      */
     cv::Mat regionGrowing(cv::Mat image, int criterion);
-
-    virtual cv::Mat inverseFourierTransform(std::vector<cv::Mat> fourierImages) = 0;
-
-    virtual cv::Mat inverseFastFourierTransform(std::vector<cv::Mat> fourierImages) = 0;
-
-
-    /**
-     * Compute Fourier transform.
-     * @param image Input image
-     * @param fourierVisPath Path to save visualization
-     * @return Fourier transformed image
-     */
-    cv::Mat fourierTransform(cv::Mat image, const std::string &fourierVisPath);
-
-    /**
-     * Compute Fast Fourier Transform.
-     * @param image Input image
-     * @param fourierVisPath Path to save visualization
-     * @return FFT transformed image
-     */
-    cv::Mat fastFourierTransform(cv::Mat image, const std::string &fourierVisPath);
-
-    /**
-     * Apply low-pass filter in frequency domain.
-     * @param fourierImage Fourier transformed image
-     * @param lowPassBandSize Filter cutoff frequency
-     * @param fourierVisPath Path to save visualization
-     * @return Filtered image
-     */
-    cv::Mat fftLowPass(cv::Mat fourierImage, int lowPassBandSize, const std::string &fourierVisPath);
-
-    /**
-     * Apply high-pass filter in the frequency domain.
-     * @param fourierImage Fourier transformed image
-     * @param lowPassBandSize Filter cutoff frequency
-     * @param fourierVisPath Path to save visualization
-     * @return Filtered image
-     */
-    cv::Mat fftHighPass(cv::Mat fourierImage, int lowPassBandSize, const std::string &fourierVisPath);
-
-    /**
-     * Apply band-pass filter in frequency domain.
-     * @param fourierImage Fourier transformed image
-     * @param lowCut Lower cutoff frequency
-     * @param highCut Higher cutoff frequency
-     * @param fourierVisPath Path to save visualization
-     * @return Filtered image
-     */
-    cv::Mat fftBandPass(cv::Mat fourierImage, int lowCut, int highCut, const std::string &fourierVisPath);
-
-    /**
-     * Apply band-cut filter in frequency domain.
-     * @param fourierImage Fourier transformed image
-     * @param lowPass Lower cutoff frequency
-     * @param highPass Higher cutoff frequency
-     * @param fourierVisPath Path to save visualization
-     * @return Filtered image
-     */
-    cv::Mat fftBandCut(cv::Mat fourierImage, int lowPass, int highPass, const std::string &fourierVisPath);
-
-    /**
-     * Apply directional high-pass filter in frequency domain.
-     * @param fourierImage Fourier transformed image
-     * @param mask Direction mask
-     * @param fourierVisPath Path to save visualization
-     * @return Filtered image
-     */
-    cv::Mat fftHighPassDirection(cv::Mat fourierImage, cv::Mat mask, const std::string &fourierVisPath);
-
-    /**
-     * Modify phase in frequency domain.
-     * @param fourierImage Fourier transformed image
-     * @param k Phase modification parameter k (vertical offset)
-     * @param l Phase modification parameter l (horizontal offset)
-     * @param fourierVisPath Path to save visualization
-     * @return Modified image
-     */
-    cv::Mat fftPhaseModifying(cv::Mat fourierImage, int k, int l, const std::string &fourierVisPath);
 };
 
 #endif //IMAGEPROCESSOR_H

@@ -229,20 +229,6 @@ public:
      * @return Edge detected image
      */
     cv::Mat robertsOperator1(cv::Mat image) override;
-
-    /**
-     * Compute inverse Fourier transform.
-     * @param fourierImages Vector of Fourier transformed image components
-     * @return Reconstructed spatial domain image
-     */
-    cv::Mat inverseFourierTransform(std::vector<cv::Mat> fourierImages) override;
-
-    /**
-     * Compute inverse Fast Fourier transform.
-     * @param fourierImages Vector of Fourier transformed image components
-     * @return Reconstructed spatial domain image
-     */
-    cv::Mat inverseFastFourierTransform(std::vector<cv::Mat> fourierImages) override;
 };
 
 

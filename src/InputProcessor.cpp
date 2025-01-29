@@ -567,7 +567,7 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
         if (highPassDirectionMask.has_value()) {
             cv::Mat mask;
             if (highPassDirectionMask.value() == 1) {
-                mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask1.png", cv::IMREAD_GRAYSCALE);
+                mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask1_low_frequency_512.png", cv::IMREAD_GRAYSCALE);
             } else {
                 mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask2.png", cv::IMREAD_GRAYSCALE);
             }

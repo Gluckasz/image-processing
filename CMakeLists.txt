@@ -17,9 +17,10 @@ add_library(image_processing_lib
         src/RGBImageProcessor.cpp
         include/InputProcessor.h
         src/InputProcessor.cpp
-        src/ImageProcessor.cpp
         src/MorphologicalProcessor.cpp
         include/MorphologicalProcessor.h
+        src/FourierProcessor.cpp
+        include/FourierProcessor.h
 )
 
 target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})
