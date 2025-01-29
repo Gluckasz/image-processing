@@ -12,21 +12,6 @@
 
 class ImageProcessor {
     /**
-     * Compute complement (negative) of binary image.
-     * @param image Input binary image
-     * @return Complemented image
-     */
-    cv::Mat complement(cv::Mat image);
-
-    /**
-     * Compute union of two binary images.
-     * @param image1 First input binary image
-     * @param image2 Second input binary image
-     * @return Union of input images
-     */
-    cv::Mat imagesUnion(cv::Mat image1, cv::Mat image2);
-
-    /**
      * Visualize Fourier transform result.
      * @param fourierImage Fourier transform result
      * @param fourierVisPath Path to save visualization
@@ -34,13 +19,6 @@ class ImageProcessor {
     void visualizeFourier(cv::Mat fourierImage, const std::string &fourierVisPath);
 
 protected:
-    /**
-     * Check if two images are equal.
-     * @param image1 First image to compare
-     * @param image2 Second image to compare
-     * @return true if images are equal, false otherwise
-     */
-    bool areEqual(cv::Mat image1, cv::Mat image2);
 
     /**
      * Perform 1D Fast Fourier Transform on image row.
@@ -116,94 +94,18 @@ public:
 
     virtual cv::Mat robertsOperator1(cv::Mat image) = 0;
 
-    virtual cv::Mat regionGrowing(cv::Mat image, int criterion) = 0;
+    /**
+     * Perform region growing segmentation.
+     * @param image Input image
+     * @param criterion Region growing criterion value
+     * @return Segmented image
+     */
+    cv::Mat regionGrowing(cv::Mat image, int criterion);
 
     virtual cv::Mat inverseFourierTransform(std::vector<cv::Mat> fourierImages) = 0;
 
     virtual cv::Mat inverseFastFourierTransform(std::vector<cv::Mat> fourierImages) = 0;
 
-    enum class FieldType {
-        WHITE,
-        BLACK,
-        WHITE_MARKER,
-        BLACK_MARKER,
-        INACTIVE
-    };
-
-    static const std::unordered_map<int, std::vector<std::vector<FieldType> > > maskMap;
-    static const std::unordered_map<int, std::vector<std::vector<FieldType> > > hmtMaskMap;
-    static const std::unordered_map<int, std::vector<std::vector<FieldType> > > hmtComplementMaskMap;
-
-    /**
-     * Apply dilation morphological operation.
-     * @param image Input binary image
-     * @param maskNumber Structural element number
-     * @param maskMapping Map of available structural elements
-     * @return Dilated image
-     */
-    cv::Mat dilation(cv::Mat image, int maskNumber,
-                     std::unordered_map<int, std::vector<std::vector<FieldType> > > maskMapping = maskMap);
-
-    /**
-     * Apply erosion morphological operation.
-     * @param image Input binary image
-     * @param maskNumber Structural element number
-     * @param maskMapping Map of available structural elements
-     * @return Eroded image
-     */
-    cv::Mat erosion(cv::Mat image, int maskNumber,
-                    std::unordered_map<int, std::vector<std::vector<FieldType> > > maskMapping = maskMap);
-
-    /**
-     * Apply opening morphological operation.
-     * @param image Input binary image
-     * @param maskNumber Structural element number
-     * @param maskMapping Map of available structural elements
-     * @return Opened image
-     */
-    cv::Mat opening(cv::Mat image, int maskNumber,
-                    std::unordered_map<int, std::vector<std::vector<FieldType> > > maskMapping = maskMap);
-
-    /**
-     * Apply closing morphological operation.
-     * @param image Input binary image
-     * @param maskNumber Structural element number
-     * @param maskMapping Map of available structural elements
-     * @return Closed image
-     */
-    cv::Mat closing(cv::Mat image, int maskNumber,
-                    std::unordered_map<int, std::vector<std::vector<FieldType> > > maskMapping = maskMap);
-
-    /**
-     * Apply hit-or-miss transform.
-     * @param image Input binary image
-     * @param maskNumber HMT mask number
-     * @param maskMapping Map of available HMT masks
-     * @return Transformed image
-     */
-    cv::Mat hmt(cv::Mat image, int maskNumber,
-                std::unordered_map<int, std::vector<std::vector<FieldType> > > maskMapping = hmtMaskMap);
-
-    /**
-     * Custom morphological operation sequence.
-     * @param image Input binary image
-     * @return Processed image
-     */
-    cv::Mat taskM4(cv::Mat image);
-
-    /**
-     * Create color map for visualization.
-     * @return Vector of BGR colors
-     */
-    std::vector<cv::Vec3b> createColorMap();
-
-    /**
-     * Apply color map to grayscale image.
-     * @param grayscaleMask Input grayscale image
-     * @param colorMap Color map to apply
-     * @return Colored image
-     */
-    cv::Mat applyColorMap(const cv::Mat &grayscaleMask, const std::vector<cv::Vec3b> &colorMap);
 
     /**
      * Compute Fourier transform.
@@ -231,7 +133,7 @@ public:
     cv::Mat fftLowPass(cv::Mat fourierImage, int lowPassBandSize, const std::string &fourierVisPath);
 
     /**
-     * Apply high-pass filter in frequency domain.
+     * Apply high-pass filter in the frequency domain.
      * @param fourierImage Fourier transformed image
      * @param lowPassBandSize Filter cutoff frequency
      * @param fourierVisPath Path to save visualization

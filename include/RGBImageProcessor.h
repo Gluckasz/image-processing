@@ -230,14 +230,6 @@ public:
     cv::Mat robertsOperator1(cv::Mat image) override;
 
     /**
-     * Perform region growing segmentation on RGB image.
-     * @param image Input RGB image
-     * @param criterion Region growing criterion value
-     * @return Segmented RGB image
-     */
-    cv::Mat regionGrowing(cv::Mat image, int criterion) override;
-
-    /**
      * Compute inverse Fourier transform for RGB image.
      * @param fourierImages Vector of Fourier transformed RGB image components
      * @return Reconstructed spatial domain RGB image

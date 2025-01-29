@@ -231,14 +231,6 @@ public:
     cv::Mat robertsOperator1(cv::Mat image) override;
 
     /**
-     * Perform region growing segmentation.
-     * @param image Input image
-     * @param criterion Region growing criterion value
-     * @return Segmented image
-     */
-    cv::Mat regionGrowing(cv::Mat image, int criterion) override;
-
-    /**
      * Compute inverse Fourier transform.
      * @param fourierImages Vector of Fourier transformed image components
      * @return Reconstructed spatial domain image
