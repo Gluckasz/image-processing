@@ -6,6 +6,7 @@
 
 cv::Mat MorphologicalProcessor::complement(cv::Mat image) {
     cv::Mat result = image.clone();
+#pragma omp parallel for collapse(2)
     for (int x = 0; x < image.rows; x++) {
         for (int y = 0; y < image.cols; y++) {
             result.at<uchar>(x, y) = 255 - image.at<uchar>(x, y);
@@ -31,7 +32,7 @@ bool MorphologicalProcessor::areEqual(cv::Mat image1, cv::Mat image2) {
 
 cv::Mat MorphologicalProcessor::imagesUnion(cv::Mat image1, cv::Mat image2) {
     cv::Mat result = image1.clone();
-
+#pragma omp parallel for collapse(2)
     for (int x = 0; x < image1.rows; x++) {
         for (int y = 0; y < image1.cols; y++) {
             result.at<uchar>(x, y) = std::max(image1.at<uchar>(x, y), image2.at<uchar>(x, y));
@@ -301,7 +302,7 @@ cv::Mat MorphologicalProcessor::dilation(cv::Mat image, const int maskNumber,
             }
         }
     }
-
+#pragma omp parallel for collapse(2)
     for (int x = 0; x < image.rows; ++x) {
         for (int y = 0; y < image.cols; ++y) {
             bool shouldDilate = false;
@@ -360,7 +361,7 @@ cv::Mat MorphologicalProcessor::erosion(cv::Mat image, const int maskNumber,
             }
         }
     }
-
+#pragma omp parallel for collapse(2)
     for (int x = 0; x < image.rows; ++x) {
         for (int y = 0; y < image.cols; ++y) {
             bool shouldErode = false;
@@ -443,6 +444,7 @@ std::vector<cv::Vec3b> MorphologicalProcessor::createColorMap() {
 
 cv::Mat MorphologicalProcessor::applyColorMap(const cv::Mat &grayscaleMask, const std::vector<cv::Vec3b> &colorMap) {
     cv::Mat colorMask(grayscaleMask.size(), CV_8UC3);
+#pragma omp parallel for collapse(2)
     for (int x = 0; x < grayscaleMask.rows; ++x) {
         for (int y = 0; y < grayscaleMask.cols; ++y) {
             const int grayValue = grayscaleMask.at<uchar>(x, y);
