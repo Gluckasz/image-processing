@@ -462,7 +462,7 @@ void InputProcessor::processInput() {
     }
 }
 
-cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fourierVisPath, std::unique_ptr<ImageProcessor> &imageProcessor) const {
+cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fourierVisPath, std::unique_ptr<SpatialDomainProcessor> &imageProcessor) const {
     cv::Mat result = image.clone();
     if (imreadMode == cv::IMREAD_COLOR) {
         std::vector<cv::Mat> channels, fourierImages;
@@ -594,7 +594,7 @@ cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fouri
 
 
 void InputProcessor::applyImageTransformations(cv::Mat &image,
-                                               std::unique_ptr<ImageProcessor> &imageProcessor)
+                                               std::unique_ptr<SpatialDomainProcessor> &imageProcessor)
 const {
     // Apply brightness modification if set
     if (brightnessModVal.has_value()) {
@@ -747,7 +747,7 @@ void InputProcessor::calculateAndSaveComparisonImageStatistics(
     const cv::Mat &compareImage,
     const cv::Mat &originalImage,
     const cv::Mat &newImage,
-    std::unique_ptr<ImageProcessor> &imageProcessor
+    std::unique_ptr<SpatialDomainProcessor> &imageProcessor
 ) const {
     std::stringstream ss;
     ss << "Comparison image stats:\n";
@@ -773,7 +773,7 @@ void InputProcessor::calculateAndSaveComparisonImageStatistics(
     statsFile.close();
 }
 
-void InputProcessor::calculateAndSaveImageStats(const cv::Mat &newImage, std::unique_ptr<ImageProcessor> &imageProcessor) const {
+void InputProcessor::calculateAndSaveImageStats(const cv::Mat &newImage, std::unique_ptr<SpatialDomainProcessor> &imageProcessor) const {
     std::stringstream ss;
     ss << "Comparison image stats:\n";
     uint n = 0;
@@ -899,7 +899,7 @@ void InputProcessor::processImage() const {
         std::cout << "No image data \n";
         return;
     }
-    std::unique_ptr<ImageProcessor> imageProcessor;
+    std::unique_ptr<SpatialDomainProcessor> imageProcessor;
     if (imreadMode == cv::IMREAD_COLOR) {
         imageProcessor = std::make_unique<RGBImageProcessor>();
     } else {

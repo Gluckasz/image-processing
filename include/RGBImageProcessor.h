@@ -7,7 +7,7 @@
 #include "GrayscaleImageProcessor.h"
 
 
-class RGBImageProcessor final : public ImageProcessor {
+class RGBImageProcessor final : public SpatialDomainProcessor {
 public:
     /**
      * Modify brightness of an RGB image by a constant factor.

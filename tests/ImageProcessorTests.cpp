@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "GrayscaleImageProcessor.h"
-#include "../include/ImageProcessor.h"
+#include "../include/SpatialDomainProcessor.h"
 
 class ImageProcessorTest : public testing::Test {
 protected:
@@ -15,7 +15,7 @@ protected:
         whiteImageGrayscale = cv::Mat(cv::Size(imageWidth, imageHeight), CV_8UC1, cv::Scalar(UCHAR_MAX));
     }
 
-    std::unique_ptr<ImageProcessor> grayscaleImageProcessor;
+    std::unique_ptr<SpatialDomainProcessor> grayscaleImageProcessor;
     cv::Mat blackImageGrayscale;
     cv::Mat whiteImageGrayscale;
 
@@ -69,12 +69,12 @@ TEST_F(ImageProcessorTest, DilationTest) {
     blackAfterDilation = grayscaleImageProcessor->dilation(
         blackImageGrayscale,
         5,
-        ImageProcessor::hmtMaskMap
+        SpatialDomainProcessor::hmtMaskMap
         );
     whiteAfterDilation = grayscaleImageProcessor->dilation(
         whiteImageGrayscale,
         5,
-        ImageProcessor::hmtMaskMap
+        SpatialDomainProcessor::hmtMaskMap
         );
     ASSERT_FALSE(blackAfterDilation.empty()) << "The image after modification should not be empty.";
     ASSERT_FALSE(whiteAfterDilation.empty()) << "The image after modification should not be empty.";
@@ -108,10 +108,10 @@ TEST_F(ImageProcessorTest, DilationErrorConditionsTest) {
     EXPECT_THROW(grayscaleImageProcessor->dilation(blackImageGrayscale, invalidMaskNumber), std::out_of_range);
     invalidMaskNumber = 0;
     EXPECT_THROW(grayscaleImageProcessor->dilation(blackImageGrayscale, invalidMaskNumber,
-        ImageProcessor::hmtMaskMap), std::out_of_range);
+        SpatialDomainProcessor::hmtMaskMap), std::out_of_range);
     invalidMaskNumber = 13;
     EXPECT_THROW(grayscaleImageProcessor->dilation(blackImageGrayscale, invalidMaskNumber,
-        ImageProcessor::hmtMaskMap), std::out_of_range);
+        SpatialDomainProcessor::hmtMaskMap), std::out_of_range);
 }
 
 TEST_F(ImageProcessorTest, ErosionTest) {
@@ -153,12 +153,12 @@ TEST_F(ImageProcessorTest, ErosionTest) {
     blackAfterErosion = grayscaleImageProcessor->erosion(
         blackImageGrayscale,
         5,
-        ImageProcessor::hmtMaskMap
+        SpatialDomainProcessor::hmtMaskMap
         );
     whiteAfterErosion = grayscaleImageProcessor->erosion(
         whiteImageGrayscale,
         5,
-        ImageProcessor::hmtMaskMap
+        SpatialDomainProcessor::hmtMaskMap
         );
 
     for (int x = 0; x < blackImageGrayscale.rows; x++) {
@@ -190,10 +190,10 @@ TEST_F(ImageProcessorTest, ErosionErrorConditionsTest) {
     EXPECT_THROW(grayscaleImageProcessor->erosion(blackImageGrayscale, invalidMaskNumber), std::out_of_range);
     invalidMaskNumber = -1;
     EXPECT_THROW(grayscaleImageProcessor->erosion(blackImageGrayscale, invalidMaskNumber,
-        ImageProcessor::hmtMaskMap), std::out_of_range);
+        SpatialDomainProcessor::hmtMaskMap), std::out_of_range);
     invalidMaskNumber = 13;
     EXPECT_THROW(grayscaleImageProcessor->erosion(blackImageGrayscale, invalidMaskNumber,
-        ImageProcessor::hmtMaskMap), std::out_of_range);
+        SpatialDomainProcessor::hmtMaskMap), std::out_of_range);
 }
 
 TEST_F(ImageProcessorTest, OpeningTest) {

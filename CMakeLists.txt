@@ -10,7 +10,7 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 add_library(image_processing_lib
-        include/ImageProcessor.h
+        include/SpatialDomainProcessor.h
         include/GrayscaleImageProcessor.h
         src/GrayscaleImageProcessor.cpp
         include/RGBImageProcessor.h
@@ -21,6 +21,8 @@ add_library(image_processing_lib
         include/MorphologicalProcessor.h
         src/FourierProcessor.cpp
         include/FourierProcessor.h
+        src/HistogramProcessor.cpp
+        include/HistogramProcessor.h
 )
 
 target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})

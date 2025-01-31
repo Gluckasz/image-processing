@@ -4,9 +4,9 @@
 
 #ifndef GRAYSCALEIMAGEPROCESSOR_H
 #define GRAYSCALEIMAGEPROCESSOR_H
-#include "ImageProcessor.h"
+#include "SpatialDomainProcessor.h"
 
-class GrayscaleImageProcessor final : public ImageProcessor {
+class GrayscaleImageProcessor final : public SpatialDomainProcessor {
 public:
     /**
      * Modify brightness of a grayscale image by a constant factor.
@@ -124,89 +124,6 @@ public:
      * @return Maximum absolute difference between corresponding pixels
      */
     double maximumDifference(cv::Mat originalImage, cv::Mat newImage) override;
-
-    /**
-     * Compute histogram of the image for specified channel.
-     * @param image Input image
-     * @param histogramChannel Channel to compute histogram for (0 for grayscale)
-     * @param histogramMaxVal Output parameter for maximum histogram value
-     * @return Array containing histogram values
-     */
-    std::array<uint, UCHAR_MAX + 1>
-    computeHistogram(cv::Mat image, int histogramChannel, uint &histogramMaxVal) override;
-
-    /**
-     * Generate histogram visualization.
-     * @param image Input image
-     * @param histogramChannel Channel to visualize histogram for (0 for grayscale)
-     * @return Image containing histogram visualization
-     */
-    cv::Mat histogram(cv::Mat image, int histogramChannel) override;
-
-    /**
-     * Perform histogram uniform transformation.
-     * @param image Input image to transform
-     * @param gMax Maximum output intensity
-     * @param gMin Minimum output intensity
-     * @return Transformed image with uniform histogram
-     */
-    cv::Mat histogramUniform(cv::Mat image, int gMax, int gMin) override;
-
-    /**
-     * Calculate mean value from histogram.
-     * @param imageHistogram Input histogram array
-     * @return Mean value
-     */
-    double mean(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
-
-    /**
-     * Calculate variance from histogram.
-     * @param imageHistogram Input histogram array
-     * @return Variance value
-     */
-    double variance(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
-
-    /**
-     * Calculate standard deviation from histogram.
-     * @param imageHistogram Input histogram array
-     * @return Standard deviation value
-     */
-    double standardDeviation(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
-
-    /**
-     * Calculate first variation coefficient from histogram.
-     * @param imageHistogram Input histogram array
-     * @return First variation coefficient
-     */
-    double variation1(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
-
-    /**
-     * Calculate asymmetry coefficient from histogram.
-     * @param imageHistogram Input histogram array
-     * @return Asymmetry coefficient
-     */
-    double asymmetry(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
-
-    /**
-     * Calculate flattening coefficient from histogram.
-     * @param imageHistogram Input histogram array
-     * @return Flattening coefficient
-     */
-    double flattening(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
-
-    /**
-     * Calculate second variation coefficient from histogram.
-     * @param imageHistogram Input histogram array
-     * @return Second variation coefficient
-     */
-    double variation2(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
-
-    /**
-     * Calculate entropy from histogram.
-     * @param imageHistogram Input histogram array
-     * @return Entropy value
-     */
-    double entropy(std::array<uint, UCHAR_MAX + 1> imageHistogram) override;
 
     /**
      * Apply Laplacian edge detection filter.

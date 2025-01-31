@@ -13,7 +13,7 @@
 #include <fstream>
 #include <chrono>
 
-#include "../include/ImageProcessor.h"
+#include "../include/SpatialDomainProcessor.h"
 #include "../include/RGBImageProcessor.h"
 #include "../include/GrayscaleImageProcessor.h"
 
@@ -321,7 +321,7 @@ private:
     /**
      * @brief Apply selected image transformations to the input image
      */
-    void applyImageTransformations(cv::Mat &image, std::unique_ptr<ImageProcessor> &imageProcessor) const;
+    void applyImageTransformations(cv::Mat &image, std::unique_ptr<SpatialDomainProcessor> &imageProcessor) const;
 
     /**
      * @brief Calculate and save image comparison statistics
@@ -330,7 +330,7 @@ private:
         const cv::Mat &compareImage,
         const cv::Mat &originalImage,
         const cv::Mat &newImage,
-        std::unique_ptr<ImageProcessor> &imageProcessor
+        std::unique_ptr<SpatialDomainProcessor> &imageProcessor
     ) const;
 
     /**
@@ -338,7 +338,7 @@ private:
      */
     void calculateAndSaveImageStats(
         const cv::Mat &newImage,
-        std::unique_ptr<ImageProcessor> &imageProcessor
+        std::unique_ptr<SpatialDomainProcessor> &imageProcessor
     ) const;
 
     /**
@@ -356,7 +356,7 @@ private:
      * @return Transformed image
      */
     cv::Mat applyFastFourier(cv::Mat image, const std::string &fourierVisPath,
-                             std::unique_ptr<ImageProcessor> &imageProcessor) const;
+                             std::unique_ptr<SpatialDomainProcessor> &imageProcessor) const;
 };
 
 
