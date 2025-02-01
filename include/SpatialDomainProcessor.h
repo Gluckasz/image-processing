@@ -34,15 +34,7 @@ public:
 
     virtual cv::Mat arithmeticMeanFilter(cv::Mat image, int kernelSize) = 0;
 
-    virtual double meanSquareError(cv::Mat originalImage, cv::Mat newImage) = 0;
 
-    virtual double peakMeanSquareError(cv::Mat originalImage, cv::Mat newImage) = 0;
-
-    virtual double signalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) = 0;
-
-    virtual double peakSignalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) = 0;
-
-    virtual double maximumDifference(cv::Mat originalImage, cv::Mat newImage) = 0;
 
     virtual cv::Mat laplacianFilter(cv::Mat image, int laplaceMask) = 0;
 
