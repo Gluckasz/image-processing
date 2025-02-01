@@ -2,7 +2,7 @@
 // Created by gluckasz on 2/1/25.
 //
 
-#include "ImageComparer.h"
+#include "../include/ImageComparer.h"
 
 double ImageComparer::meanSquareError(cv::Mat originalImage, cv::Mat newImage) {
     double squareDistanceSum = 0;

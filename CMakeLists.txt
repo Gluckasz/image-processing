@@ -23,7 +23,7 @@ add_library(image_processing_lib
         include/FourierProcessor.h
         src/HistogramProcessor.cpp
         include/HistogramProcessor.h
-        include/ImageComparer.cpp
+        src/ImageComparer.cpp
         include/ImageComparer.h
 )
 
