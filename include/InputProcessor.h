@@ -14,8 +14,10 @@
 #include <chrono>
 
 #include "../include/SpatialDomainProcessor.h"
-#include "../include/RGBImageProcessor.h"
-#include "../include/GrayscaleImageProcessor.h"
+#include "../include/FourierProcessor.h"
+#include "../include/HistogramProcessor.h"
+#include "../include/MorphologicalProcessor.h"
+#include "../include/ImageComparer.h"
 
 constexpr int INPUT_IMAGE_POS = 1;
 
@@ -42,7 +44,7 @@ public:
     /**
      * @brief Execute image processing operations based on set flags
      */
-    void processImage() const;
+    void processImage();
 
 private:
     // Command-line input state
@@ -321,7 +323,7 @@ private:
     /**
      * @brief Apply selected image transformations to the input image
      */
-    void applyImageTransformations(cv::Mat &image, std::unique_ptr<SpatialDomainProcessor> &imageProcessor) const;
+    void applyImageTransformations(cv::Mat &image);
 
     /**
      * @brief Calculate and save image comparison statistics
@@ -329,17 +331,15 @@ private:
     void calculateAndSaveComparisonImageStatistics(
         const cv::Mat &compareImage,
         const cv::Mat &originalImage,
-        const cv::Mat &newImage,
-        std::unique_ptr<SpatialDomainProcessor> &imageProcessor
-    ) const;
+        const cv::Mat &newImage
+    );
 
     /**
      * @brief Calculate and save image statistics
      */
     void calculateAndSaveImageStats(
-        const cv::Mat &newImage,
-        std::unique_ptr<SpatialDomainProcessor> &imageProcessor
-    ) const;
+        const cv::Mat &newImage
+    );
 
     /**
      * @brief Save processed image to output directory
@@ -355,8 +355,7 @@ private:
      * @param imageProcessor Image processor instance
      * @return Transformed image
      */
-    cv::Mat applyFastFourier(cv::Mat image, const std::string &fourierVisPath,
-                             std::unique_ptr<SpatialDomainProcessor> &imageProcessor) const;
+    cv::Mat applyFastFourier(const cv::Mat& image, const std::string &fourierVisPath) const;
 };
 
 

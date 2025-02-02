@@ -45,7 +45,7 @@ namespace MorphologicalProcessor {
         return result;
     }
 
-    cv::Mat MorphologicalProcessor::dilation(cv::Mat image, const int maskNumber,
+    cv::Mat dilation(cv::Mat image, const int maskNumber,
                                              const std::unordered_map<int, std::vector<std::vector<FieldType> > > &
                                              maskMapping) {
         if (image.empty()) {
@@ -105,7 +105,7 @@ namespace MorphologicalProcessor {
         return result;
     }
 
-    cv::Mat MorphologicalProcessor::erosion(cv::Mat image, const int maskNumber,
+    cv::Mat erosion(cv::Mat image, const int maskNumber,
                                             const std::unordered_map<int, std::vector<std::vector<FieldType> > > &
                                             maskMapping) {
         if (image.empty()) {
@@ -164,7 +164,7 @@ namespace MorphologicalProcessor {
         return result;
     }
 
-    cv::Mat MorphologicalProcessor::opening(const cv::Mat &image, const int maskNumber,
+    cv::Mat opening(const cv::Mat &image, const int maskNumber,
                                             const std::unordered_map<int, std::vector<std::vector<FieldType> > > &
                                             maskMapping) {
         cv::Mat result = image.clone();
@@ -173,7 +173,7 @@ namespace MorphologicalProcessor {
         return result;
     }
 
-    cv::Mat MorphologicalProcessor::closing(const cv::Mat &image, const int maskNumber,
+    cv::Mat closing(const cv::Mat &image, const int maskNumber,
                                             const std::unordered_map<int, std::vector<std::vector<FieldType> > > &
                                             maskMapping) {
         cv::Mat result = image.clone();
@@ -182,7 +182,7 @@ namespace MorphologicalProcessor {
         return result;
     }
 
-    cv::Mat MorphologicalProcessor::hmt(const cv::Mat &image, const int maskNumber) {
+    cv::Mat hmt(const cv::Mat &image, const int maskNumber) {
         cv::Mat foregroundMatch = image.clone();
         cv::Mat backgroundMatch = image.clone();
 

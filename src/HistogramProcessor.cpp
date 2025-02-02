@@ -71,9 +71,9 @@ namespace HistogramProcessor {
     double variance(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
         double sum = 0;
         double pixels = 0;
-        double mean = mean(imageHistogram);
+        double meanVal = mean(imageHistogram);
         for (int i = 0; i < imageHistogram.size(); i++) {
-            sum += imageHistogram[i] * pow(i - mean, 2);
+            sum += imageHistogram[i] * pow(i - meanVal, 2);
             pixels += imageHistogram[i];
         }
 
@@ -81,42 +81,42 @@ namespace HistogramProcessor {
     }
 
     double standardDeviation(const std::array<uint, UCHAR_MAX + 1> &imageHistogram) {
-        const double variance = HistogramProcessor::variance(imageHistogram);
-        return sqrt(variance);
+        const double varianceVal = variance(imageHistogram);
+        return sqrt(varianceVal);
     }
 
     double variation1(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
-        double variance = variance(imageHistogram);
-        double mean = mean(imageHistogram);
-        return variance / mean;
+        double varianceVal = variance(imageHistogram);
+        double meanVal = mean(imageHistogram);
+        return varianceVal / meanVal;
     }
 
     double asymmetry(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
         double sum = 0;
         double pixels = 0;
-        double mean = mean(imageHistogram);
+        double meanVal = mean(imageHistogram);
         for (int i = 0; i < imageHistogram.size(); i++) {
-            sum += imageHistogram[i] * pow(i - mean, 3);
+            sum += imageHistogram[i] * pow(i - meanVal, 3);
             pixels += imageHistogram[i];
         }
 
-        double standardDeviation = standardDeviation(imageHistogram);
+        double standardDeviationVal = standardDeviation(imageHistogram);
 
-        return sum / pixels / pow(standardDeviation, 3);
+        return sum / pixels / pow(standardDeviationVal, 3);
     }
 
     double flattening(std::array<uint, UCHAR_MAX + 1> imageHistogram) {
         double sum = 0;
         double pixels = 0;
-        double mean = mean(imageHistogram);
+        double meanVal = mean(imageHistogram);
         for (int i = 0; i < imageHistogram.size(); i++) {
-            sum += imageHistogram[i] * pow(i - mean, 4);
+            sum += imageHistogram[i] * pow(i - meanVal, 4);
             pixels += imageHistogram[i];
         }
 
-        double variance = variance(imageHistogram);
+        double varianceVal = variance(imageHistogram);
 
-        return sum / pixels / pow(variance, 2) - 3;
+        return sum / pixels / pow(varianceVal, 2) - 3;
     }
 
     double variation2(const std::array<uint, UCHAR_MAX + 1> &imageHistogram) {

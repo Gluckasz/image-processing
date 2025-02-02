@@ -83,11 +83,9 @@ namespace MorphologicalProcessor {
      * Apply hit-or-miss transform.
      * @param image Input binary image
      * @param maskNumber HMT mask number
-     * @param maskMapping Map of available HMT masks
      * @return Transformed image
      */
-    cv::Mat hmt(const cv::Mat &image, int maskNumber,
-                const std::unordered_map<int, std::vector<std::vector<FieldType> > > &maskMapping = hmtMaskMap);
+    cv::Mat hmt(const cv::Mat &image, int maskNumber);
 }
 
 

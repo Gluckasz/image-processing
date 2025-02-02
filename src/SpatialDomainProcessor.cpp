@@ -40,7 +40,7 @@ namespace {
 }
 
 namespace SpatialDomainProcessor {
-    cv::Mat SpatialDomainProcessor::modifyBrightness(const cv::Mat &image, const int modVal) {
+    cv::Mat modifyBrightness(const cv::Mat &image, const int modVal) {
         cv::Mat result = image.clone();
         for (int x = 0; x < result.rows; x++) {
             for (int y = 0; y < result.cols; y++) {
@@ -62,7 +62,7 @@ namespace SpatialDomainProcessor {
         return result;
     }
 
-    cv::Mat SpatialDomainProcessor::modifyContrastLinear(const cv::Mat &image, const int modVal) {
+    cv::Mat modifyContrastLinear(const cv::Mat &image, const int modVal) {
         cv::Mat result = image.clone();
         int max = 0;
         int min = 255;
@@ -91,7 +91,7 @@ namespace SpatialDomainProcessor {
     }
 
 
-    cv::Mat SpatialDomainProcessor::modifyContrastGamma(const cv::Mat &image, const float modVal) {
+    cv::Mat modifyContrastGamma(const cv::Mat &image, const float modVal) {
         cv::Mat result = image.clone();
         for (int x = 0; x < result.rows; x++) {
             for (int y = 0; y < result.cols; y++) {
@@ -106,7 +106,7 @@ namespace SpatialDomainProcessor {
         return result;
     }
 
-    cv::Mat SpatialDomainProcessor::negative(const cv::Mat &image) {
+    cv::Mat negative(const cv::Mat &image) {
         cv::Mat result = image.clone();
         for (int x = 0; x < result.rows; x++) {
             for (int y = 0; y < result.cols; y++) {
@@ -116,7 +116,7 @@ namespace SpatialDomainProcessor {
         return result;
     }
 
-    cv::Mat SpatialDomainProcessor::flipHorizontally(const cv::Mat &image) {
+    cv::Mat flipHorizontally(const cv::Mat &image) {
         cv::Mat result = image.clone();
         for (int x = 0; x < result.rows; x++) {
             for (int y = 0; y < result.cols / 2; y++) {
@@ -128,7 +128,7 @@ namespace SpatialDomainProcessor {
         return result;
     }
 
-    cv::Mat SpatialDomainProcessor::flipVertically(const cv::Mat &image) {
+    cv::Mat flipVertically(const cv::Mat &image) {
         cv::Mat result = image.clone();
         for (int x = 0; x < result.rows / 2; x++) {
             for (int y = 0; y < result.cols; y++) {
@@ -140,13 +140,13 @@ namespace SpatialDomainProcessor {
         return result;
     }
 
-    cv::Mat SpatialDomainProcessor::flipDiagonally(const cv::Mat &image) {
+    cv::Mat flipDiagonally(const cv::Mat &image) {
         cv::Mat result = image.clone();
         result = flipHorizontally(result);
         return flipVertically(result);
     }
 
-    cv::Mat SpatialDomainProcessor::resize(cv::Mat image, const float factor) {
+    cv::Mat resize(cv::Mat image, const float factor) {
         const int newWidth = static_cast<int>(static_cast<float>(image.cols) * factor);
         const int newHeight = static_cast<int>(static_cast<float>(image.rows) * factor);
         cv::Mat newImage = cv::Mat::zeros(newHeight, newWidth, CV_8UC1);
@@ -161,7 +161,7 @@ namespace SpatialDomainProcessor {
         return newImage;
     }
 
-    cv::Mat SpatialDomainProcessor::midpointFilter(cv::Mat image, const int kernelSize) {
+    cv::Mat midpointFilter(cv::Mat image, const int kernelSize) {
         cv::Mat newImage;
         image.copyTo(newImage);
         const int border = (kernelSize - 1) / 2;
@@ -192,7 +192,7 @@ namespace SpatialDomainProcessor {
         return newImage;
     }
 
-    cv::Mat SpatialDomainProcessor::arithmeticMeanFilter(cv::Mat image, const int kernelSize) {
+    cv::Mat arithmeticMeanFilter(cv::Mat image, const int kernelSize) {
         cv::Mat newImage;
         image.copyTo(newImage);
         const int border = (kernelSize - 1) / 2;
@@ -228,12 +228,12 @@ namespace SpatialDomainProcessor {
     }
 
     template<typename TPixel>
-    cv::Mat SpatialDomainProcessor::laplacianFilter(const cv::Mat &image, const int laplaceMask) {
-        static constexpr std::array<std::array<int, 3>, 3> laplacianMasks[] = {
-            {{{{0, -1, 0}, {-1, 4, -1}, {0, -1, 0}}}},
-            {{{{-1, -1, -1}, {-1, 8, -1}, {-1, -1, -1}}}},
-            {{{{1, -2, 1}, {-2, 4, -2}, {1, -2, 1}}}}
-        };
+    cv::Mat laplacianFilter(const cv::Mat &image, const int laplaceMask) {
+        static constexpr std::array<std::array<std::array<int, 3>, 3>, 3> laplacianMasks = {{
+            {{{0, -1, 0}, {-1, 4, -1}, {0, -1, 0}}},
+            {{{-1, -1, -1}, {-1, 8, -1}, {-1, -1, -1}}},
+            {{{1, -2, 1}, {-2, 4, -2}, {1, -2, 1}}}
+        }};
 
         if (laplaceMask < 0 || laplaceMask > 2) {
             throw std::invalid_argument("Invalid laplaceMask value");
@@ -275,7 +275,7 @@ namespace SpatialDomainProcessor {
     }
 
     template<typename TPixel>
-    cv::Mat SpatialDomainProcessor::optimizedLaplacianFilter(cv::Mat image) {
+    cv::Mat optimizedLaplacianFilter(cv::Mat image) {
         cv::Mat newImage = cv::Mat::zeros(image.size(), image.type());
 
         for (int x = 0; x < image.rows; x++) {
@@ -311,7 +311,7 @@ namespace SpatialDomainProcessor {
     }
 
     template<typename TPixel>
-    cv::Mat SpatialDomainProcessor::robertsOperator1(cv::Mat image) {
+    cv::Mat robertsOperator1(cv::Mat image) {
         cv::Mat result = image.clone();
 
         for (int x = 0; x < image.rows - 1; x++) {
@@ -343,7 +343,7 @@ namespace SpatialDomainProcessor {
     }
 
     template<typename TPixel>
-    cv::Mat SpatialDomainProcessor::regionGrowing(cv::Mat image, const int criterion) {
+    cv::Mat regionGrowing(cv::Mat image, const int criterion) {
         cv::Mat imageSegmentationMasks = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
         const int seedXGridSpacing = image.rows / 10;
         const int seedYGridSpacing = image.cols / 10;
@@ -415,7 +415,7 @@ namespace SpatialDomainProcessor {
         return imageSegmentationMasks;
     }
 
-    std::vector<cv::Vec3b> SpatialDomainProcessor::createColorMap() {
+    std::vector<cv::Vec3b> createColorMap() {
         std::vector colorMap(256, cv::Vec3b(0, 0, 0));
         for (int i = 1; i <= 255; ++i) {
             const int hue = i * 179 / 255;
@@ -427,7 +427,7 @@ namespace SpatialDomainProcessor {
         return colorMap;
     }
 
-    cv::Mat SpatialDomainProcessor::applyColorMap(const cv::Mat &grayscaleMask,
+    cv::Mat applyColorMap(const cv::Mat &grayscaleMask,
                                                   const std::vector<cv::Vec3b> &colorMap) {
         cv::Mat colorMask(grayscaleMask.size(), CV_8UC3);
 #pragma omp parallel for collapse(2)
@@ -440,3 +440,15 @@ namespace SpatialDomainProcessor {
         return colorMask;
     }
 }
+
+template cv::Mat SpatialDomainProcessor::laplacianFilter<uchar>(const cv::Mat &, int);
+template cv::Mat SpatialDomainProcessor::laplacianFilter<cv::Vec3b>(const cv::Mat &, int);
+
+template cv::Mat SpatialDomainProcessor::optimizedLaplacianFilter<uchar>(cv::Mat);
+template cv::Mat SpatialDomainProcessor::optimizedLaplacianFilter<cv::Vec3b>(cv::Mat);
+
+template cv::Mat SpatialDomainProcessor::robertsOperator1<uchar>(cv::Mat);
+template cv::Mat SpatialDomainProcessor::robertsOperator1<cv::Vec3b>(cv::Mat);
+
+template cv::Mat SpatialDomainProcessor::regionGrowing<uchar>(cv::Mat, int);
+template cv::Mat SpatialDomainProcessor::regionGrowing<cv::Vec3b>(cv::Mat, int);

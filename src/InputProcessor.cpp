@@ -462,202 +462,159 @@ void InputProcessor::processInput() {
     }
 }
 
-cv::Mat InputProcessor::applyFastFourier(cv::Mat image, const std::string &fourierVisPath, std::unique_ptr<SpatialDomainProcessor> &imageProcessor) const {
+cv::Mat InputProcessor::applyFastFourier(const cv::Mat& image, const std::string &fourierVisPath) const {
     cv::Mat result = image.clone();
-    if (imreadMode == cv::IMREAD_COLOR) {
-        std::vector<cv::Mat> channels, fourierImages;
-        cv::split(image, channels);
-        for (int i = 0; i < 3; i++) {
-            cv::Mat fourierImage = imageProcessor->fastFourierTransform(channels[i],
-            fourierVisPath + std::to_string(i) + ".bmp");
+    std::vector<cv::Mat> channels, fourierImages;
+    cv::split(image, channels);
+    for (int i = 0; i < channels.size(); i++) {
+        cv::Mat fourierImage = FourierProcessor::fastFourierTransform(channels[i],
+        fourierVisPath + std::to_string(i) + ".bmp");
 
-            if (lowPassBandSize.has_value()) {
-                fourierImage = imageProcessor->fftLowPass(
-                    fourierImage,
-                    lowPassBandSize.value(),
-                    fourierVisPath + std::to_string(i) + "_after_low_pass.bmp"
-                    );
-            }
-            if (highPassBandSize.has_value()) {
-                fourierImage = imageProcessor->fftHighPass(
-                    fourierImage,
-                    highPassBandSize.value(),
-                    fourierVisPath + std::to_string(i) + "_after_high_pass.bmp"
-                    );
-            }
-
-            if (isBandPass) {
-                fourierImage = imageProcessor->fftBandPass(
-                    fourierImage,
-                    lowCut.value(),
-                    highCut.value(),
-                    fourierVisPath + std::to_string(i) + "_after_band_pass.bmp"
-                    );
-            }
-
-            if (isBandCut) {
-                fourierImage = imageProcessor->fftBandCut(
-                    fourierImage,
-                    lowPass.value(),
-                    highPass.value(),
-                    fourierVisPath + std::to_string(i) + "_after_band_cut.bmp"
-                    );
-            }
-
-            if (highPassDirectionMask.has_value()) {
-                cv::Mat mask;
-                if (highPassDirectionMask.value() == 1) {
-                    mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask1.png", cv::IMREAD_GRAYSCALE);
-                } else {
-                    mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask2.png", cv::IMREAD_GRAYSCALE);
-                }
-                fourierImage = imageProcessor->fftHighPassDirection(
-                    fourierImage,
-                    mask,
-                    fourierVisPath + std::to_string(i) + "_after_high_pass_direction.bmp"
-                    );
-            }
-
-            if (taskF6k.has_value() && taskF6l.has_value()) {
-                fourierImage = imageProcessor->fftPhaseModifying(
-                    fourierImage,
-                    taskF6k.value(),
-                    taskF6l.value(),
-                    fourierVisPath + std::to_string(i) + "_after_phase_modifying.bmp"
-                    );
-            }
-            fourierImages.push_back(fourierImage);
-        }
-
-        result = imageProcessor->inverseFastFourierTransform(fourierImages);
-    } else {
-        std::vector<cv::Mat> fourierImages;
-        cv::Mat fourierImage = imageProcessor->fastFourierTransform(image,
-           fourierVisPath + "0.bmp");
         if (lowPassBandSize.has_value()) {
-            fourierImage = imageProcessor->fftLowPass(
+            fourierImage = FourierProcessor::fftLowPass(
                 fourierImage,
                 lowPassBandSize.value(),
-                fourierVisPath + "0_after_low_pass.bmp"
+                fourierVisPath + std::to_string(i) + "_after_low_pass.bmp"
                 );
         }
         if (highPassBandSize.has_value()) {
-            fourierImage = imageProcessor->fftHighPass(
+            fourierImage = FourierProcessor::fftHighPass(
                 fourierImage,
                 highPassBandSize.value(),
-                fourierVisPath + "0_after_high_pass.bmp"
+                fourierVisPath + std::to_string(i) + "_after_high_pass.bmp"
                 );
         }
+
         if (isBandPass) {
-            fourierImage = imageProcessor->fftBandPass(
+            fourierImage = FourierProcessor::fftBandPass(
                 fourierImage,
                 lowCut.value(),
                 highCut.value(),
-                fourierVisPath + "0_after_band_pass.bmp"
+                fourierVisPath + std::to_string(i) + "_after_band_pass.bmp"
                 );
         }
+
         if (isBandCut) {
-            fourierImage = imageProcessor->fftBandCut(
+            fourierImage = FourierProcessor::fftBandCut(
                 fourierImage,
                 lowPass.value(),
                 highPass.value(),
-                fourierVisPath + "0_after_band_cut.bmp"
+                fourierVisPath + std::to_string(i) + "_after_band_cut.bmp"
                 );
         }
+
         if (highPassDirectionMask.has_value()) {
             cv::Mat mask;
             if (highPassDirectionMask.value() == 1) {
-                mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask1_low_frequency_512.png", cv::IMREAD_GRAYSCALE);
+                mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask1.png", cv::IMREAD_GRAYSCALE);
             } else {
                 mask = cv::imread("/home/gluckasz/Downloads/Images/F5mask2.png", cv::IMREAD_GRAYSCALE);
             }
-            fourierImage = imageProcessor->fftHighPassDirection(
+            fourierImage = FourierProcessor::fftHighPassDirection(
                 fourierImage,
                 mask,
-                fourierVisPath + "0_after_high_pass_direction.bmp"
+                fourierVisPath + std::to_string(i) + "_after_high_pass_direction.bmp"
                 );
         }
+
         if (taskF6k.has_value() && taskF6l.has_value()) {
-            fourierImage = imageProcessor->fftPhaseModifying(
+            fourierImage = FourierProcessor::fftPhaseModifying(
                 fourierImage,
                 taskF6k.value(),
                 taskF6l.value(),
-                fourierVisPath + "0_after_phase_modifying.bmp"
+                fourierVisPath + std::to_string(i) + "_after_phase_modifying.bmp"
                 );
         }
-        fourierImages.push_back(fourierImage);
-        result = imageProcessor->inverseFastFourierTransform(fourierImages);
+        fourierImages.push_back(FourierProcessor::inverseFastFourierTransform(fourierImage));
     }
 
+    cv::merge(fourierImages, result);
     return result;
 }
 
 
-void InputProcessor::applyImageTransformations(cv::Mat &image,
-                                               std::unique_ptr<SpatialDomainProcessor> &imageProcessor)
-const {
-    // Apply brightness modification if set
-    if (brightnessModVal.has_value()) {
-        image = imageProcessor->modifyBrightness(image, brightnessModVal.value());
+void InputProcessor::applyImageTransformations(cv::Mat &image) {
+    cv::Mat result = image.clone();
+    std::vector<cv::Mat> channels;
+    cv::split(image, channels);
+    for (int i = 0; i < channels.size(); i++) {
+        // Apply brightness modification if set
+        if (brightnessModVal.has_value()) {
+            channels[i] = SpatialDomainProcessor::modifyBrightness(channels[i], brightnessModVal.value());
+        }
+
+        // Apply linear contrast modification if set
+        if (contrastLinearModVal.has_value()) {
+            channels[i] = SpatialDomainProcessor::modifyContrastLinear(channels[i], contrastLinearModVal.value());
+        }
+
+        // Apply gamma contrast modification if set
+        if (contrastGammaModVal.has_value()) {
+            channels[i] = SpatialDomainProcessor::modifyContrastGamma(channels[i], contrastGammaModVal.value());
+        }
+
+        // Apply negative transformation
+        if (isNegative) {
+            channels[i] = SpatialDomainProcessor::negative(channels[i]);
+        }
+
+        // Apply horizontal flip if requested
+        if (isHorizontalFlip) {
+            channels[i] = SpatialDomainProcessor::flipHorizontally(channels[i]);
+        }
+
+        // Apply vertical flip if requested
+        if (isVerticalFlip) {
+            channels[i] = SpatialDomainProcessor::flipVertically(channels[i]);
+        }
+
+        // Apply diagonal flip if requested
+        if (isDiagonalFlip) {
+            channels[i] = SpatialDomainProcessor::flipDiagonally(channels[i]);
+        }
+
+        // Apply a shrink transformation if set
+        if (shrinkModVal.has_value()) {
+            channels[i] = SpatialDomainProcessor::resize(channels[i], shrinkModVal.value());
+        }
+
+        // Apply an enlarge transformation if set
+        if (enlargeModVal.has_value()) {
+            channels[i] = SpatialDomainProcessor::resize(channels[i], enlargeModVal.value());
+        }
+
+        // Apply midpoint filter if kernel size is set
+        if (midpointKernelSize.has_value()) {
+            channels[i] = SpatialDomainProcessor::midpointFilter(channels[i], midpointKernelSize.value());
+        }
+
+        // Apply arithmetic mean filter if kernel size is set
+        if (arithmeticMeanKernelSize.has_value()) {
+            channels[i] = SpatialDomainProcessor::arithmeticMeanFilter(channels[i], arithmeticMeanKernelSize.value());
+        }
+
+        if (histogramUniformGMax.has_value() && histogramUniformGMin.has_value()) {
+            std::array<uint, UCHAR_MAX + 1> imageHistogram = HistogramProcessor::computeHistogram(channels[i]);
+            channels[i] = HistogramProcessor::histogramUniform(channels[i], imageHistogram, histogramUniformGMax.value(), histogramUniformGMin.value());
+        }
+
+        if(isFourierTransform) {
+            channels[i] = FourierProcessor::inverseFourierTransform(FourierProcessor::fourierTransform(channels[i],
+            OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
+            + "_slow_fourier_visualization_channel" + std::to_string(i) + ".bmp"));
+        }
     }
 
-    // Apply linear contrast modification if set
-    if (contrastLinearModVal.has_value()) {
-        image = imageProcessor->modifyContrastLinear(image, contrastLinearModVal.value());
-    }
-
-    // Apply gamma contrast modification if set
-    if (contrastGammaModVal.has_value()) {
-        image = imageProcessor->modifyContrastGamma(image, contrastGammaModVal.value());
-    }
-
-    // Apply negative transformation
-    if (isNegative) {
-        image = imageProcessor->negative(image);
-    }
-
-    // Apply horizontal flip if requested
-    if (isHorizontalFlip) {
-        image = imageProcessor->flipHorizontally(image);
-    }
-
-    // Apply vertical flip if requested
-    if (isVerticalFlip) {
-        image = imageProcessor->flipVertically(image);
-    }
-
-    // Apply diagonal flip if requested
-    if (isDiagonalFlip) {
-        image = imageProcessor->flipDiagonally(image);
-    }
-
-    // Apply a shrink transformation if set
-    if (shrinkModVal.has_value()) {
-        image = imageProcessor->resize(image, shrinkModVal.value());
-    }
-
-    // Apply an enlarge transformation if set
-    if (enlargeModVal.has_value()) {
-        image = imageProcessor->resize(image, enlargeModVal.value());
-    }
-
-    // Apply midpoint filter if kernel size is set
-    if (midpointKernelSize.has_value()) {
-        image = imageProcessor->midpointFilter(image, midpointKernelSize.value());
-    }
-
-    // Apply arithmetic mean filter if kernel size is set
-    if (arithmeticMeanKernelSize.has_value()) {
-        image = imageProcessor->arithmeticMeanFilter(image, arithmeticMeanKernelSize.value());
-    }
-
-    if (histogramUniformGMax.has_value() && histogramUniformGMin.has_value()) {
-        image = imageProcessor->histogramUniform(image, histogramUniformGMax.value(), histogramUniformGMin.value());
-    }
+    cv::merge(channels, image);
 
     if (laplaceMask.has_value()) {
         auto start = std::chrono::high_resolution_clock::now();
-        image = imageProcessor->laplacianFilter(image, laplaceMask.value());
+        if (channels.size() == 1) {
+            image = SpatialDomainProcessor::laplacianFilter<uchar>(image, laplaceMask.value());
+        } else {
+            image = SpatialDomainProcessor::laplacianFilter<cv::Vec3b>(image, laplaceMask.value());
+        }
+
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = duration_cast<std::chrono::microseconds>(stop - start);
 
@@ -670,7 +627,11 @@ const {
 
     if (isOptimizedLaplacian) {
         auto start = std::chrono::high_resolution_clock::now();
-        image = imageProcessor->optimizedLaplacianFilter(image);
+        if (channels.size() == 1) {
+            image = SpatialDomainProcessor::optimizedLaplacianFilter<uchar>(image);
+        } else {
+            image = SpatialDomainProcessor::optimizedLaplacianFilter<cv::Vec3b>(image);
+        }
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = duration_cast<std::chrono::microseconds>(stop - start);
 
@@ -682,63 +643,41 @@ const {
     }
 
     if (isRobertsOperator) {
-        image = imageProcessor->robertsOperator1(image);
+        if (channels.size() == 1) {
+            image = SpatialDomainProcessor::robertsOperator1<uchar>(image);
+        } else {
+            image = SpatialDomainProcessor::robertsOperator1<cv::Vec3b>(image);
+        }
     }
-
     if(dilationMask.has_value()) {
-        image = imageProcessor->dilation(image, dilationMask.value());
+        image = MorphologicalProcessor::dilation(image, dilationMask.value());
     }
 
     if(erosionMask.has_value()) {
-        image = imageProcessor->erosion(image, erosionMask.value());
+        image = MorphologicalProcessor::erosion(image, erosionMask.value());
     }
 
     if(openingMask.has_value()) {
-        image = imageProcessor->opening(image, openingMask.value());
+        image = MorphologicalProcessor::opening(image, openingMask.value());
     }
 
     if(closingMask.has_value()) {
-        image = imageProcessor->closing(image, closingMask.value());
+        image = MorphologicalProcessor::closing(image, closingMask.value());
     }
 
     if(hmtMask.has_value()) {
-        image = imageProcessor->hmt(image, hmtMask.value());
-    }
-
-    if(isTaskM4) {
-        image = imageProcessor->taskM4(image);
+        image = MorphologicalProcessor::hmt(image, hmtMask.value());
     }
 
     if (!std::filesystem::is_directory(OUTPUT_DIR_NAME) || !std::filesystem::exists(OUTPUT_DIR_NAME)) {
         std::filesystem::create_directory(OUTPUT_DIR_NAME);
     }
 
-    if(isFourierTransform) {
-        if (imreadMode == cv::IMREAD_COLOR) {
-            std::vector<cv::Mat> channels, fourierImages;
-            cv::split(image, channels);
-            for (int i = 0; i < 3; i++) {
-                fourierImages.push_back(imageProcessor->fourierTransform(channels[i],
-                OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
-                + "_slow_fourier_visualization_channel" + std::to_string(i) + ".bmp"));
-            }
-
-            image = imageProcessor->inverseFourierTransform(fourierImages);
-        } else {
-            std::vector<cv::Mat> fourierImages;
-            fourierImages.push_back(imageProcessor->fourierTransform(image,
-                OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4)
-                + "_slow_fourier_visualization_channel0" + ".bmp"));
-            image = imageProcessor->inverseFourierTransform(fourierImages);
-        }
-    }
-
     if(isFastFourierTransform) {
         image = applyFastFourier(
             image, OUTPUT_DIR_NAME + "/"
             + outputFileName.substr(0, outputFileName.length() - 4)
-            + "_fast_fourier_visualization_channel",
-            imageProcessor
+            + "_fast_fourier_visualization_channel"
             );
     }
 }
@@ -746,26 +685,33 @@ const {
 void InputProcessor::calculateAndSaveComparisonImageStatistics(
     const cv::Mat &compareImage,
     const cv::Mat &originalImage,
-    const cv::Mat &newImage,
-    std::unique_ptr<SpatialDomainProcessor> &imageProcessor
-) const {
+    const cv::Mat &newImage
+) {
     std::stringstream ss;
     ss << "Comparison image stats:\n";
-    if (isMeanSquareError)
-        ss << "Mean square error before denoising: " << imageProcessor->meanSquareError(compareImage, originalImage) << "\n"
-        << "Mean square error after denoising: " << imageProcessor->meanSquareError(originalImage, newImage) << "\n";
-    if (isPeakMeanSquareError)
-        ss << "Peak mean square error before denoising: " << imageProcessor->peakMeanSquareError(compareImage, originalImage) << "\n"
-    << "Peak mean square error after denoising: " << imageProcessor->peakMeanSquareError(originalImage, newImage) << "\n";
-    if (isSignalToNoise)
-        ss << "Signal to noise ratio before denoising: " << imageProcessor->signalToNoiseRatio(compareImage, originalImage) << "\n"
-    << "Signal to noise ratio after denoising: " << imageProcessor->signalToNoiseRatio(originalImage, newImage) << "\n";
-    if (isPeakSignalToNoise)
-        ss << "Signal to noise ratio before denoising: " << imageProcessor->peakSignalToNoiseRatio(compareImage, originalImage) << "\n"
-    << "Signal to noise ratio after denoising: " << imageProcessor->peakSignalToNoiseRatio(originalImage, newImage) << "\n";
-    if (isMaximumDifference)
-        ss << "Signal to noise ratio before denoising: " << imageProcessor->maximumDifference(compareImage, originalImage) << "\n"
-    << "Signal to noise ratio after denoising: " << imageProcessor->maximumDifference(originalImage, newImage) << "\n";
+    std::vector<cv::Mat> compareImageChannels, originalImageChannels, newImageChannels;
+    cv::split(newImage, compareImageChannels);
+    cv::split(newImage, originalImageChannels);
+    cv::split(newImage, newImageChannels);
+
+    for (int i = 0; i < compareImageChannels.size(); i++) {
+        ss << "Comparison image stats channel " << i << ":\n";
+        if (isMeanSquareError)
+            ss << "Mean square error before denoising: " << ImageComparer::meanSquareError(compareImageChannels[i], originalImageChannels[i]) << "\n"
+            << "Mean square error after denoising: " << ImageComparer::meanSquareError(originalImageChannels[i], newImageChannels[i]) << "\n";
+        if (isPeakMeanSquareError)
+            ss << "Peak mean square error before denoising: " << ImageComparer::peakMeanSquareError(compareImageChannels[i], originalImageChannels[i]) << "\n"
+        << "Peak mean square error after denoising: " << ImageComparer::peakMeanSquareError(originalImageChannels[i], newImageChannels[i]) << "\n";
+        if (isSignalToNoise)
+            ss << "Signal to noise ratio before denoising: " << ImageComparer::signalToNoiseRatio(compareImageChannels[i], originalImageChannels[i]) << "\n"
+        << "Signal to noise ratio after denoising: " << ImageComparer::signalToNoiseRatio(originalImageChannels[i], newImageChannels[i]) << "\n";
+        if (isPeakSignalToNoise)
+            ss << "Signal to noise ratio before denoising: " << ImageComparer::peakSignalToNoiseRatio(compareImageChannels[i], originalImageChannels[i]) << "\n"
+        << "Signal to noise ratio after denoising: " << ImageComparer::peakSignalToNoiseRatio(originalImageChannels[i], newImageChannels[i]) << "\n";
+        if (isMaximumDifference)
+            ss << "Signal to noise ratio before denoising: " << ImageComparer::maximumDifference(compareImageChannels[i], originalImageChannels[i]) << "\n"
+        << "Signal to noise ratio after denoising: " << ImageComparer::maximumDifference(originalImageChannels[i], newImageChannels[i]) << "\n";
+    }
     std::ofstream statsFile;
     statsFile.open(
         OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + "_comparison_stats" + ".txt");
@@ -773,118 +719,53 @@ void InputProcessor::calculateAndSaveComparisonImageStatistics(
     statsFile.close();
 }
 
-void InputProcessor::calculateAndSaveImageStats(const cv::Mat &newImage, std::unique_ptr<SpatialDomainProcessor> &imageProcessor) const {
+void InputProcessor::calculateAndSaveImageStats(const cv::Mat &newImage) {
     std::stringstream ss;
     ss << "Comparison image stats:\n";
-    uint n = 0;
+    std::vector<cv::Mat> channels;
+    cv::split(newImage, channels);
 
     std::array<std::array<uint, UCHAR_MAX + 1>, 3> imageHistograms{};
-    for (int i = 0; i < 3; i++) {
-        imageHistograms[i] = imageProcessor->computeHistogram(newImage, i, n);
-    }
+    for (int i = 0; i < channels.size(); i++) {
+        imageHistograms[i] = HistogramProcessor::computeHistogram(newImage);
+        if (isMean) {
+            double mean = HistogramProcessor::mean(imageHistograms[i]);
+            ss << "Mean channel " << i << ": " << mean << "\n";
+        }
+        if (isVariance) {
+            double variance = HistogramProcessor::variance(imageHistograms[i]);
+            ss << "Variance channel " << i << ": " << variance << "\n";
+        }
+        if (isStandardDeviation) {
+            double standardDeviation = HistogramProcessor::standardDeviation(imageHistograms[i]);
+            ss << "Standard channel " << i << ": " << standardDeviation << "\n";
+        }
 
-    if (isMean) {
-        if (imreadMode == cv::IMREAD_COLOR) {
-            double mean = 0;
-            for (int i = 0; i < 3; i++) {
-                mean += imageProcessor->mean(imageHistograms[i]);
-            }
-            ss << "Mean: " << mean / 3 << "\n";
-        } else {
-            double mean = imageProcessor->mean(imageHistograms[0]);
-            ss << "Mean: " << mean << "\n";
+        if (isStandardDeviation) {
+            double variation1 = HistogramProcessor::variation1(imageHistograms[i]);
+            ss << "Variation channel " << i << ": " << variation1 << "\n";
         }
-    }
-    if (isVariance) {
-        if (imreadMode == cv::IMREAD_COLOR) {
-            double variance = 0;
-            for (int i = 0; i < 3; i++) {
-                variance += imageProcessor->variance(imageHistograms[i]);
-            }
-            ss << "Variance: " << variance / 3 << "\n";
-        } else {
-            double variance = imageProcessor->variance(imageHistograms[0]);
-            ss << "Variance: " << variance << "\n";
-        }
-    }
-    if (isStandardDeviation) {
-        if (imreadMode == cv::IMREAD_COLOR) {
-            double standardDeviation = 0;
-            for (int i = 0; i < 3; i++) {
-                standardDeviation += imageProcessor->standardDeviation(imageHistograms[i]);
-            }
-            ss << "Standard deviation: " << standardDeviation / 3 << "\n";
-        } else {
-            double standardDeviation = imageProcessor->standardDeviation(imageHistograms[0]);
-            ss << "Standard deviation: " << standardDeviation << "\n";
-        }
-    }
 
-    if (isStandardDeviation) {
-        if (imreadMode == cv::IMREAD_COLOR) {
-            double variation1 = 0;
-            for (int i = 0; i < 3; i++) {
-                variation1 += imageProcessor->variation1(imageHistograms[i]);
-            }
-            ss << "Variation coefficient I: " << variation1 / 3 << "\n";
-        } else {
-            double variation1 = imageProcessor->variation1(imageHistograms[0]);
-            ss << "Variation coefficient I: " << variation1 << "\n";
+        if (isAsymmetry) {
+                double asymmetry = HistogramProcessor::asymmetry(imageHistograms[i]);
+                ss << "Asymmetry channel " << i << ": " << asymmetry << "\n";
+        }
+
+        if (isFlattening) {
+                double flattening = HistogramProcessor::flattening(imageHistograms[i]);
+                ss << "Flattening channel " << i << ": "<< flattening << "\n";
+        }
+
+        if (isVariation2) {
+                double variation2 = HistogramProcessor::variation2(imageHistograms[i]);
+                ss << "Variation coefficient II channel " << i << ": " << variation2 << "\n";
+        }
+
+        if (isEntropy) {
+                double entropy = HistogramProcessor::entropy(imageHistograms[i]);
+                ss << "Information source entropy channel " << i << ": " << entropy << "\n";
         }
     }
-
-    if (isAsymmetry) {
-        if (imreadMode == cv::IMREAD_COLOR) {
-            double asymmetry = 0;
-            for (int i = 0; i < 3; i++) {
-                asymmetry += imageProcessor->asymmetry(imageHistograms[i]);
-            }
-            ss << "Asymmetry coefficient: " << asymmetry / 3 << "\n";
-        } else {
-            double asymmetry = imageProcessor->asymmetry(imageHistograms[0]);
-            ss << "Asymmetry coefficient: " << asymmetry << "\n";
-        }
-    }
-
-    if (isFlattening) {
-        if (imreadMode == cv::IMREAD_COLOR) {
-            double flattening = 0;
-            for (int i = 0; i < 3; i++) {
-                flattening += imageProcessor->flattening(imageHistograms[i]);
-            }
-            ss << "Flattening coefficient: " << flattening / 3 << "\n";
-        } else {
-            double flattening = imageProcessor->flattening(imageHistograms[0]);
-            ss << "Flattening coefficient: " << flattening << "\n";
-        }
-    }
-
-    if (isVariation2) {
-        if (imreadMode == cv::IMREAD_COLOR) {
-            double variation2 = 0;
-            for (int i = 0; i < 3; i++) {
-                variation2 += imageProcessor->variation2(imageHistograms[i]);
-            }
-            ss << "Variation coefficient II: " << variation2 / 3 << "\n";
-        } else {
-            double variation2 = imageProcessor->variation2(imageHistograms[0]);
-            ss << "Variation coefficient II: " << variation2 << "\n";
-        }
-    }
-
-    if (isEntropy) {
-        if (imreadMode == cv::IMREAD_COLOR) {
-            double entropy = 0;
-            for (int i = 0; i < 3; i++) {
-                entropy += imageProcessor->entropy(imageHistograms[i]);
-            }
-            ss << "Information source entropy: " << entropy / 3 << "\n";
-        } else {
-            double entropy = imageProcessor->entropy(imageHistograms[0]);
-            ss << "Information source entropy: " << entropy << "\n";
-        }
-    }
-
     std::ofstream statsFile;
     statsFile.open(
         OUTPUT_DIR_NAME + "/" + outputFileName.substr(0, outputFileName.length() - 4) + "_stats" + ".txt");
@@ -893,44 +774,45 @@ void InputProcessor::calculateAndSaveImageStats(const cv::Mat &newImage, std::un
 }
 
 
-void InputProcessor::processImage() const {
+void InputProcessor::processImage() {
     cv::Mat originalImage = imread(argv[INPUT_IMAGE_POS], imreadMode);
     if (!originalImage.data) {
         std::cout << "No image data \n";
         return;
     }
-    std::unique_ptr<SpatialDomainProcessor> imageProcessor;
-    if (imreadMode == cv::IMREAD_COLOR) {
-        imageProcessor = std::make_unique<RGBImageProcessor>();
-    } else {
-        imageProcessor = std::make_unique<GrayscaleImageProcessor>();
-    }
 
     cv::Mat newImage;
     originalImage.copyTo(newImage);
-    applyImageTransformations(newImage, imageProcessor);
+    applyImageTransformations(newImage);
     if (histogramChannel) {
         std::string histogramFileName = outputFileName.substr(0, outputFileName.length() - 4) +
                                         "_histogram.png";
-        saveImage(imageProcessor->histogram(newImage, histogramChannel.value()), histogramFileName);
+        saveImage(HistogramProcessor::histogramVisualization(HistogramProcessor::computeHistogram(newImage), 8), histogramFileName);
     }
     saveImage(newImage, this->outputFileName);
 
     if (isNoNoise) {
         cv::Mat compareImage = imread(noNoiseImage, imreadMode);
-        calculateAndSaveComparisonImageStatistics(compareImage, originalImage, newImage, imageProcessor);
-        calculateAndSaveImageStats(newImage, imageProcessor);
+        calculateAndSaveComparisonImageStatistics(compareImage, originalImage, newImage);
+        calculateAndSaveImageStats(newImage);
     }
 
-    calculateAndSaveImageStats(newImage, imageProcessor);
-
     if (regionGrowing.has_value()) {
-        cv::Mat segmentedImage = imageProcessor->regionGrowing(newImage, regionGrowing.value());
-        saveImage(segmentedImage, outputFileName.substr(0, outputFileName.length() - 4) +
+        if (imreadMode == cv::IMREAD_COLOR) {
+            cv::Mat segmentedImage = SpatialDomainProcessor::regionGrowing<cv::Vec3b>(newImage, regionGrowing.value());
+            saveImage(segmentedImage, outputFileName.substr(0, outputFileName.length() - 4) +
                                         "_segmentation.bmp");
-        cv::Mat segmentedColorImage = imageProcessor->applyColorMap(segmentedImage, imageProcessor->createColorMap());
-        saveImage(segmentedColorImage, outputFileName.substr(0, outputFileName.length() - 4) +
-                                        "_segmentation_colored.bmp");
+            cv::Mat segmentedColorImage = SpatialDomainProcessor::applyColorMap(segmentedImage, SpatialDomainProcessor::createColorMap());
+            saveImage(segmentedColorImage, outputFileName.substr(0, outputFileName.length() - 4) +
+                                            "_segmentation_colored.bmp");
+        } else {
+            cv::Mat segmentedImage = SpatialDomainProcessor::regionGrowing<uchar>(newImage, regionGrowing.value());
+            saveImage(segmentedImage, outputFileName.substr(0, outputFileName.length() - 4) +
+                                        "_segmentation.bmp");
+            cv::Mat segmentedColorImage = SpatialDomainProcessor::applyColorMap(segmentedImage, SpatialDomainProcessor::createColorMap());
+            saveImage(segmentedColorImage, outputFileName.substr(0, outputFileName.length() - 4) +
+                                            "_segmentation_colored.bmp");
+        }
     }
 }
 
