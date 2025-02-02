@@ -11,10 +11,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 add_library(image_processing_lib
         include/SpatialDomainProcessor.h
-        include/GrayscaleImageProcessor.h
-        src/GrayscaleImageProcessor.cpp
-        include/RGBImageProcessor.h
-        src/RGBImageProcessor.cpp
+        src/SpatialDomainProcessor.cpp
         include/InputProcessor.h
         src/InputProcessor.cpp
         src/MorphologicalProcessor.cpp
