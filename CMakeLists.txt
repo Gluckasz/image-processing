@@ -22,10 +22,9 @@ add_library(image_processing_lib
         include/HistogramProcessor.h
         src/ImageComparer.cpp
         include/ImageComparer.h
-        include/Masks.hpp
-        include/Constants.hpp
         include/Masks.h
         include/Constants.h
+        include/CommandOptions.h
 )
 
 target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})
