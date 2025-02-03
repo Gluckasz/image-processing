@@ -8,12 +8,11 @@
 #include <opencv2/opencv.hpp>
 
 struct CommandOptions {
-
-    #pragma region Input/Output configuration parameters
+#pragma region Input/Output configuration parameters
     cv::ImreadModes imreadMode = cv::IMREAD_COLOR;
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Basic image transformation parameters
+#pragma region Basic image transformation parameters
     std::optional<int> brightnessModVal;
     std::optional<int> contrastLinearModVal;
     std::optional<float> contrastGammaModVal;
@@ -23,14 +22,14 @@ struct CommandOptions {
     bool isDiagonalFlip = false;
     std::optional<float> shrinkModVal;
     std::optional<float> enlargeModVal;
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Spatial domain filtering parameters
+#pragma region Spatial domain filtering parameters
     std::optional<int> midpointKernelSize;
     std::optional<int> arithmeticMeanKernelSize;
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Image comparison parameters
+#pragma region Image comparison parameters
     bool isNoNoise = false;
     std::string noNoiseImage;
     bool isMeanSquareError = false;
@@ -38,9 +37,9 @@ struct CommandOptions {
     bool isSignalToNoise = false;
     bool isPeakSignalToNoise = false;
     bool isMaximumDifference = false;
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Histogram and statistical parameters
+#pragma region Histogram and statistical parameters
     std::optional<int> histogramChannel;
     std::optional<int> histogramUniformGMax;
     std::optional<int> histogramUniformGMin;
@@ -52,27 +51,27 @@ struct CommandOptions {
     bool isFlattening = false;
     bool isVariation2 = false;
     bool isEntropy = false;
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Edge detection parameters
+#pragma region Edge detection parameters
     std::optional<int> laplaceMask;
     bool isOptimizedLaplacian = false;
     bool isRobertsOperator = false;
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Morphological parameters
+#pragma region Morphological parameters
     std::optional<int> dilationMask;
     std::optional<int> erosionMask;
     std::optional<int> openingMask;
     std::optional<int> closingMask;
     std::optional<int> hmtMask;
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Segmentation parameters
+#pragma region Segmentation parameters
     std::optional<int> regionGrowing;
-    #pragma endregion
+#pragma endregion
 
-    #pragma region Frequency domain processing parameters
+#pragma region Frequency domain processing parameters
     bool isFourierTransform = false;
     bool isFastFourierTransform = false;
     std::optional<int> lowPassBandSize;
@@ -86,7 +85,7 @@ struct CommandOptions {
     std::optional<int> highPassDirectionMask;
     std::optional<int> taskF6k;
     std::optional<int> taskF6l;
-    #pragma endregion
+#pragma endregion
 };
 
 #endif //COMMANDOPTIONS_H
