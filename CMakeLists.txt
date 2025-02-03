@@ -28,6 +28,7 @@ add_library(image_processing_lib
         src/CommandParser.cpp
         include/CommandParser.h
         include/CommandMapping.h
+        include/ImageOperation.h
 )
 
 target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})
