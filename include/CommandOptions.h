@@ -7,10 +7,12 @@
 #include <optional>
 #include <opencv2/opencv.hpp>
 
+#include "Constants.h"
+
 struct CommandOptions {
 #pragma region Input/Output configuration parameters
     cv::ImreadModes imreadMode = cv::IMREAD_COLOR;
-    std::optional<std::string> outputFileName;
+    std::optional<std::string> outputFileName = Constants::DEFAULT_OUTPUT_NAME;
     bool showHelp = false;
 #pragma endregion
 

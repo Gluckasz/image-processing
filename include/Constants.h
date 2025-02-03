@@ -7,7 +7,7 @@
 
 namespace Constants {
     constexpr auto DEFAULT_OUTPUT_DIR = "output";
-    constexpr auto DEFAULT_OUTPUT_NAME = "output.bmp";
+    constexpr auto DEFAULT_OUTPUT_NAME = "output";
 }
 
 #endif //CONSTANTS_H
