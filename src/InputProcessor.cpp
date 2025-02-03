@@ -492,12 +492,3 @@ void InputProcessor::processImage() {
         }
     }
 }
-
-
-void InputProcessor::saveImage(cv::Mat image, std::string outputFileName) const {
-    if (!std::filesystem::is_directory(OUTPUT_DIR_NAME) || !
-        std::filesystem::exists(OUTPUT_DIR_NAME)) {
-        std::filesystem::create_directory(OUTPUT_DIR_NAME);
-    }
-    imwrite(OUTPUT_DIR_NAME + "/" + outputFileName, image);
-}

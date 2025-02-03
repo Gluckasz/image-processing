@@ -78,13 +78,6 @@ private:
     );
 
     /**
-     * @brief Save processed image to output directory
-     * @param image Image to save
-     * @param outputFileName Name of output file
-     */
-    void saveImage(cv::Mat image, std::string outputFileName) const;
-
-    /**
      * @brief Apply Fast Fourier Transform and save visualization
      * @param image Input image
      * @param fourierVisPath Path to save FFT visualization

@@ -29,6 +29,20 @@ add_library(image_processing_lib
         include/CommandParser.h
         include/CommandMapping.h
         include/ImageOperation.h
+        src/ChannelOperations/BrightnessOperation.cpp
+        src/ChannelOperations/ContrastLinearOperation.cpp
+        src/ChannelOperations/ContrastGammaOperation.cpp
+        src/ChannelOperations/NegativeOperation.cpp
+        src/ChannelOperations/FlipHorizontallyOperation.cpp
+        src/ChannelOperations/FlipVerticallyOperation.cpp
+        src/ChannelOperations/FlipDiagonallyOperation.cpp
+        src/ChannelOperations/ResizeOperation.cpp
+        src/ChannelOperations/MidpointFilterOperation.cpp
+        src/ChannelOperations/ArithmeticMeanFilterOperation.cpp
+        src/WholeImageOperations/LaplacianFilterOperation.cpp
+        src/WholeImageOperations/OptimizedLaplacianFilterOperation.cpp
+        src/WholeImageOperations/RobertsOperation.cpp
+        src/WholeImageOperations/RegionGrowingOperation.cpp
         src/OutputManager.cpp
         include/OutputManager.h
 )
