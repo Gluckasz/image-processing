@@ -54,8 +54,7 @@ private:
     /**
      * @brief Output configuration
      */
-    std::string outputFileName = "output.bmp";
-    const std::string OUTPUT_DIR_NAME = "output";
+
     cv::ImreadModes imreadMode = cv::IMREAD_COLOR;
 
     /**
