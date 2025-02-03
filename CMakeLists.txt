@@ -25,6 +25,7 @@ add_library(image_processing_lib
         include/Masks.h
         include/Constants.h
         include/CommandOptions.h
+        include/CommandMapping.h
 )
 
 target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})
