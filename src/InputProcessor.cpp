@@ -139,50 +139,6 @@ void InputProcessor::printCommands() {
     << "\t -l - l coefficient in task F6.\n\n";
 }
 
-template<typename T>
-bool InputProcessor::readParam(const std::string &arg, const std::string &prefix, std::optional<T> &result,
-                               const std::string &errorMsg) {
-    try {
-        std::string valueStr = arg.substr(prefix.length());
-        if (valueStr.empty()) {
-            throw std::invalid_argument("Missing value after prefix");
-        }
-        if constexpr (std::is_same_v<T, int>) {
-            result = std::stoi(valueStr);
-        } else if constexpr (std::is_same_v<T, float>) {
-            result = std::stof(valueStr);
-        } else if constexpr (std::is_same_v<T, std::string>) {
-            result = valueStr;
-        } else {
-            throw std::invalid_argument("Unsupported type for readParam");
-        }
-        return true;
-    } catch (const std::exception &e) {
-        std::cerr << errorMsg << ": " << e.what() << std::endl;
-        return false;
-    }
-}
-
-bool InputProcessor::readStringParam(const std::string &arg, const std::string &prefix, std::string &result,
-                                     const std::string &errorMsg) {
-    try {
-        std::string valueStr = arg.substr(prefix.length());
-        if (valueStr.empty()) {
-            throw std::invalid_argument("Missing value after prefix");
-        }
-        result = valueStr;
-        return true;
-    } catch (const std::exception &e) {
-        std::cerr << errorMsg << ": " << e.what() << std::endl;
-        return false;
-    }
-}
-
-
-void InputProcessor::processInput() {
-
-}
-
 cv::Mat InputProcessor::applyFastFourier(const cv::Mat& image, const std::string &fourierVisPath) const {
     cv::Mat result = image.clone();
     std::vector<cv::Mat> channels, fourierImages;

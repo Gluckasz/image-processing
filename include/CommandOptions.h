@@ -10,6 +10,8 @@
 struct CommandOptions {
 #pragma region Input/Output configuration parameters
     cv::ImreadModes imreadMode = cv::IMREAD_COLOR;
+    std::optional<std::string> outputFileName;
+    bool showHelp = false;
 #pragma endregion
 
 #pragma region Basic image transformation parameters
@@ -30,8 +32,7 @@ struct CommandOptions {
 #pragma endregion
 
 #pragma region Image comparison parameters
-    bool isNoNoise = false;
-    std::string noNoiseImage;
+    std::optional<std::string> noNoiseImage;
     bool isMeanSquareError = false;
     bool isPeakMeanSquareError = false;
     bool isSignalToNoise = false;
@@ -76,10 +77,8 @@ struct CommandOptions {
     bool isFastFourierTransform = false;
     std::optional<int> lowPassBandSize;
     std::optional<int> highPassBandSize;
-    bool isBandPass = false;
     std::optional<int> lowCut;
     std::optional<int> highCut;
-    bool isBandCut = false;
     std::optional<int> lowPass;
     std::optional<int> highPass;
     std::optional<int> highPassDirectionMask;

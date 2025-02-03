@@ -25,6 +25,8 @@ add_library(image_processing_lib
         include/Masks.h
         include/Constants.h
         include/CommandOptions.h
+        src/CommandParser.cpp
+        include/CommandParser.h
         include/CommandMapping.h
 )
 

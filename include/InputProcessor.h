@@ -57,20 +57,6 @@ private:
     void printCommands();
 
     /**
-     * @brief Template function to read and validate numeric parameters
-     * @tparam T Parameter type (int or float)
-     */
-    template<typename T>
-    bool readParam(const std::string &arg, const std::string &prefix, std::optional<T> &result,
-                   const std::string &errorMsg);
-
-    /**
-     * @brief Read and validate string parameters
-     */
-    static bool readStringParam(const std::string &arg, const std::string &prefix, std::string &result,
-                                const std::string &errorMsg);
-
-    /**
      * @brief Apply selected image transformations to the input image
      */
     void applyImageTransformations(cv::Mat &image);
