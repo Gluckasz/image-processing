@@ -24,6 +24,8 @@ add_library(image_processing_lib
         include/ImageComparer.h
         include/Masks.hpp
         include/Constants.hpp
+        include/Masks.h
+        include/Constants.h
 )
 
 target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})

@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 #include <opencv2/opencv.hpp>
-#include <Masks.hpp>
+#include <Masks.h>
 
 
 using Masks::FieldType;

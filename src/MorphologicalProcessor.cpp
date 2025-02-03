@@ -3,7 +3,7 @@
 //
 
 #include "../include/MorphologicalProcessor.h"
-#include <Masks.hpp>
+#include <Masks.h>
 
 
 namespace MorphologicalProcessor {
