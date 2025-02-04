@@ -28,10 +28,9 @@ A command-line tool for image processing, designed for academic purposes. This a
 ### From Source 
 
 1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/yourusername/your-repo.git
-   cd your-repo
-
+2. cd image_processing
+3. cmake .
+4. make
    
 ## Usage
 
