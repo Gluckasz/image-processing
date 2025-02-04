@@ -1,10 +1,10 @@
 //
 // Created by gluckasz on 2/4/25.
 //
-#include "Constants.h"
-#include "HistogramProcessor.h"
-#include "ImageOperation.h"
-#include "OutputManager.h"
+#include "../../include/Constants.h"
+#include "../../include/HistogramProcessor.h"
+#include "../../include/ImageOperation.h"
+#include "../../include/OutputManager.h"
 
 class HistogramVisualizationOperation final : public ImageOperation {
     int gMin_, gMax_;

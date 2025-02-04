@@ -1,9 +1,9 @@
 //
 // Created by gluckasz on 2/4/25.
 //
-#include "ImageComparer.h"
-#include "ImageOperation.h"
-#include "OutputManager.h"
+#include "../../include/ImageComparer.h"
+#include "../../include/ImageOperation.h"
+#include "../../include/OutputManager.h"
 
 class CompareImageStatsOperation final : public ImageOperation {
     cv::Mat &originalImage_;
