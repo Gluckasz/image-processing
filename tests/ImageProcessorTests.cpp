@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "GrayscaleImageProcessor.h"
-#include "../include/SpatialDomainProcessor.h"
+#include "../include/image-processing-lib/SpatialDomainProcessor.h"
 
 class ImageProcessorTest : public testing::Test {
 protected:

@@ -2,7 +2,7 @@
 // Created by gluckasz on 2/1/25.
 //
 
-#include "../include/ImageComparer.h"
+#include "../../include/image-processing-lib/ImageComparer.h"
 
 namespace ImageComparer {
     double meanSquareError(cv::Mat originalImage, cv::Mat newImage) {

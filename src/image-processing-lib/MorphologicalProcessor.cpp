@@ -2,8 +2,7 @@
 // Created by gluckasz on 1/29/25.
 //
 
-#include "../include/MorphologicalProcessor.h"
-#include <Masks.hpp>
+#include "../../include/image-processing-lib/MorphologicalProcessor.h"
 
 
 namespace MorphologicalProcessor {

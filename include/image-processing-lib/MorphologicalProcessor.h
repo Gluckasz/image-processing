@@ -7,8 +7,13 @@
 #include <unordered_map>
 #include <vector>
 #include <opencv2/opencv.hpp>
-#include <Masks.hpp>
 
+#include "input-processing-lib/Masks.h"
+
+
+namespace Masks {
+    enum class FieldType;
+}
 
 using Masks::FieldType;
 using Masks::maskMap;

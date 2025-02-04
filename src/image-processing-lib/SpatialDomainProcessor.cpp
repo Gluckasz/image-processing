@@ -2,7 +2,7 @@
 // Created by gluckasz on 10/6/24.
 //
 
-#include "../include/SpatialDomainProcessor.h"
+#include "../../include/image-processing-lib/SpatialDomainProcessor.h"
 
 namespace {
     template<typename TPixel>

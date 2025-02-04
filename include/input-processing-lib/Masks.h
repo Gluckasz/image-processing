@@ -1,7 +1,8 @@
 //
 // Created by gluckasz on 2/2/25.
 //
-#pragma once
+#ifndef MASKS_H
+#define MASKS_H
 
 #include <unordered_map>
 #include <vector>
@@ -242,3 +243,5 @@ namespace Masks {
         },
     };
 }
+
+#endif //MASKS_H

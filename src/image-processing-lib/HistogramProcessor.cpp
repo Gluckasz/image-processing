@@ -2,7 +2,7 @@
 // Created by gluckasz on 1/31/25.
 //
 
-#include "../include/HistogramProcessor.h"
+#include "../include/image-processing-lib/HistogramProcessor.h"
 
 namespace HistogramProcessor {
     std::array<uint, UCHAR_MAX + 1> computeHistogram(cv::Mat image) {
@@ -32,7 +32,7 @@ namespace HistogramProcessor {
         return histogramImage;
     }
 
-    cv::Mat histogramUniform(const cv::Mat &image,
+    cv::Mat histogramEqualization(const cv::Mat &image,
                              const std::array<uint, UCHAR_MAX + 1> &imageHistogram, const int gMax,
                              const int gMin) {
         cv::Mat result = image.clone();

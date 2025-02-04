@@ -32,7 +32,7 @@ namespace HistogramProcessor {
      * @param gMin Minimum output intensity
      * @return Transformed image with equalized histogram
      */
-    cv::Mat histogramUniform(const cv::Mat &image, const std::array<uint, UCHAR_MAX + 1> &imageHistogram, int gMax,
+    cv::Mat histogramEqualization(const cv::Mat &image, const std::array<uint, UCHAR_MAX + 1> &imageHistogram, int gMax,
                              int gMin);
 
     /**
