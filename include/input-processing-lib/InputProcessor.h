@@ -6,18 +6,10 @@
 #define INPUTPROCESSOR_H
 
 #include <string>
-#include <cstring>
-#include <iostream>
 #include <opencv2/opencv.hpp>
-#include <filesystem>
-#include <fstream>
-#include <chrono>
 
-#include "../image-processing-lib/SpatialDomainProcessor.h"
-#include "../include/FourierProcessor.h"
-#include "../image-processing-lib/HistogramProcessor.h"
-#include "../image-processing-lib/MorphologicalProcessor.h"
-#include "../image-processing-lib/ImageComparer.h"
+#include "CommandOptions.h"
+#include "ImageOperation.h"
 
 constexpr int INPUT_IMAGE_POS = 1;
 
@@ -28,63 +20,22 @@ constexpr int INPUT_IMAGE_POS = 1;
  * manages image processing operations, and coordinates output generation.
  */
 class InputProcessor {
+    CommandOptions options_;
+    std::vector<std::unique_ptr<ImageOperation>> channelOperations_;
+    std::vector<std::unique_ptr<ImageOperation>> imageOperations_;
+    std::vector<std::unique_ptr<ImageOperation>> statsOperations_;
+    std::string inputImagePath_;
+
+    void setupChannelProcessingPipeline();
+    void setupImageProcessingPipeline();
+    void setupStatsPipeline();
+    void saveResults(const cv::Mat& image) const;
+    static void printCommands();
 public:
-    /**
-     * @brief Construct a new Input Processor object
-     * @param argc Number of command-line arguments
-     * @param argv Array of command-line argument strings
-     */
-    InputProcessor(int argc, char **argv);
+    InputProcessor(CommandOptions options, std::string inputImagePath)
+        : options_(std::move(options)), inputImagePath_(std::move(inputImagePath)) {}
 
-    /**
-     * @brief Process command-line arguments and set corresponding flags
-     */
-    void processInput();
-
-    /**
-     * @brief Execute image processing operations based on set flags
-     */
-    void processImage();
-
-private:
-    // Command-line input state
-    int argc;
-    char **argv;
-
-    /**
-     * @brief Print usage information and available commands
-     */
-    void printCommands();
-
-    /**
-     * @brief Apply selected image transformations to the input image
-     */
-    void applyImageTransformations(cv::Mat &image);
-
-    /**
-     * @brief Calculate and save image comparison statistics
-     */
-    void calculateAndSaveComparisonImageStatistics(
-        const cv::Mat &compareImage,
-        const cv::Mat &originalImage,
-        const cv::Mat &newImage
-    );
-
-    /**
-     * @brief Calculate and save image statistics
-     */
-    void calculateAndSaveImageStats(
-        const cv::Mat &newImage
-    );
-
-    /**
-     * @brief Apply Fast Fourier Transform and save visualization
-     * @param image Input image
-     * @param fourierVisPath Path to save FFT visualization
-     * @param imageProcessor Image processor instance
-     * @return Transformed image
-     */
-    cv::Mat applyFastFourier(const cv::Mat& image, const std::string &fourierVisPath) const;
+    void process();
 };
 
 

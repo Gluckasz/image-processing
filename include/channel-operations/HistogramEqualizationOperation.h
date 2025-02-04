@@ -6,10 +6,10 @@
 #include "../../include/ImageOperation.h"
 #include "../../include/input-processing-lib/OutputManager.h"
 
-class HistogramVisualizationOperation final : public ImageOperation {
+class HistogramEqualizationOperation final : public ImageOperation {
     int gMin_, gMax_;
 public:
-    explicit HistogramVisualizationOperation(const int gMin, const int gMax) : gMin_(gMin), gMax_(gMax) {
+    explicit HistogramEqualizationOperation(const int gMin, const int gMax) : gMin_(gMin), gMax_(gMax) {
     }
 
     void apply(cv::Mat &image) const override {

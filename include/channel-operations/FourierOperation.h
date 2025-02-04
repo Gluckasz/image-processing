@@ -10,7 +10,7 @@ public:
     void apply(cv::Mat &image) const override {
         cv::Mat fourierImage = FourierProcessor::fourierTransform(image);
         const std::string path = OutputManager::constructPath("image_fourier", "magnitude_spectrum", "bmp");
-        FourierProcessor::visualizeFourier(image, path);
+        FourierProcessor::visualizeFourier(fourierImage, path);
         image = FourierProcessor::inverseFourierTransform(fourierImage);
     }
 };

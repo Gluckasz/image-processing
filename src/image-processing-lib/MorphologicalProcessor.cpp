@@ -3,7 +3,6 @@
 //
 
 #include "../../include/image-processing-lib/MorphologicalProcessor.h"
-#include <../../include/Masks.h>
 
 
 namespace MorphologicalProcessor {

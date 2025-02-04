@@ -18,7 +18,7 @@ public:
         cv::Mat fourierImage = FourierProcessor::fastFourierTransform(image);
         fourierImage = FourierProcessor::fftBandCut(fourierImage, low_, high_);
         const std::string path = OutputManager::constructPath("image_fourier", "magnitude_spectrum", "bmp");
-        FourierProcessor::visualizeFourier(image, path);
+        FourierProcessor::visualizeFourier(fourierImage, path);
         image = FourierProcessor::inverseFastFourierTransform(fourierImage);
     }
 };

@@ -51,7 +51,7 @@ add_library(image_processing_lib
         include/whole-image-operations/ClosingOperation.h
         include/whole-image-operations/HMTOperation.h
         include/whole-image-operations/CompareImageStatsOperation.h
-        include/channel-operations/HistogramVisualizationOperation.h
+        include/whole-image-operations/HistogramVisualizationOperation.h
         include/channel-operations/HistogramEqualizationOperation.h
         include/whole-image-operations/HistogramStatsOperation.h
         include/channel-operations/FourierOperation.h

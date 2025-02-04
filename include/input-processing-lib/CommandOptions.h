@@ -24,8 +24,7 @@ struct CommandOptions {
     bool isHorizontalFlip = false;
     bool isVerticalFlip = false;
     bool isDiagonalFlip = false;
-    std::optional<float> shrinkModVal;
-    std::optional<float> enlargeModVal;
+    std::optional<float> resizeModVal;
 #pragma endregion
 
 #pragma region Spatial domain filtering parameters
@@ -34,19 +33,19 @@ struct CommandOptions {
 #pragma endregion
 
 #pragma region Image comparison parameters
-    std::optional<std::string> noNoiseImage;
+    std::optional<std::string> originalImage;
     bool isMeanSquareError = false;
     bool isPeakMeanSquareError = false;
     bool isSignalToNoise = false;
     bool isPeakSignalToNoise = false;
-    bool isMaximumDifference = false;
+    bool isCompareImages = false;
 #pragma endregion
 
 #pragma region Histogram and statistical parameters
     std::optional<int> histogramChannel;
     std::optional<int> histogramUniformGMax;
     std::optional<int> histogramUniformGMin;
-    bool isMean = false;
+    bool isHistogramStats = false;
     bool isVariance = false;
     bool isStandardDeviation = false;
     bool isVariation1 = false;
@@ -83,7 +82,6 @@ struct CommandOptions {
     std::optional<int> highCut;
     std::optional<int> lowPass;
     std::optional<int> highPass;
-    std::optional<int> highPassDirectionMask;
     std::optional<int> taskF6k;
     std::optional<int> taskF6l;
 #pragma endregion

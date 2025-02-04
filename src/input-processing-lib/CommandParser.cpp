@@ -4,7 +4,7 @@
 
 #include "../include/input-processing-lib/CommandParser.h"
 
-#include "CommandMapping.h"
+#include "input-processing-lib/CommandMapping.h"
 
 template<typename T>
 bool CommandParser::readParam(const std::string &arg, const std::string &prefix, std::optional<T> &result,
@@ -82,16 +82,10 @@ CommandOptions CommandParser::parse(const int argc, char **argv) {
                 commandOptions.isDiagonalFlip = true;
                 break;
 
-            case CommandType::SHRINK:
+            case CommandType::RESIZE:
                 if (++i < argc)
-                    readParam(argv[i], "-val=", commandOptions.shrinkModVal,
+                    readParam(argv[i], "-val=", commandOptions.resizeModVal,
                               "Shrink scale factor must be a float between 0 and 1.");
-                break;
-
-            case CommandType::ENLARGE:
-                if (++i < argc)
-                    readParam(argv[i], "-val=", commandOptions.enlargeModVal,
-                              "Enlarge scale factor must be a float greater than 1.");
                 break;
 
             case CommandType::MIDPOINT_FILTER:
@@ -106,30 +100,8 @@ CommandOptions CommandParser::parse(const int argc, char **argv) {
                               "Arithmetic mean filter kernel size must be an integer.");
                 break;
 
-            case CommandType::NO_NOISE_IMAGE:
-                if (++i < argc)
-                    readParam(argv[i], "-fileName=", commandOptions.noNoiseImage,
-                              "Invalid format for noise-free image file name.");
-                break;
-
-            case CommandType::MSE:
-                commandOptions.isMeanSquareError = true;
-                break;
-
-            case CommandType::PMSE:
-                commandOptions.isPeakMeanSquareError = true;
-                break;
-
-            case CommandType::SNR:
-                commandOptions.isSignalToNoise = true;
-                break;
-
-            case CommandType::PSNR:
-                commandOptions.isPeakSignalToNoise = true;
-                break;
-
-            case CommandType::MAXIMUM_DIFFERENCE:
-                commandOptions.isMaximumDifference = true;
+            case CommandType::COMPARE_IMAGES:
+                commandOptions.isCompareImages = true;
                 break;
 
             case CommandType::HISTOGRAM:
@@ -159,36 +131,8 @@ CommandOptions CommandParser::parse(const int argc, char **argv) {
 
                 break;
 
-            case CommandType::MEAN:
-                commandOptions.isMean = true;
-                break;
-
-            case CommandType::VARIANCE:
-                commandOptions.isVariance = true;
-                break;
-
-            case CommandType::STANDARD_DEVIATION:
-                commandOptions.isStandardDeviation = true;
-                break;
-
-            case CommandType::VARIATION_1:
-                commandOptions.isVariation1 = true;
-                break;
-
-            case CommandType::ASYMMETRY:
-                commandOptions.isAsymmetry = true;
-                break;
-
-            case CommandType::FLATTENING:
-                commandOptions.isFlattening = true;
-                break;
-
-            case CommandType::VARIATION_2:
-                commandOptions.isVariation2 = true;
-                break;
-
-            case CommandType::ENTROPY:
-                commandOptions.isEntropy = true;
+            case CommandType::HISTOGRAM_STATS:
+                commandOptions.isHistogramStats = true;
                 break;
 
             case CommandType::LAPLACE:
@@ -288,14 +232,6 @@ CommandOptions CommandParser::parse(const int argc, char **argv) {
                 }
                 if (++i < argc) {
                     readParam(argv[i], "-highPass=", commandOptions.highPass, "Band value must be an integer.");
-                }
-                break;
-
-            case CommandType::FFT_HIGH_PASS_DIRECTION:
-                commandOptions.isFastFourierTransform = true;
-                if (++i < argc) {
-                    readParam(argv[i], "-mask=", commandOptions.highPassDirectionMask,
-                              "Mask must be an integer between 0 and 1.");
                 }
                 break;
 
