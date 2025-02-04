@@ -318,26 +318,6 @@ namespace FourierProcessor {
         return result;
     }
 
-    cv::Mat fftHighPassDirection(cv::Mat fourierImage, cv::Mat mask) {
-        cv::Mat result = fourierImage.clone();
-        const std::complex DCComponent(
-            fourierImage.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[0],
-            fourierImage.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[1]
-        );
-        for (int x = 0; x < fourierImage.rows; x++) {
-            for (int y = 0; y < fourierImage.cols; y++) {
-                if (mask.at<uchar>(x, y) == 0) {
-                    result.at<cv::Vec2d>(x, y) = 0;
-                }
-            }
-        }
-
-        result.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[0] = DCComponent.real();
-        result.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[1] = DCComponent.imag();
-
-        return result;
-    }
-
     cv::Mat fftPhaseModifying(cv::Mat fourierImage, const int verticalShift, const int horizontalShift) {
         cv::Mat mask = cv::Mat::zeros(fourierImage.rows, fourierImage.cols, CV_64FC2);
         for (int n = 0; n < fourierImage.rows; n++) {

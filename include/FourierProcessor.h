@@ -64,14 +64,6 @@ namespace FourierProcessor {
     cv::Mat fftBandCut(cv::Mat fourierImage, int lowPass, int highPass);
 
     /**
-     * Apply directional high-pass filter in the frequency domain.
-     * @param fourierImage Fourier transformed image
-     * @param mask Direction mask
-     * @return Filtered image
-     */
-    cv::Mat fftHighPassDirection(cv::Mat fourierImage, cv::Mat mask);
-
-    /**
      * Modify phase in frequency domain.
      * @param fourierImage Fourier transformed image
      * @param verticalShift Phase modification parameter k (vertical offset)

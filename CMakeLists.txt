@@ -45,15 +45,22 @@ add_library(image_processing_lib
         src/whole-image-operations/RegionGrowingOperation.cpp
         src/OutputManager.cpp
         include/OutputManager.h
-        src/morphological-operations/DilationOperation.cpp
-        src/morphological-operations/ErosionOperation.cpp
-        src/morphological-operations/OpeningOperation.cpp
-        src/morphological-operations/ClosingOperation.cpp
-        src/morphological-operations/HMTOperation.cpp
-        src/stats-operations/CompareImageStatsOperation.cpp
-        src/histogram-operations/HistogramVisualizationOperation.cpp
-        src/histogram-operations/HistogramEqualizationOperation.cpp
-        src/histogram-operations/HistogramStatsOperation.cpp
+        src/whole-image-operations/DilationOperation.cpp
+        src/whole-image-operations/ErosionOperation.cpp
+        src/whole-image-operations/OpeningOperation.cpp
+        src/whole-image-operations/ClosingOperation.cpp
+        src/whole-image-operations/HMTOperation.cpp
+        src/whole-image-operations/CompareImageStatsOperation.cpp
+        src/channel-operations/HistogramVisualizationOperation.cpp
+        src/channel-operations/HistogramEqualizationOperation.cpp
+        src/whole-image-operations/HistogramStatsOperation.cpp
+        src/channel-operations/FourierOperation.cpp
+        src/channel-operations/FastFourierOperation.cpp
+        src/channel-operations/LowPassOperation.cpp
+        src/channel-operations/HighPassOperation.cpp
+        src/channel-operations/BandPassOperation.cpp
+        src/channel-operations/BandCutOperation.cpp
+        src/channel-operations/PhaseShiftOperation.cpp
 )
 
 target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})
