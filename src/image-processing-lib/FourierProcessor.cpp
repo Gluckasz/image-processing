@@ -2,7 +2,7 @@
 // Created by gluckasz on 1/29/25.
 //
 
-#include "../include/FourierProcessor.h"
+#include "../include/image-processing-lib/FourierProcessor.h"
 
 namespace {
     /**

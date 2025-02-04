@@ -1,9 +1,9 @@
 //
 // Created by gluckasz on 2/4/25.
 //
-#include "../../include/FourierProcessor.h"
 #include "../../include/ImageOperation.h"
 #include "../../include/input-processing-lib/OutputManager.h"
+#include "image-processing-lib/FourierProcessor.h"
 
 class BandPassOperation final : public ImageOperation {
     int low_;
