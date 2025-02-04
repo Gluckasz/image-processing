@@ -45,6 +45,11 @@ add_library(image_processing_lib
         src/whole-image-operations/RegionGrowingOperation.cpp
         src/OutputManager.cpp
         include/OutputManager.h
+        src/morphological-operations/DilationOperation.cpp
+        src/morphological-operations/ErosionOperation.cpp
+        src/morphological-operations/OpeningOperation.cpp
+        src/morphological-operations/ClosingOperation.cpp
+        src/morphological-operations/HMTOperation.cpp
 )
 
 target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})
