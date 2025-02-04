@@ -141,7 +141,7 @@ namespace FourierProcessor {
     }
 
 
-    cv::Mat fourierTransform(cv::Mat image, const std::string &fourierVisPath) {
+    cv::Mat fourierTransform(cv::Mat image) {
         const int M = image.rows;
         const int N = image.cols;
 
@@ -178,7 +178,6 @@ namespace FourierProcessor {
                 fourierImage.at<cv::Vec2d>(u, v)[0] = sum.real();
                 fourierImage.at<cv::Vec2d>(u, v)[1] = sum.imag();
             }
-            std::cout << "Done: " << u << " u iterations." << "\n";
         }
 
 #pragma omp parallel for
@@ -194,12 +193,10 @@ namespace FourierProcessor {
             }
         }
 
-        visualizeFourier(fourierImage, fourierVisPath);
-
         return fourierImage;
     }
 
-    cv::Mat fastFourierTransform(cv::Mat image, const std::string &fourierVisPath) {
+    cv::Mat fastFourierTransform(cv::Mat image) {
         const int M = image.rows;
         const int N = image.cols;
 
@@ -257,13 +254,10 @@ namespace FourierProcessor {
                 fourierImage.at<cv::Vec2d>(u, v + N / 2) = temp;
             }
         }
-
-        visualizeFourier(fourierImage, fourierVisPath);
-
         return fourierImage;
     }
 
-    cv::Mat fftLowPass(const cv::Mat &fourierImage, const int lowPassBandSize, const std::string &fourierVisPath) {
+    cv::Mat fftLowPass(const cv::Mat &fourierImage, const int lowPassBandSize) {
         cv::Mat result = fourierImage.clone();
         for (int x = 0; x < fourierImage.rows; x++) {
             for (int y = 0; y < fourierImage.cols; y++) {
@@ -272,13 +266,10 @@ namespace FourierProcessor {
                 }
             }
         }
-
-        visualizeFourier(result, fourierVisPath);
-
         return result;
     }
 
-    cv::Mat fftHighPass(cv::Mat fourierImage, const int highPassBandSize, const std::string &fourierVisPath) {
+    cv::Mat fftHighPass(cv::Mat fourierImage, const int highPassBandSize) {
         cv::Mat result = fourierImage.clone();
         const std::complex DCComponent(
             fourierImage.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[0],
@@ -295,24 +286,18 @@ namespace FourierProcessor {
         result.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[0] = DCComponent.real();
         result.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[1] = DCComponent.imag();
 
-        visualizeFourier(result, fourierVisPath);
-
         return result;
     }
 
-    cv::Mat fftBandPass(const cv::Mat &fourierImage, const int lowCut, const int highCut,
-                        const std::string &fourierVisPath) {
+    cv::Mat fftBandPass(const cv::Mat &fourierImage, const int lowCut, const int highCut) {
         cv::Mat result = fourierImage.clone();
-        result = fftHighPass(result, lowCut, fourierVisPath);
-        result = fftLowPass(result, highCut, fourierVisPath);
-
-        visualizeFourier(result, fourierVisPath);
+        result = fftHighPass(result, lowCut);
+        result = fftLowPass(result, highCut);
 
         return result;
     }
 
-    cv::Mat fftBandCut(cv::Mat fourierImage, const int lowPass, const int highPass,
-                       const std::string &fourierVisPath) {
+    cv::Mat fftBandCut(cv::Mat fourierImage, const int lowPass, const int highPass) {
         cv::Mat result = fourierImage.clone();
         const std::complex DCComponent(
             fourierImage.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[0],
@@ -330,12 +315,10 @@ namespace FourierProcessor {
         result.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[0] = DCComponent.real();
         result.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[1] = DCComponent.imag();
 
-        visualizeFourier(result, fourierVisPath);
-
         return result;
     }
 
-    cv::Mat fftHighPassDirection(cv::Mat fourierImage, cv::Mat mask, const std::string &fourierVisPath) {
+    cv::Mat fftHighPassDirection(cv::Mat fourierImage, cv::Mat mask) {
         cv::Mat result = fourierImage.clone();
         const std::complex DCComponent(
             fourierImage.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[0],
@@ -352,13 +335,10 @@ namespace FourierProcessor {
         result.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[0] = DCComponent.real();
         result.at<cv::Vec2d>(fourierImage.rows / 2, fourierImage.cols / 2)[1] = DCComponent.imag();
 
-        visualizeFourier(result, fourierVisPath);
-
         return result;
     }
 
-    cv::Mat fftPhaseModifying(cv::Mat fourierImage, const int verticalShift, const int horizontalShift,
-                              const std::string &fourierVisPath) {
+    cv::Mat fftPhaseModifying(cv::Mat fourierImage, const int verticalShift, const int horizontalShift) {
         cv::Mat mask = cv::Mat::zeros(fourierImage.rows, fourierImage.cols, CV_64FC2);
         for (int n = 0; n < fourierImage.rows; n++) {
             for (int m = 0; m < fourierImage.cols; m++) {
@@ -385,9 +365,6 @@ namespace FourierProcessor {
                 result.at<cv::Vec2d>(n, m)[1] = a * d + b * c;
             }
         }
-
-        visualizeFourier(result, fourierVisPath);
-
         return result;
     }
 
@@ -439,7 +416,6 @@ namespace FourierProcessor {
                     std::clamp(std::round(pixelValue), 0.0, 255.0)
                 );
             }
-            std::cout << "Done: " << x << " u iterations." << "\n";
         }
 
         return result;
