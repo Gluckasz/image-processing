@@ -29,38 +29,38 @@ add_library(image_processing_lib
         include/input-processing-lib/CommandParser.h
         include/input-processing-lib/CommandMapping.h
         include/ImageOperation.h
-        src/channel-operations/BrightnessOperation.cpp
-        src/channel-operations/ContrastLinearOperation.cpp
-        src/channel-operations/ContrastGammaOperation.cpp
-        src/channel-operations/NegativeOperation.cpp
-        src/channel-operations/FlipHorizontallyOperation.cpp
-        src/channel-operations/FlipVerticallyOperation.cpp
-        src/channel-operations/FlipDiagonallyOperation.cpp
-        src/channel-operations/ResizeOperation.cpp
-        src/channel-operations/MidpointFilterOperation.cpp
-        src/channel-operations/ArithmeticMeanFilterOperation.cpp
-        src/whole-image-operations/LaplacianFilterOperation.cpp
-        src/whole-image-operations/OptimizedLaplacianFilterOperation.cpp
-        src/whole-image-operations/RobertsOperation.cpp
-        src/whole-image-operations/RegionGrowingOperation.cpp
+        include/channel-operations/BrightnessOperation.h
+        include/channel-operations/ContrastLinearOperation.h
+        include/channel-operations/ContrastGammaOperation.h
+        include/channel-operations/NegativeOperation.h
+        include/channel-operations/FlipHorizontallyOperation.h
+        include/channel-operations/FlipVerticallyOperation.h
+        include/channel-operations/FlipDiagonallyOperation.h
+        include/channel-operations/ResizeOperation.h
+        include/channel-operations/MidpointFilterOperation.h
+        include/channel-operations/ArithmeticMeanFilterOperation.h
+        include/whole-image-operations/LaplacianFilterOperation.h
+        include/whole-image-operations/OptimizedLaplacianFilterOperation.h
+        include/whole-image-operations/RobertsOperation.h
+        include/whole-image-operations/RegionGrowingOperation.h
         src/input-processing-lib/OutputManager.cpp
         include/input-processing-lib/OutputManager.h
-        src/whole-image-operations/DilationOperation.cpp
-        src/whole-image-operations/ErosionOperation.cpp
-        src/whole-image-operations/OpeningOperation.cpp
-        src/whole-image-operations/ClosingOperation.cpp
-        src/whole-image-operations/HMTOperation.cpp
-        src/whole-image-operations/CompareImageStatsOperation.cpp
-        src/channel-operations/HistogramVisualizationOperation.cpp
-        src/channel-operations/HistogramEqualizationOperation.cpp
-        src/whole-image-operations/HistogramStatsOperation.cpp
-        src/channel-operations/FourierOperation.cpp
-        src/channel-operations/FastFourierOperation.cpp
-        src/channel-operations/LowPassOperation.cpp
-        src/channel-operations/HighPassOperation.cpp
-        src/channel-operations/BandPassOperation.cpp
-        src/channel-operations/BandCutOperation.cpp
-        src/channel-operations/PhaseShiftOperation.cpp
+        include/whole-image-operations/DilationOperation.h
+        include/whole-image-operations/ErosionOperation.h
+        include/whole-image-operations/OpeningOperation.h
+        include/whole-image-operations/ClosingOperation.h
+        include/whole-image-operations/HMTOperation.h
+        include/whole-image-operations/CompareImageStatsOperation.h
+        include/channel-operations/HistogramVisualizationOperation.h
+        include/channel-operations/HistogramEqualizationOperation.h
+        include/whole-image-operations/HistogramStatsOperation.h
+        include/channel-operations/FourierOperation.h
+        include/channel-operations/FastFourierOperation.h
+        include/channel-operations/LowPassOperation.h
+        include/channel-operations/HighPassOperation.h
+        include/channel-operations/BandPassOperation.h
+        include/channel-operations/BandCutOperation.h
+        include/channel-operations/PhaseShiftOperation.h
 )
 
 target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})
