@@ -11,7 +11,9 @@
 
 class OutputManager {
 public:
-    static void saveImage(const cv::Mat &image, const std::string &filename);
+    static void saveImage(const cv::Mat &image, const std::string &filePath);
+
+    static void saveFile(const std::string &filePath, const std::stringstream &contents);
 
     static std::string constructPath(const std::string &baseName, const std::string &suffix,
                                      const std::string &extension);
