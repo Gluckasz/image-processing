@@ -29,20 +29,20 @@ add_library(image_processing_lib
         include/CommandParser.h
         include/CommandMapping.h
         include/ImageOperation.h
-        src/ChannelOperations/BrightnessOperation.cpp
-        src/ChannelOperations/ContrastLinearOperation.cpp
-        src/ChannelOperations/ContrastGammaOperation.cpp
-        src/ChannelOperations/NegativeOperation.cpp
-        src/ChannelOperations/FlipHorizontallyOperation.cpp
-        src/ChannelOperations/FlipVerticallyOperation.cpp
-        src/ChannelOperations/FlipDiagonallyOperation.cpp
-        src/ChannelOperations/ResizeOperation.cpp
-        src/ChannelOperations/MidpointFilterOperation.cpp
-        src/ChannelOperations/ArithmeticMeanFilterOperation.cpp
-        src/WholeImageOperations/LaplacianFilterOperation.cpp
-        src/WholeImageOperations/OptimizedLaplacianFilterOperation.cpp
-        src/WholeImageOperations/RobertsOperation.cpp
-        src/WholeImageOperations/RegionGrowingOperation.cpp
+        src/channel-operations/BrightnessOperation.cpp
+        src/channel-operations/ContrastLinearOperation.cpp
+        src/channel-operations/ContrastGammaOperation.cpp
+        src/channel-operations/NegativeOperation.cpp
+        src/channel-operations/FlipHorizontallyOperation.cpp
+        src/channel-operations/FlipVerticallyOperation.cpp
+        src/channel-operations/FlipDiagonallyOperation.cpp
+        src/channel-operations/ResizeOperation.cpp
+        src/channel-operations/MidpointFilterOperation.cpp
+        src/channel-operations/ArithmeticMeanFilterOperation.cpp
+        src/whole-image-operations/LaplacianFilterOperation.cpp
+        src/whole-image-operations/OptimizedLaplacianFilterOperation.cpp
+        src/whole-image-operations/RobertsOperation.cpp
+        src/whole-image-operations/RegionGrowingOperation.cpp
         src/OutputManager.cpp
         include/OutputManager.h
 )
