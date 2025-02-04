@@ -2,7 +2,7 @@
 // Created by gluckasz on 2/3/25.
 //
 #include "ImageOperation.h"
-#include "SpatialDomainProcessor.h"
+#include "../../include/image-processing-lib/SpatialDomainProcessor.h"
 
 class OptimizedLaplacianFilterOperation final : public ImageOperation {
 public:

@@ -2,7 +2,7 @@
 // Created by gluckasz on 2/3/25.
 //
 #include "ImageOperation.h"
-#include "SpatialDomainProcessor.h"
+#include "../../include/image-processing-lib/SpatialDomainProcessor.h"
 
 class FlipHorizontallyOperation final : public ImageOperation {
 public:

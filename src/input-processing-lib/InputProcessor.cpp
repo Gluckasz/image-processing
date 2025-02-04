@@ -2,7 +2,7 @@
 // Created by gluckasz on 10/9/24.
 //
 
-#include "../include/InputProcessor.h"
+#include "../../include/input-processing-lib/InputProcessor.h"
 
 InputProcessor::InputProcessor(int argc, char **argv) {
     this->argc = argc;

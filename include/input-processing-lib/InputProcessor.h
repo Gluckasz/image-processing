@@ -13,11 +13,11 @@
 #include <fstream>
 #include <chrono>
 
-#include "../include/SpatialDomainProcessor.h"
+#include "../image-processing-lib/SpatialDomainProcessor.h"
 #include "../include/FourierProcessor.h"
-#include "../include/HistogramProcessor.h"
-#include "../include/MorphologicalProcessor.h"
-#include "../include/ImageComparer.h"
+#include "../image-processing-lib/HistogramProcessor.h"
+#include "../image-processing-lib/MorphologicalProcessor.h"
+#include "../image-processing-lib/ImageComparer.h"
 
 constexpr int INPUT_IMAGE_POS = 1;
 

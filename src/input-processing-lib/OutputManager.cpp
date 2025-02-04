@@ -2,11 +2,11 @@
 // Created by gluckasz on 2/3/25.
 //
 
-#include "../include/OutputManager.h"
+#include "../../include/input-processing-lib/OutputManager.h"
 
 #include <fstream>
 
-#include "Constants.h"
+#include "../../include/Constants.h"
 
 
 void OutputManager::saveImage(const cv::Mat &image, const std::string &filePath) {

@@ -1,9 +1,9 @@
 //
 // Created by gluckasz on 2/4/25.
 //
-#include "../../include/HistogramProcessor.h"
+#include "../../include/image-processing-lib/HistogramProcessor.h"
 #include "../../include/ImageOperation.h"
-#include "../../include/OutputManager.h"
+#include "../../include/input-processing-lib/OutputManager.h"
 
 class HistogramStatsOperation final : public ImageOperation {
 public:

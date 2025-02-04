@@ -2,7 +2,7 @@
 // Created by gluckasz on 2/3/25.
 //
 
-#include "../include/CommandParser.h"
+#include "../include/input-processing-lib/CommandParser.h"
 
 #include "CommandMapping.h"
 

@@ -10,24 +10,24 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 add_library(image_processing_lib
-        include/SpatialDomainProcessor.h
-        src/SpatialDomainProcessor.cpp
-        include/InputProcessor.h
-        src/InputProcessor.cpp
-        src/MorphologicalProcessor.cpp
-        include/MorphologicalProcessor.h
-        src/FourierProcessor.cpp
-        include/FourierProcessor.h
-        src/HistogramProcessor.cpp
-        include/HistogramProcessor.h
-        src/ImageComparer.cpp
-        include/ImageComparer.h
-        include/Masks.h
+        include/image-processing-lib/SpatialDomainProcessor.h
+        src/image-processing-lib/SpatialDomainProcessor.cpp
+        include/input-processing-lib/InputProcessor.h
+        src/input-processing-lib/InputProcessor.cpp
+        src/image-processing-lib/MorphologicalProcessor.cpp
+        include/image-processing-lib/MorphologicalProcessor.h
+        src/image-processing-lib/FourierProcessor.cpp
+        include/image-processing-lib/FourierProcessor.h
+        src/image-processing-lib/HistogramProcessor.cpp
+        include/image-processing-lib/HistogramProcessor.h
+        src/image-processing-lib/ImageComparer.cpp
+        include/image-processing-lib/ImageComparer.h
+        include/input-processing-lib/Masks.h
         include/Constants.h
-        include/CommandOptions.h
-        src/CommandParser.cpp
-        include/CommandParser.h
-        include/CommandMapping.h
+        include/input-processing-lib/CommandOptions.h
+        src/input-processing-lib/CommandParser.cpp
+        include/input-processing-lib/CommandParser.h
+        include/input-processing-lib/CommandMapping.h
         include/ImageOperation.h
         src/channel-operations/BrightnessOperation.cpp
         src/channel-operations/ContrastLinearOperation.cpp
@@ -43,8 +43,8 @@ add_library(image_processing_lib
         src/whole-image-operations/OptimizedLaplacianFilterOperation.cpp
         src/whole-image-operations/RobertsOperation.cpp
         src/whole-image-operations/RegionGrowingOperation.cpp
-        src/OutputManager.cpp
-        include/OutputManager.h
+        src/input-processing-lib/OutputManager.cpp
+        include/input-processing-lib/OutputManager.h
         src/whole-image-operations/DilationOperation.cpp
         src/whole-image-operations/ErosionOperation.cpp
         src/whole-image-operations/OpeningOperation.cpp

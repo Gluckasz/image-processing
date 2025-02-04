@@ -7,7 +7,7 @@
 #include <optional>
 #include <opencv2/opencv.hpp>
 
-#include "Constants.h"
+#include "../Constants.h"
 
 struct CommandOptions {
 #pragma region Input/Output configuration parameters

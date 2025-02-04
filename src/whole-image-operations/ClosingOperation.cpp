@@ -2,7 +2,7 @@
 // Created by gluckasz on 2/4/25.
 //
 #include "../../include/ImageOperation.h"
-#include "../../include/MorphologicalProcessor.h"
+#include "../../include/image-processing-lib/MorphologicalProcessor.h"
 
 class ClosingOperation final : public ImageOperation {
     int maskNum_;

@@ -3,7 +3,7 @@
 //
 #include "../../include/FourierProcessor.h"
 #include "../../include/ImageOperation.h"
-#include "../../include/OutputManager.h"
+#include "../../include/input-processing-lib/OutputManager.h"
 
 class FastFourierOperation final : public ImageOperation {
 public:

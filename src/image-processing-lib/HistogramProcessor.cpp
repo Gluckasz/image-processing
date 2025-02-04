@@ -2,7 +2,7 @@
 // Created by gluckasz on 1/31/25.
 //
 
-#include "../include/HistogramProcessor.h"
+#include "../include/image-processing-lib/HistogramProcessor.h"
 
 namespace HistogramProcessor {
     std::array<uint, UCHAR_MAX + 1> computeHistogram(cv::Mat image) {

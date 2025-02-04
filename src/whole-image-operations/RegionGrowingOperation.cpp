@@ -2,8 +2,8 @@
 // Created by gluckasz on 2/3/25.
 //
 #include "ImageOperation.h"
-#include "OutputManager.h"
-#include "SpatialDomainProcessor.h"
+#include "../../include/input-processing-lib/OutputManager.h"
+#include "../../include/image-processing-lib/SpatialDomainProcessor.h"
 
 
 class RegionGrowingOperation final : public ImageOperation {
