@@ -51,6 +51,9 @@ add_library(image_processing_lib
         src/morphological-operations/ClosingOperation.cpp
         src/morphological-operations/HMTOperation.cpp
         src/stats-operations/CompareImageStatsOperation.cpp
+        src/histogram-operations/HistogramVisualizationOperation.cpp
+        src/histogram-operations/HistogramEqualizationOperation.cpp
+        src/histogram-operations/HistogramStatsOperation.cpp
 )
 
 target_link_libraries(image_processing_lib PUBLIC ${OpenCV_LIBS})

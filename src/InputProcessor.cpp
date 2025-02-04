@@ -272,7 +272,7 @@ void InputProcessor::applyImageTransformations(cv::Mat &image) {
 
         if (histogramUniformGMax.has_value() && histogramUniformGMin.has_value()) {
             std::array<uint, UCHAR_MAX + 1> imageHistogram = HistogramProcessor::computeHistogram(channels[i]);
-            channels[i] = HistogramProcessor::histogramUniform(channels[i], imageHistogram, histogramUniformGMax.value(), histogramUniformGMin.value());
+            channels[i] = HistogramProcessor::histogramEqualization(channels[i], imageHistogram, histogramUniformGMax.value(), histogramUniformGMin.value());
         }
 
         if(isFourierTransform) {

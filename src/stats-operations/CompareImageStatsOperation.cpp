@@ -1,8 +1,6 @@
 //
 // Created by gluckasz on 2/4/25.
 //
-#include <fstream>
-
 #include "ImageComparer.h"
 #include "ImageOperation.h"
 #include "OutputManager.h"

@@ -32,7 +32,7 @@ namespace HistogramProcessor {
         return histogramImage;
     }
 
-    cv::Mat histogramUniform(const cv::Mat &image,
+    cv::Mat histogramEqualization(const cv::Mat &image,
                              const std::array<uint, UCHAR_MAX + 1> &imageHistogram, const int gMax,
                              const int gMin) {
         cv::Mat result = image.clone();
