@@ -27,7 +27,7 @@ A command-line tool for image processing, designed for academic purposes. This a
 
 ### From Source 
 
-1. **Clone the Repository:**
+1. **Clone the Repository**
 2. cd image_processing
 3. cmake .
 4. make
