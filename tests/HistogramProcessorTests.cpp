@@ -29,24 +29,25 @@ TEST_F(HistogramProcessorTest, ComputeHistogramTest) {
 
 TEST_F(HistogramProcessorTest, HistogramTest) {
     constexpr int binWidth = 8;
-    const cv::Mat histogram = HistogramProcessor::histogramVisualization(whiteImageGrayscale, binWidth);
-    ASSERT_EQ(4, histogram.rows);
-    ASSERT_EQ(2056, histogram.cols);
+    const std::array<uint, UCHAR_MAX + 1> histogram = HistogramProcessor::computeHistogram(whiteImageGrayscale);
+    const cv::Mat histogramVis = HistogramProcessor::histogramVisualization(histogram, binWidth);
+    ASSERT_EQ(4, histogramVis.rows);
+    ASSERT_EQ(2056, histogramVis.cols);
     for (int y = UCHAR_MAX * binWidth; y < 2048; y++) {
-        for (int x = 0; x < histogram.rows; x++) {
-            EXPECT_EQ(histogram.at<uchar>(x, y), 255)
+        for (int x = 0; x < histogramVis.rows; x++) {
+            EXPECT_EQ(histogramVis.at<uchar>(x, y), 255)
             << "Mismatch at pixel (" << x << ", " << y << ")";
         }
     }
     for (int y = 0; y < UCHAR_MAX * binWidth; y++) {
-        for (int x = 0; x < histogram.rows; x++) {
-            EXPECT_EQ(histogram.at<uchar>(x, y), 0)
+        for (int x = 0; x < histogramVis.rows; x++) {
+            EXPECT_EQ(histogramVis.at<uchar>(x, y), 0)
             << "Mismatch at pixel (" << x << ", " << y << ")";
         }
     }
-    for (int y = 2048; y < histogram.cols; y++) {
-        for (int x = 0; x < histogram.rows; x++) {
-            EXPECT_EQ(histogram.at<uchar>(x, y), 0)
+    for (int y = 2048; y < histogramVis.cols; y++) {
+        for (int x = 0; x < histogramVis.rows; x++) {
+            EXPECT_EQ(histogramVis.at<uchar>(x, y), 0)
             << "Mismatch at pixel (" << x << ", " << y << ")";
         }
     }

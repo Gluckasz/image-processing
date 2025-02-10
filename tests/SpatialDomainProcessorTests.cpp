@@ -300,7 +300,7 @@ TEST_F(SpatialDomainProcessorTest, MidpointFilterTest) {
     ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
 
     constexpr int expectedValue = (10 + 0) / 2;
-    constexpr int modifiedPixel = imageAfterModification.at<uchar>(0, 0);
+    const int modifiedPixel = imageAfterModification.at<uchar>(0, 0);
     EXPECT_EQ(expectedValue, modifiedPixel)
         << "Mismatch at pixel (" << 0 << ", " << 0 << ")";
 }
