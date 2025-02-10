@@ -80,6 +80,7 @@ add_executable(image_processing_tests
         tests/ImageProcessorTests.cpp
         tests/SpatialDomainProcessorTests.cpp
         tests/ImageComparerTests.cpp
+        tests/HistogramProcessorTests.cpp
 )
 
 target_link_libraries(image_processing_tests
