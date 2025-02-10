@@ -1,8 +1,8 @@
 //
 // Created by gluckasz on 2/4/25.
 //
-#include "../../include/ImageOperation.h"
-#include "../../include/input-processing-lib/OutputManager.h"
+#include "../ImageOperation.h"
+#include "input-processing-lib/OutputManager.h"
 #include "image-processing-lib/FourierProcessor.h"
 
 class HighPassOperation final : public ImageOperation {

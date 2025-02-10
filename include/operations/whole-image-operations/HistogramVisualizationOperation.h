@@ -1,10 +1,10 @@
 //
 // Created by gluckasz on 2/4/25.
 //
-#include "../Constants.h"
-#include "../image-processing-lib/HistogramProcessor.h"
+#include "../../Constants.h"
+#include "image-processing-lib/HistogramProcessor.h"
 #include "../ImageOperation.h"
-#include "../input-processing-lib/OutputManager.h"
+#include "input-processing-lib/OutputManager.h"
 
 class HistogramVisualizationOperation final : public ImageOperation {
     int histogramChannel_;

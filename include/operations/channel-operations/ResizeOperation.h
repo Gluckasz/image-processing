@@ -1,8 +1,8 @@
 //
 // Created by gluckasz on 2/3/25.
 //
-#include "ImageOperation.h"
-#include "../../include/image-processing-lib/SpatialDomainProcessor.h"
+#include "../ImageOperation.h"
+#include "image-processing-lib/SpatialDomainProcessor.h"
 
 class ResizeOperation final : public ImageOperation {
     float delta_;

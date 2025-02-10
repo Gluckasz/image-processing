@@ -1,8 +1,8 @@
 //
 // Created by gluckasz on 2/4/25.
 //
-#include "../../include/ImageOperation.h"
-#include "../../include/image-processing-lib/MorphologicalProcessor.h"
+#include "../ImageOperation.h"
+#include "image-processing-lib/MorphologicalProcessor.h"
 
 class HMTOperation final : public ImageOperation {
     int maskNum_;

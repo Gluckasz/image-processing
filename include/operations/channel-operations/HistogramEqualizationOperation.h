@@ -1,10 +1,8 @@
 //
 // Created by gluckasz on 2/4/25.
 //
-#include "../../include/Constants.h"
-#include "../../include/image-processing-lib/HistogramProcessor.h"
-#include "../../include/ImageOperation.h"
-#include "../../include/input-processing-lib/OutputManager.h"
+#include "image-processing-lib/HistogramProcessor.h"
+#include "../ImageOperation.h"
 
 class HistogramEqualizationOperation final : public ImageOperation {
     int gMin_, gMax_;
