@@ -78,6 +78,8 @@ add_executable(image_processing_tests
         tests/GrayscaleImageProcessorTests.cpp
         tests/RGBImageProcessorTests.cpp
         tests/ImageProcessorTests.cpp
+        tests/SpatialDomainProcessorTests.cpp
+        tests/ImageComparerTests.cpp
 )
 
 target_link_libraries(image_processing_tests
