@@ -75,9 +75,7 @@ target_link_libraries(image_processing PRIVATE image_processing_lib)
 enable_testing()
 
 add_executable(image_processing_tests
-        tests/GrayscaleImageProcessorTests.cpp
-        tests/RGBImageProcessorTests.cpp
-        tests/ImageProcessorTests.cpp
+        tests/MorphologicalProcessorTests.cpp
         tests/SpatialDomainProcessorTests.cpp
         tests/ImageComparerTests.cpp
         tests/HistogramProcessorTests.cpp
