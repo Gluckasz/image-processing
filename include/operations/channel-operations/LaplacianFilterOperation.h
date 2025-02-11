@@ -2,7 +2,7 @@
 // Created by gluckasz on 2/3/25.
 //
 #include "../ImageOperation.h"
-#include "image-processing-lib/SpatialDomainProcessor.h"
+#include "../../image-processing-lib/SpatialDomainProcessor.h"
 
 class LaplacianFilterOperation final : public ImageOperation {
     int maskNum_;
@@ -12,10 +12,6 @@ public:
     }
 
     void apply(cv::Mat &image) const override {
-        if (image.channels() == 1) {
-            image = SpatialDomainProcessor::laplacianFilter<uchar>(image, maskNum_);
-        } else {
-            image = SpatialDomainProcessor::laplacianFilter<cv::Vec3b>(image, maskNum_);
-        }
+        image = SpatialDomainProcessor::laplacianFilter(image, maskNum_);
     }
 };

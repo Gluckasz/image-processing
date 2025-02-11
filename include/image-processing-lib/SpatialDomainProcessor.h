@@ -91,7 +91,6 @@ namespace SpatialDomainProcessor {
      * @param laplaceMask Type of Laplacian mask to use
      * @return Edge detected image
      */
-    template<typename TPixel>
     cv::Mat laplacianFilter(const cv::Mat &image, int laplaceMask);
 
     /**
@@ -99,7 +98,6 @@ namespace SpatialDomainProcessor {
      * @param image Input image
      * @return Edge detected image
      */
-    template<typename TPixel>
     cv::Mat optimizedLaplacianFilter(cv::Mat image);
 
     /**
@@ -107,7 +105,6 @@ namespace SpatialDomainProcessor {
      * @param image Input image
      * @return Edge detected image
      */
-    template<typename TPixel>
     cv::Mat robertsOperator1(cv::Mat image);
 
     /**

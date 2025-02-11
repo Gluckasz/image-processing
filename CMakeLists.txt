@@ -39,9 +39,9 @@ add_library(image_processing_lib
         include/operations/channel-operations/ResizeOperation.h
         include/operations/channel-operations/MidpointFilterOperation.h
         include/operations/channel-operations/ArithmeticMeanFilterOperation.h
-        include/operations/whole-image-operations/LaplacianFilterOperation.h
-        include/operations/whole-image-operations/OptimizedLaplacianFilterOperation.h
-        include/operations/whole-image-operations/RobertsOperation.h
+        include/operations/channel-operations/LaplacianFilterOperation.h
+        include/operations/channel-operations/OptimizedLaplacianFilterOperation.h
+        include/operations/channel-operations/RobertsOperation.h
         include/operations/whole-image-operations/RegionGrowingOperation.h
         src/input-processing-lib/OutputManager.cpp
         include/input-processing-lib/OutputManager.h

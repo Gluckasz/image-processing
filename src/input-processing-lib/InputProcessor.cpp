@@ -30,11 +30,11 @@
 #include "operations/whole-image-operations/HistogramStatsOperation.h"
 #include "operations/whole-image-operations/HistogramVisualizationOperation.h"
 #include "operations/whole-image-operations/HMTOperation.h"
-#include "operations/whole-image-operations/LaplacianFilterOperation.h"
+#include "../../include/operations/channel-operations/LaplacianFilterOperation.h"
 #include "operations/whole-image-operations/OpeningOperation.h"
-#include "operations/whole-image-operations/OptimizedLaplacianFilterOperation.h"
+#include "../../include/operations/channel-operations/OptimizedLaplacianFilterOperation.h"
 #include "operations/whole-image-operations/RegionGrowingOperation.h"
-#include "operations/whole-image-operations/RobertsOperation.h"
+#include "../../include/operations/channel-operations/RobertsOperation.h"
 
 
 void InputProcessor::setupChannelProcessingPipeline() {
@@ -110,6 +110,18 @@ void InputProcessor::setupChannelProcessingPipeline() {
         channelOperations_.emplace_back(
             std::make_unique<ResizeOperation>(options_.resizeModVal.value()));
     }
+    if (options_.laplaceMask.has_value()) {
+        channelOperations_.emplace_back(
+            std::make_unique<LaplacianFilterOperation>(options_.laplaceMask.value()));
+    }
+    if (options_.isOptimizedLaplacian) {
+        channelOperations_.emplace_back(
+            std::make_unique<OptimizedLaplacianFilterOperation>());
+    }
+    if (options_.isRobertsOperator) {
+        channelOperations_.emplace_back(
+            std::make_unique<RobertsOperation>());
+    }
 }
 
 void InputProcessor::setupImageProcessingPipeline() {
@@ -133,25 +145,13 @@ void InputProcessor::setupImageProcessingPipeline() {
         imageOperations_.emplace_back(
             std::make_unique<HMTOperation>(options_.hmtMask.value()));
     }
-    if (options_.laplaceMask.has_value()) {
-        imageOperations_.emplace_back(
-            std::make_unique<LaplacianFilterOperation>(options_.laplaceMask.value()));
-    }
     if (options_.openingMask.has_value()) {
         imageOperations_.emplace_back(
             std::make_unique<OpeningOperation>(options_.openingMask.value()));
     }
-    if (options_.isOptimizedLaplacian) {
-        imageOperations_.emplace_back(
-            std::make_unique<OptimizedLaplacianFilterOperation>());
-    }
     if (options_.regionGrowing.has_value()) {
         imageOperations_.emplace_back(
             std::make_unique<RegionGrowingOperation>(options_.regionGrowing.value()));
-    }
-    if (options_.isRobertsOperator) {
-        imageOperations_.emplace_back(
-            std::make_unique<RobertsOperation>());
     }
 }
 
