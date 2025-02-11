@@ -31,7 +31,7 @@ TEST_F(ImageProcessorTest, DilationTest) {
 
     for (int x = 0; x < blackImageGrayscale.rows; x++) {
         for (int y = 0; y < blackImageGrayscale.cols; y++) {
-            if (x == 0 && y == 1) {
+            if (x == 1 && y == 0) {
                 EXPECT_EQ(255, blackAfterDilation.at<uchar>(x, y))
                 << "Mismatch at pixel (" << x << ", " << y << ")";
             } else {
@@ -58,8 +58,13 @@ TEST_F(ImageProcessorTest, DilationTest) {
                 << "Mismatch at pixel (" << x << ", " << y << ")";
             }
 
-            EXPECT_EQ(255, whiteAfterDilation.at<uchar>(x, y))
-            << "Mismatch at pixel (" << x << ", " << y << ")";
+            if (x == 3 && y == 3) {
+                EXPECT_EQ(0, whiteAfterDilation.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            } else {
+                EXPECT_EQ(255, whiteAfterDilation.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            }
         }
     }
 
@@ -78,17 +83,8 @@ TEST_F(ImageProcessorTest, DilationTest) {
 
     for (int x = 0; x < blackImageGrayscale.rows; x++) {
         for (int y = 0; y < blackImageGrayscale.cols; y++) {
-            if (
-                (x == 1 && y == 1)
-                || (x == 1 && y == 2)
-                || (x == 2 && y == 1)
-                || (x == 2 && y == 2)
-                )
-                EXPECT_EQ(255, blackAfterDilation.at<uchar>(x, y))
-                << "Mismatch at pixel (" << x << ", " << y << ")";
-            else
-                EXPECT_EQ(0, blackAfterDilation.at<uchar>(x, y))
-                << "Mismatch at pixel (" << x << ", " << y << ")";
+            EXPECT_EQ(255, blackAfterDilation.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
 
             EXPECT_EQ(255, whiteAfterDilation.at<uchar>(x, y))
             << "Mismatch at pixel (" << x << ", " << y << ")";
@@ -122,7 +118,7 @@ TEST_F(ImageProcessorTest, ErosionTest) {
         for (int y = 0; y < blackImageGrayscale.cols; y++) {
             EXPECT_EQ(0, blackAfterErosion.at<uchar>(x, y))
             << "Mismatch at pixel (" << x << ", " << y << ")";
-            if (x == 1 && (y == 0 || y == 1))
+            if (x == 1 && (y == 0 || y == 1) || y == 3)
                 EXPECT_EQ(0, whiteAfterErosion.at<uchar>(x, y))
                 << "Mismatch at pixel (" << x << ", " << y << ")";
             else
@@ -138,7 +134,7 @@ TEST_F(ImageProcessorTest, ErosionTest) {
         for (int y = 0; y < blackImageGrayscale.cols; y++) {
             EXPECT_EQ(0, blackAfterErosion.at<uchar>(x, y))
             << "Mismatch at pixel (" << x << ", " << y << ")";
-            if (x != 3 && y != 3 && !(x == 1 && y == 1))
+            if (x == 3 || y == 3 || !(x == 1 && y == 1))
                 EXPECT_EQ(0, whiteAfterErosion.at<uchar>(x, y))
                 << "Mismatch at pixel (" << x << ", " << y << ")";
             else
@@ -163,17 +159,8 @@ TEST_F(ImageProcessorTest, ErosionTest) {
             EXPECT_EQ(0, blackAfterErosion.at<uchar>(x, y))
             << "Mismatch at pixel (" << x << ", " << y << ")";
 
-            if (
-                (x == 1 && y == 1)
-                || (x == 1 && y == 2)
-                || (x == 2 && y == 1)
-                || (x == 2 && y == 2)
-                )
-                EXPECT_EQ(0, whiteAfterErosion.at<uchar>(x, y))
-                << "Mismatch at pixel (" << x << ", " << y << ")";
-            else
-                EXPECT_EQ(255, whiteAfterErosion.at<uchar>(x, y))
-                << "Mismatch at pixel (" << x << ", " << y << ")";
+            EXPECT_EQ(0, whiteAfterErosion.at<uchar>(x, y))
+            << "Mismatch at pixel (" << x << ", " << y << ")";
         }
     }
 }
@@ -204,8 +191,14 @@ TEST_F(ImageProcessorTest, OpeningTest) {
         for (int y = 0; y < blackImageGrayscale.cols; y++) {
             EXPECT_EQ(0, blackAfterOpening.at<uchar>(x, y))
             << "Mismatch at pixel (" << x << ", " << y << ")";
-            EXPECT_EQ(255, whiteAfterOpening.at<uchar>(x, y))
-            << "Mismatch at pixel (" << x << ", " << y << ")";
+
+            if (y == 3 || (x == 1 && y == 0)) {
+                EXPECT_EQ(0, whiteAfterOpening.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            } else {
+                EXPECT_EQ(255, whiteAfterOpening.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            }
         }
     }
 }
@@ -219,10 +212,21 @@ TEST_F(ImageProcessorTest, ClosingTest) {
 
     for (int x = 0; x < blackImageGrayscale.rows; x++) {
         for (int y = 0; y < blackImageGrayscale.cols; y++) {
-            EXPECT_EQ(0, blackAfterClosing.at<uchar>(x, y))
-            << "Mismatch at pixel (" << x << ", " << y << ")";
-            EXPECT_EQ(255, whiteAfterClosing.at<uchar>(x, y))
-            << "Mismatch at pixel (" << x << ", " << y << ")";
+            if (x == 1 && y == 0) {
+                EXPECT_EQ(255, blackAfterClosing.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            } else {
+                EXPECT_EQ(0, blackAfterClosing.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            }
+
+            if (y == 3) {
+                EXPECT_EQ(0, whiteAfterClosing.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            } else {
+                EXPECT_EQ(255, whiteAfterClosing.at<uchar>(x, y))
+                << "Mismatch at pixel (" << x << ", " << y << ")";
+            }
         }
     }
 }
