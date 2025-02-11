@@ -324,7 +324,7 @@ TEST_F(SpatialDomainProcessorTest, LaplacianFilterGrayscaleTest) {
     largerBlackImageGrayscale.at<uchar>(2, 1) = 20;
     largerBlackImageGrayscale.at<uchar>(1, 2) = 20;
 
-    cv::Mat imageAfterModification = SpatialDomainProcessor::laplacianFilter<uchar>(largerBlackImageGrayscale, 0);
+    cv::Mat imageAfterModification = SpatialDomainProcessor::laplacianFilter(largerBlackImageGrayscale, 0);
     ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
 
     for (int x = 0; x < imageAfterModification.rows; x++) {
@@ -338,7 +338,7 @@ TEST_F(SpatialDomainProcessorTest, LaplacianFilterGrayscaleTest) {
         }
     }
 
-    imageAfterModification = SpatialDomainProcessor::laplacianFilter<uchar>(largerBlackImageGrayscale, 1);
+    imageAfterModification = SpatialDomainProcessor::laplacianFilter(largerBlackImageGrayscale, 1);
     ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
 
     for (int x = 0; x < imageAfterModification.rows; x++) {
@@ -352,7 +352,7 @@ TEST_F(SpatialDomainProcessorTest, LaplacianFilterGrayscaleTest) {
         }
     }
 
-    imageAfterModification = SpatialDomainProcessor::laplacianFilter<uchar>(largerBlackImageGrayscale, 2);
+    imageAfterModification = SpatialDomainProcessor::laplacianFilter(largerBlackImageGrayscale, 2);
     ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
 
     for (int x = 0; x < imageAfterModification.rows; x++) {
@@ -374,7 +374,7 @@ TEST_F(SpatialDomainProcessorTest, OptimizedLaplacianFilterGrayscaleTest) {
     largerBlackImageGrayscale.at<uchar>(2, 1) = 20;
     largerBlackImageGrayscale.at<uchar>(1, 2) = 20;
 
-    cv::Mat imageAfterModification = SpatialDomainProcessor::optimizedLaplacianFilter<uchar>(largerBlackImageGrayscale);
+    cv::Mat imageAfterModification = SpatialDomainProcessor::optimizedLaplacianFilter(largerBlackImageGrayscale);
     ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
 
     for (int x = 0; x < imageAfterModification.rows; x++) {
@@ -396,7 +396,7 @@ TEST_F(SpatialDomainProcessorTest, RobertsOperator1GrayscaleTest) {
     largerBlackImageGrayscale.at<uchar>(2, 1) = 20;
     largerBlackImageGrayscale.at<uchar>(1, 2) = 20;
 
-    cv::Mat imageAfterModification = SpatialDomainProcessor::robertsOperator1<uchar>(largerBlackImageGrayscale);
+    cv::Mat imageAfterModification = SpatialDomainProcessor::robertsOperator1(largerBlackImageGrayscale);
     ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
 
     EXPECT_EQ(40, imageAfterModification.at<uchar>(0, 0));
@@ -429,118 +429,6 @@ TEST_F(SpatialDomainProcessorTest, RegionGrowingGrayscaleTest) {
                 }
             }
         }
-    }
-}
-
-TEST_F(SpatialDomainProcessorTest, LaplacianFilterColorTest) {
-    for (int z = 0; z < 3; z++) {
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(0, 1)[z] = 20;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(1, 0)[z] = 20;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(1, 1)[z] = 40;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(2, 1)[z] = 20;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(1, 2)[z] = 20;
-    }
-
-    cv::Mat imageAfterModification = SpatialDomainProcessor::laplacianFilter<cv::Vec3b>(
-        largerBlackImageGrayscaleColor, 0);
-    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
-
-    for (int x = 0; x < imageAfterModification.rows; x++) {
-        for (int y = 0; y < imageAfterModification.cols; y++) {
-            for (int z = 0; z < 3; z++) {
-                if (x == 1 && y == 1)
-                    EXPECT_EQ(80, imageAfterModification.at<cv::Vec3b>(x, y)[z])
-                << "Mismatch at pixel (" << x << ", " << y << ")";
-                else
-                    EXPECT_EQ(40, imageAfterModification.at<cv::Vec3b>(x, y)[z])
-                << "Mismatch at pixel (" << x << ", " << y << ")";
-            }
-        }
-    }
-
-    imageAfterModification = SpatialDomainProcessor::laplacianFilter<cv::Vec3b>(largerBlackImageGrayscaleColor, 1);
-    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
-
-    for (int x = 0; x < imageAfterModification.rows; x++) {
-        for (int y = 0; y < imageAfterModification.cols; y++) {
-            for (int z = 0; z < 3; z++) {
-                if (x == 1 && y == 1)
-                    EXPECT_EQ(240, imageAfterModification.at<cv::Vec3b>(x, y)[z])
-                << "Mismatch at pixel (" << x << ", " << y << ")";
-                else
-                    EXPECT_EQ(80, imageAfterModification.at<cv::Vec3b>(x, y)[z])
-                << "Mismatch at pixel (" << x << ", " << y << ")";
-            }
-        }
-    }
-
-    imageAfterModification = SpatialDomainProcessor::laplacianFilter<cv::Vec3b>(largerBlackImageGrayscaleColor, 2);
-    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
-
-    for (int x = 0; x < imageAfterModification.rows; x++) {
-        for (int y = 0; y < imageAfterModification.cols; y++) {
-            for (int z = 0; z < 3; z++) {
-                if (x == 1 && y == 1)
-                    EXPECT_EQ(0, imageAfterModification.at<cv::Vec3b>(x, y)[z])
-                << "Mismatch at pixel (" << x << ", " << y << ")";
-                else
-                    EXPECT_EQ(40, imageAfterModification.at<cv::Vec3b>(x, y)[z])
-                << "Mismatch at pixel (" << x << ", " << y << ")";
-            }
-        }
-    }
-}
-
-TEST_F(SpatialDomainProcessorTest, OptimizedLaplacianFilterColorTest) {
-    for (int z = 0; z < 3; z++) {
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(0, 1)[z] = 20;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(1, 0)[z] = 20;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(1, 1)[z] = 40;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(2, 1)[z] = 20;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(1, 2)[z] = 20;
-    }
-
-    cv::Mat imageAfterModification = SpatialDomainProcessor::optimizedLaplacianFilter<cv::Vec3b>(
-        largerBlackImageGrayscaleColor);
-    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
-
-    for (int x = 0; x < imageAfterModification.rows; x++) {
-        for (int y = 0; y < imageAfterModification.cols; y++) {
-            for (int z = 0; z < 3; z++) {
-                if (x == 1 && y == 1)
-                    EXPECT_EQ(80, imageAfterModification.at<cv::Vec3b>(x, y)[z])
-                << "Mismatch at pixel (" << x << ", " << y << ")";
-                else
-                    EXPECT_EQ(40, imageAfterModification.at<cv::Vec3b>(x, y)[z])
-                << "Mismatch at pixel (" << x << ", " << y << ")";
-            }
-        }
-    }
-}
-
-TEST_F(SpatialDomainProcessorTest, RobertsOperator1Test) {
-    for (int z = 0; z < 3; z++) {
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(0, 1)[z] = 20;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(1, 0)[z] = 20;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(1, 1)[z] = 40;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(2, 1)[z] = 20;
-        largerBlackImageGrayscaleColor.at<cv::Vec3b>(1, 2)[z] = 20;
-    }
-
-    cv::Mat imageAfterModification = SpatialDomainProcessor::robertsOperator1<
-        cv::Vec3b>(largerBlackImageGrayscaleColor);
-    ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
-
-    for (int z = 0; z < 3; z++) {
-        EXPECT_EQ(40, imageAfterModification.at<cv::Vec3b>(0, 0)[z]);
-        EXPECT_EQ(40, imageAfterModification.at<cv::Vec3b>(1, 0)[z]);
-        EXPECT_EQ(40, imageAfterModification.at<cv::Vec3b>(0, 1)[z]);
-        EXPECT_EQ(40, imageAfterModification.at<cv::Vec3b>(1, 1)[z]);
-        EXPECT_EQ(0, imageAfterModification.at<cv::Vec3b>(0, 2)[z]);
-        EXPECT_EQ(0, imageAfterModification.at<cv::Vec3b>(2, 0)[z]);
-        EXPECT_EQ(20, imageAfterModification.at<cv::Vec3b>(2, 1)[z]);
-        EXPECT_EQ(20, imageAfterModification.at<cv::Vec3b>(1, 2)[z]);
-        EXPECT_EQ(0, imageAfterModification.at<cv::Vec3b>(2, 2)[z]);
     }
 }
 
