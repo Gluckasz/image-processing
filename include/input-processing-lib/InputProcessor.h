@@ -9,7 +9,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "CommandOptions.h"
-#include "ImageOperation.h"
+#include "../operations/ImageOperation.h"
 
 constexpr int INPUT_IMAGE_POS = 1;
 

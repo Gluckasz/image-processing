@@ -5,36 +5,36 @@
 #include "../../include/input-processing-lib/InputProcessor.h"
 
 
-#include "channel-operations/ArithmeticMeanFilterOperation.h"
-#include "channel-operations/BandCutOperation.h"
-#include "channel-operations/BandPassOperation.h"
-#include "channel-operations/BrightnessOperation.h"
-#include "channel-operations/ContrastGammaOperation.h"
-#include "channel-operations/ContrastLinearOperation.h"
-#include "channel-operations/FastFourierOperation.h"
-#include "channel-operations/FlipDiagonallyOperation.h"
-#include "channel-operations/FlipHorizontallyOperation.h"
-#include "channel-operations/FlipVerticallyOperation.h"
-#include "channel-operations/FourierOperation.h"
-#include "channel-operations/HighPassOperation.h"
-#include "channel-operations/HistogramEqualizationOperation.h"
-#include "channel-operations/LowPassOperation.h"
-#include "channel-operations/MidpointFilterOperation.h"
-#include "channel-operations/NegativeOperation.h"
-#include "channel-operations/PhaseShiftOperation.h"
-#include "channel-operations/ResizeOperation.h"
+#include "operations/channel-operations/ArithmeticMeanFilterOperation.h"
+#include "operations/channel-operations/BandCutOperation.h"
+#include "operations/channel-operations/BandPassOperation.h"
+#include "operations/channel-operations/BrightnessOperation.h"
+#include "operations/channel-operations/ContrastGammaOperation.h"
+#include "operations/channel-operations/ContrastLinearOperation.h"
+#include "operations/channel-operations/FastFourierOperation.h"
+#include "operations/channel-operations/FlipDiagonallyOperation.h"
+#include "operations/channel-operations/FlipHorizontallyOperation.h"
+#include "operations/channel-operations/FlipVerticallyOperation.h"
+#include "operations/channel-operations/FourierOperation.h"
+#include "operations/channel-operations/HighPassOperation.h"
+#include "operations/channel-operations/HistogramEqualizationOperation.h"
+#include "operations/channel-operations/LowPassOperation.h"
+#include "operations/channel-operations/MidpointFilterOperation.h"
+#include "operations/channel-operations/NegativeOperation.h"
+#include "operations/channel-operations/PhaseShiftOperation.h"
+#include "operations/channel-operations/ResizeOperation.h"
 #include "input-processing-lib/CommandMapping.h"
-#include "whole-image-operations/ClosingOperation.h"
-#include "whole-image-operations/CompareImageStatsOperation.h"
-#include "whole-image-operations/DilationOperation.h"
-#include "whole-image-operations/HistogramStatsOperation.h"
-#include "whole-image-operations/HistogramVisualizationOperation.h"
-#include "whole-image-operations/HMTOperation.h"
-#include "whole-image-operations/LaplacianFilterOperation.h"
-#include "whole-image-operations/OpeningOperation.h"
-#include "whole-image-operations/OptimizedLaplacianFilterOperation.h"
-#include "whole-image-operations/RegionGrowingOperation.h"
-#include "whole-image-operations/RobertsOperation.h"
+#include "operations/whole-image-operations/ClosingOperation.h"
+#include "operations/whole-image-operations/CompareImageStatsOperation.h"
+#include "operations/whole-image-operations/DilationOperation.h"
+#include "operations/whole-image-operations/HistogramStatsOperation.h"
+#include "operations/whole-image-operations/HistogramVisualizationOperation.h"
+#include "operations/whole-image-operations/HMTOperation.h"
+#include "../../include/operations/channel-operations/LaplacianFilterOperation.h"
+#include "operations/whole-image-operations/OpeningOperation.h"
+#include "../../include/operations/channel-operations/OptimizedLaplacianFilterOperation.h"
+#include "operations/whole-image-operations/RegionGrowingOperation.h"
+#include "../../include/operations/channel-operations/RobertsOperation.h"
 
 
 void InputProcessor::setupChannelProcessingPipeline() {
@@ -110,6 +110,18 @@ void InputProcessor::setupChannelProcessingPipeline() {
         channelOperations_.emplace_back(
             std::make_unique<ResizeOperation>(options_.resizeModVal.value()));
     }
+    if (options_.laplaceMask.has_value()) {
+        channelOperations_.emplace_back(
+            std::make_unique<LaplacianFilterOperation>(options_.laplaceMask.value()));
+    }
+    if (options_.isOptimizedLaplacian) {
+        channelOperations_.emplace_back(
+            std::make_unique<OptimizedLaplacianFilterOperation>());
+    }
+    if (options_.isRobertsOperator) {
+        channelOperations_.emplace_back(
+            std::make_unique<RobertsOperation>());
+    }
 }
 
 void InputProcessor::setupImageProcessingPipeline() {
@@ -133,25 +145,13 @@ void InputProcessor::setupImageProcessingPipeline() {
         imageOperations_.emplace_back(
             std::make_unique<HMTOperation>(options_.hmtMask.value()));
     }
-    if (options_.laplaceMask.has_value()) {
-        imageOperations_.emplace_back(
-            std::make_unique<LaplacianFilterOperation>(options_.laplaceMask.value()));
-    }
     if (options_.openingMask.has_value()) {
         imageOperations_.emplace_back(
             std::make_unique<OpeningOperation>(options_.openingMask.value()));
     }
-    if (options_.isOptimizedLaplacian) {
-        imageOperations_.emplace_back(
-            std::make_unique<OptimizedLaplacianFilterOperation>());
-    }
     if (options_.regionGrowing.has_value()) {
         imageOperations_.emplace_back(
             std::make_unique<RegionGrowingOperation>(options_.regionGrowing.value()));
-    }
-    if (options_.isRobertsOperator) {
-        imageOperations_.emplace_back(
-            std::make_unique<RobertsOperation>());
     }
 }
 

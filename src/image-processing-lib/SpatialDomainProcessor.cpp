@@ -6,19 +6,6 @@
 
 namespace {
     template<typename TPixel>
-    struct AccTypeFor;
-
-    template<>
-    struct AccTypeFor<uchar> {
-        using type = int;
-    };
-
-    template<>
-    struct AccTypeFor<cv::Vec3b> {
-        using type = cv::Vec3i;
-    };
-
-    template<typename TPixel>
     double getIntensity(const TPixel &pixel);
 
     template<>
@@ -34,7 +21,7 @@ namespace {
     cv::Mat padImage(const cv::Mat &image) {
         cv::Mat padded;
         constexpr int borderSize = 1;
-        copyMakeBorder(image, padded, borderSize, borderSize, borderSize, borderSize, cv::BORDER_REPLICATE);
+        copyMakeBorder(image, padded, borderSize, borderSize, borderSize, borderSize, cv::BORDER_CONSTANT);
         return padded;
     }
 }
@@ -227,7 +214,6 @@ namespace SpatialDomainProcessor {
         return paddedImage;
     }
 
-    template<typename TPixel>
     cv::Mat laplacianFilter(const cv::Mat &image, const int laplaceMask) {
         static constexpr std::array<std::array<std::array<int, 3>, 3>, 3> laplacianMasks = {{
             {{{0, -1, 0}, {-1, 4, -1}, {0, -1, 0}}},
@@ -246,96 +232,65 @@ namespace SpatialDomainProcessor {
 
         for (int x = 1; x < paddedImage.rows - 1; x++) {
             for (int y = 1; y < paddedImage.cols - 1; y++) {
-                typename AccTypeFor<TPixel>::type convolutionValue = {};
+                int convolutionValue = 0;
 
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
-                        TPixel pixel = paddedImage.at<TPixel>(x + i, y + j);
+                        int pixel = paddedImage.at<uchar>(x + i, y + j);
                         int maskVal = mask[i + 1][j + 1];
                         convolutionValue += pixel * maskVal;
                     }
                 }
 
-                TPixel resultPixel;
-                if constexpr (std::is_same_v<TPixel, uchar>) {
-                    int val = std::min(std::abs(convolutionValue), 255);
-                    resultPixel = static_cast<uchar>(val);
-                } else {
-                    for (int c = 0; c < 3; c++) {
-                        int val = std::min(std::abs(convolutionValue[c]), 255);
-                        resultPixel[c] = static_cast<uchar>(val);
-                    }
-                }
-
-                result.at<TPixel>(x - 1, y - 1) = resultPixel;
+                int val = std::min(std::abs(convolutionValue), 255);
+                result.at<uchar>(x - 1, y - 1) = static_cast<uchar>(val);
             }
         }
 
         return result;
     }
 
-    template<typename TPixel>
     cv::Mat optimizedLaplacianFilter(cv::Mat image) {
         cv::Mat newImage = cv::Mat::zeros(image.size(), image.type());
 
         for (int x = 0; x < image.rows; x++) {
             for (int y = 0; y < image.cols; y++) {
-                typename AccTypeFor<TPixel>::type convolutionValue = {};
+               int convolutionValue = 0;
 
                 if (x - 1 >= 0)
-                    convolutionValue += image.at<TPixel>(x - 1, y) * -1;
+                    convolutionValue += image.at<uchar>(x - 1, y) * -1;
                 if (y - 1 >= 0)
-                    convolutionValue += image.at<TPixel>(x, y - 1) * -1;
-                convolutionValue += image.at<TPixel>(x, y) * 4;
+                    convolutionValue += image.at<uchar>(x, y - 1) * -1;
+                convolutionValue += image.at<uchar>(x, y) * 4;
                 if (y + 1 < image.cols)
-                    convolutionValue += image.at<TPixel>(x, y + 1) * -1;
+                    convolutionValue += image.at<uchar>(x, y + 1) * -1;
                 if (x + 1 < image.rows)
-                    convolutionValue += image.at<TPixel>(x + 1, y) * -1;
+                    convolutionValue += image.at<uchar>(x + 1, y) * -1;
 
-                TPixel resultPixel;
-                if constexpr (std::is_same_v<TPixel, uchar>) {
-                    int val = std::min(std::abs(convolutionValue), 255);
-                    resultPixel = static_cast<uchar>(val);
-                } else {
-                    for (int c = 0; c < 3; c++) {
-                        int val = std::min(std::abs(convolutionValue[c]), 255);
-                        resultPixel[c] = static_cast<uchar>(val);
-                    }
-                }
-
-                newImage.at<TPixel>(x, y) = resultPixel;
+                int val = std::min(std::abs(convolutionValue), 255);
+                newImage.at<uchar>(x, y) = static_cast<uchar>(val);
             }
         }
 
         return newImage;
     }
 
-    template<typename TPixel>
     cv::Mat robertsOperator1(cv::Mat image) {
         cv::Mat result = image.clone();
 
         for (int x = 0; x < image.rows - 1; x++) {
             for (int y = 0; y < image.cols - 1; y++) {
-                TPixel current = image.at<TPixel>(x, y);
-                TPixel diag = image.at<TPixel>(x + 1, y + 1);
-                TPixel right = image.at<TPixel>(x, y + 1);
-                TPixel below = image.at<TPixel>(x + 1, y);
+                int current = image.at<uchar>(x, y);
+                int diag = image.at<uchar>(x + 1, y + 1);
+                int right = image.at<uchar>(x, y + 1);
+                int below = image.at<uchar>(x + 1, y);
 
-                TPixel diff1 = current - diag;
-                TPixel diff2 = right - below;
+                int diff1 = current - diag;
+                int diff2 = right - below;
 
-                TPixel magnitude;
-                if constexpr (std::is_same_v<TPixel, uchar>) {
-                    int val = static_cast<int>(std::sqrt(std::pow(diff1, 2) + std::pow(diff2, 2)));
-                    magnitude = std::clamp(val, 0, 255);
-                } else {
-                    for (int c = 0; c < 3; c++) {
-                        int val = static_cast<int>(std::sqrt(std::pow(diff1[c], 2) + std::pow(diff2[c], 2)));
-                        magnitude[c] = std::clamp(val, 0, 255);
-                    }
-                }
-
-                result.at<TPixel>(x, y) = magnitude;
+                int val = static_cast<int>(std::round(std::sqrt(std::pow(diff1, 2) + std::pow(diff2, 2))));
+                int magnitude = std::clamp(val, 0, 255);
+                result.at<uchar>(x, y) = magnitude;
             }
         }
 
@@ -440,15 +395,6 @@ namespace SpatialDomainProcessor {
         return colorMask;
     }
 }
-
-template cv::Mat SpatialDomainProcessor::laplacianFilter<uchar>(const cv::Mat &, int);
-template cv::Mat SpatialDomainProcessor::laplacianFilter<cv::Vec3b>(const cv::Mat &, int);
-
-template cv::Mat SpatialDomainProcessor::optimizedLaplacianFilter<uchar>(cv::Mat);
-template cv::Mat SpatialDomainProcessor::optimizedLaplacianFilter<cv::Vec3b>(cv::Mat);
-
-template cv::Mat SpatialDomainProcessor::robertsOperator1<uchar>(cv::Mat);
-template cv::Mat SpatialDomainProcessor::robertsOperator1<cv::Vec3b>(cv::Mat);
 
 template cv::Mat SpatialDomainProcessor::regionGrowing<uchar>(cv::Mat, int);
 template cv::Mat SpatialDomainProcessor::regionGrowing<cv::Vec3b>(cv::Mat, int);
