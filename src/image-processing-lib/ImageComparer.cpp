@@ -6,6 +6,12 @@
 
 namespace ImageComparer {
     double meanSquareError(cv::Mat originalImage, cv::Mat newImage) {
+        if (originalImage.empty() || newImage.empty()) {
+            throw std::invalid_argument("Images cannot be empty");
+        }
+        if (originalImage.cols != newImage.cols || originalImage.rows != newImage.rows) {
+            throw std::invalid_argument("Images must have same dimensions");
+        }
         double squareDistanceSum = 0;
 
         for (int x = 0; x < originalImage.cols; x++) {
@@ -20,6 +26,12 @@ namespace ImageComparer {
     }
 
     double peakMeanSquareError(cv::Mat originalImage, const cv::Mat &newImage) {
+        if (originalImage.empty() || newImage.empty()) {
+            throw std::invalid_argument("Images cannot be empty");
+        }
+        if (originalImage.cols != newImage.cols || originalImage.rows != newImage.rows) {
+            throw std::invalid_argument("Images must have same dimensions");
+        }
         uchar max = 0;
 
         for (int x = 0; x < originalImage.cols; x++) {
@@ -29,11 +41,20 @@ namespace ImageComparer {
                 }
             }
         }
+        if (max == 0) {
+            throw std::invalid_argument("Image maximum value cannot be zero");
+        }
         return meanSquareError(originalImage, newImage)
                / pow(max, 2);
     }
 
     double signalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) {
+        if (originalImage.empty() || newImage.empty()) {
+            throw std::invalid_argument("Images cannot be empty");
+        }
+        if (originalImage.cols != newImage.cols || originalImage.rows != newImage.rows) {
+            throw std::invalid_argument("Images must have same dimensions");
+        }
         double squareSum = 0;
         double se = 0;
 
@@ -43,6 +64,12 @@ namespace ImageComparer {
                 se += pow(originalImage.at<uchar>(x, y) - newImage.at<uchar>(x, y), 2);
             }
         }
+        if (se == 0) {
+            throw std::invalid_argument("Squared error value cannot be zero");
+        }
+        if (squareSum == 0) {
+            throw std::invalid_argument("Squared sum value of original image cannot be zero");
+        }
 
         return 10 * std::log10(
                    squareSum
@@ -51,6 +78,12 @@ namespace ImageComparer {
     }
 
     double peakSignalToNoiseRatio(cv::Mat originalImage, cv::Mat newImage) {
+        if (originalImage.empty() || newImage.empty()) {
+            throw std::invalid_argument("Images cannot be empty");
+        }
+        if (originalImage.cols != newImage.cols || originalImage.rows != newImage.rows) {
+            throw std::invalid_argument("Images must have same dimensions");
+        }
         uchar max = 0;
         for (int x = 0; x < originalImage.cols; x++) {
             for (int y = 0; y < originalImage.rows; y++) {
@@ -58,6 +91,9 @@ namespace ImageComparer {
                     max = originalImage.at<uchar>(x, y);
                 }
             }
+        }
+        if (max == 0) {
+            throw std::invalid_argument("Image maximum value cannot be zero");
         }
 
         unsigned long long maxSquareSum = 0;
@@ -68,6 +104,9 @@ namespace ImageComparer {
                 se += pow(originalImage.at<uchar>(x, y) - newImage.at<uchar>(x, y), 2);
             }
         }
+        if (se == 0) {
+            throw std::invalid_argument("Squared error value cannot be zero");
+        }
 
         return 10 * std::log10(
                    static_cast<double>(maxSquareSum)
@@ -76,6 +115,12 @@ namespace ImageComparer {
 
 
     double maximumDifference(cv::Mat originalImage, cv::Mat newImage) {
+        if (originalImage.empty() || newImage.empty()) {
+            throw std::invalid_argument("Images cannot be empty");
+        }
+        if (originalImage.cols != newImage.cols || originalImage.rows != newImage.rows) {
+            throw std::invalid_argument("Images must have same dimensions");
+        }
         uchar maxDifference = 0;
         for (int x = 0; x < originalImage.cols; x++) {
             for (int y = 0; y < originalImage.rows; y++) {
