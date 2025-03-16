@@ -2,12 +2,19 @@ cmake_minimum_required(VERSION 3.28)
 project(image_processing)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/v1.14.0.zip
+)
+FetchContent_MakeAvailable(googletest)
 
 add_library(image_processing_lib
         include/image-processing-lib/SpatialDomainProcessor.h
@@ -84,8 +91,8 @@ add_executable(image_processing_tests
 target_link_libraries(image_processing_tests
         PRIVATE
         image_processing_lib
-        GTest::GTest
-        GTest::Main
+        gtest
+        gtest_main
 )
 
 add_test(NAME ImageProcessingTests COMMAND image_processing_tests)
