@@ -295,24 +295,24 @@ TEST_F(SpatialDomainProcessorTest, ResizeTest) {
 }
 
 TEST_F(SpatialDomainProcessorTest, MidpointFilterTest) {
-    blackImageGrayscale.at<uchar>(0, 0) = 10;
-    cv::Mat imageAfterModification = SpatialDomainProcessor::midpointFilter(blackImageGrayscale, 2);
+    largerBlackImageGrayscale.at<uchar>(1, 1) = 10;
+    cv::Mat imageAfterModification = SpatialDomainProcessor::midpointFilter(largerBlackImageGrayscale, 2);
     ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
 
     constexpr int expectedValue = (10 + 0) / 2;
-    const int modifiedPixel = imageAfterModification.at<uchar>(0, 0);
+    const int modifiedPixel = imageAfterModification.at<uchar>(1, 1);
     EXPECT_EQ(expectedValue, modifiedPixel)
         << "Mismatch at pixel (" << 0 << ", " << 0 << ")";
 }
 
 TEST_F(SpatialDomainProcessorTest, ArithmeticMeanFilterTest) {
-    blackImageGrayscale.at<uchar>(0, 0) = 10;
-    blackImageGrayscale.at<uchar>(0, 1) = 10;
-    cv::Mat imageAfterModification = SpatialDomainProcessor::arithmeticMeanFilter(blackImageGrayscale, 2);
+    largerBlackImageGrayscale.at<uchar>(1, 1) = 10;
+    largerBlackImageGrayscale.at<uchar>(0, 0) = 10;
+    cv::Mat imageAfterModification = SpatialDomainProcessor::arithmeticMeanFilter(largerBlackImageGrayscale, 2);
     ASSERT_FALSE(imageAfterModification.empty()) << "The imageAfterModification should not be empty.";
 
     constexpr int expectedValue = (10 + 10 + 0 + 0) / 4;
-    const int modifiedPixel = imageAfterModification.at<uchar>(0, 0);
+    const int modifiedPixel = imageAfterModification.at<uchar>(1, 1);
     EXPECT_EQ(expectedValue, modifiedPixel)
         << "Mismatch at pixel (" << 0 << ", " << 0 << ")";
 }
