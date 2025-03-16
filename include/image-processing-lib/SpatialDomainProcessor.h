@@ -75,7 +75,7 @@ namespace SpatialDomainProcessor {
      * @param kernelSize of the filter
      * @return image after applying the filter
      */
-    cv::Mat midpointFilter(cv::Mat image, int kernelSize);
+    cv::Mat midpointFilter(cv::Mat image, const int kernelSize);
 
     /**
      * Apply an arithmetic filter.
@@ -83,7 +83,7 @@ namespace SpatialDomainProcessor {
      * @param kernelSize of the filter
      * @return image after applying the filter
      */
-    cv::Mat arithmeticMeanFilter(cv::Mat image, int kernelSize);
+    cv::Mat arithmeticMeanFilter(cv::Mat image, const int kernelSize);
 
     /**
      * Apply Laplacian-edge detection filter.

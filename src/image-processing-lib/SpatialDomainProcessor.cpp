@@ -149,30 +149,26 @@ namespace SpatialDomainProcessor {
     }
 
     cv::Mat midpointFilter(cv::Mat image, const int kernelSize) {
-        cv::Mat newImage;
-        image.copyTo(newImage);
-        const int border = (kernelSize - 1) / 2;
-        int leftFilterSize = -kernelSize / 2;
-        const int rightFilterSize = kernelSize / 2;
-        if (kernelSize % 2 == 0) {
-            leftFilterSize += 1;
+        if (kernelSize < 1) {
+            throw std::invalid_argument("Kernel size must be at least 1");
         }
+
+        cv::Mat newImage = image.clone();
+        const int border = kernelSize / 2;
 
         for (int x = border; x < image.rows - border; x++) {
             for (int y = border; y < image.cols - border; y++) {
-                uchar max = image.at<uchar>(x - border, y - border);
-                uchar min = image.at<uchar>(x - border, y - border);
-                for (int i = leftFilterSize; i <= rightFilterSize; i++) {
-                    for (int j = leftFilterSize; j <= rightFilterSize; j++) {
+                uchar min = 255;
+                uchar max = 0;
+
+                for (int i = -border; i <= border; i++) {
+                    for (int j = -border; j <= border; j++) {
                         const uchar currentPixel = image.at<uchar>(x + i, y + j);
-                        if (max < currentPixel) {
-                            max = currentPixel;
-                        }
-                        if (min > currentPixel) {
-                            min = currentPixel;
-                        }
+                        if (max < currentPixel) max = currentPixel;
+                        if (min > currentPixel) min = currentPixel;
                     }
                 }
+
                 newImage.at<uchar>(x, y) = (max + min) / 2;
             }
         }
@@ -180,27 +176,32 @@ namespace SpatialDomainProcessor {
     }
 
     cv::Mat arithmeticMeanFilter(cv::Mat image, const int kernelSize) {
-        cv::Mat newImage;
-        image.copyTo(newImage);
-        const int border = (kernelSize - 1) / 2;
-        int leftFilterSize = -kernelSize / 2;
-        const int rightFilterSize = kernelSize / 2;
-        if (kernelSize % 2 == 0) {
-            leftFilterSize += 1;
+        if (kernelSize < 1) {
+            throw std::invalid_argument("Kernel size must be at least 1");
         }
+
+        cv::Mat result = image.clone();
+
+        const int border = kernelSize / 2;
 
         for (int x = border; x < image.rows - border; x++) {
             for (int y = border; y < image.cols - border; y++) {
                 int sum = 0;
-                for (int i = leftFilterSize; i <= rightFilterSize; i++) {
-                    for (int j = leftFilterSize; j <= rightFilterSize; j++) {
-                        sum += image.at<uchar>(x + j, y + i);
+                int count = 0;
+
+                for (int i = -border; i <= border; i++) {
+                    for (int j = -border; j <= border; j++) {
+                        sum += image.at<uchar>(x + i, y + j);
+                        count++;
                     }
                 }
-                newImage.at<uchar>(x, y) = static_cast<uchar>(sum / pow(kernelSize, 2));
+
+
+                result.at<uchar>(x, y) = count > 0 ? static_cast<uchar>(sum / count) : image.at<uchar>(x, y);
             }
         }
-        return newImage;
+
+        return result;
     }
 
 
