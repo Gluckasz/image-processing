@@ -5,6 +5,7 @@
 #ifndef FOURIERPROCESSOR_H
 #define FOURIERPROCESSOR_H
 #include <opencv2/opencv.hpp>
+#include <numbers>
 
 
 namespace FourierProcessor {

@@ -6,8 +6,8 @@
 #define CONSTANTS_H
 
 namespace Constants {
-    constexpr std::string DEFAULT_OUTPUT_DIR = "output";
-    constexpr std::string DEFAULT_OUTPUT_NAME = "output";
+    const std::string DEFAULT_OUTPUT_DIR = "output";
+    const std::string DEFAULT_OUTPUT_NAME = "output";
     constexpr int DEFAULT_BIN_WIDTH = 10;
 }
 
