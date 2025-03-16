@@ -149,26 +149,31 @@ namespace SpatialDomainProcessor {
     }
 
     cv::Mat midpointFilter(cv::Mat image, const int kernelSize) {
-        if (kernelSize < 1) {
-            throw std::invalid_argument("Kernel size must be at least 1");
-        }
-
-        cv::Mat newImage = image.clone();
+        cv::Mat newImage;
+        image.copyTo(newImage);
         const int border = kernelSize / 2;
 
         for (int x = border; x < image.rows - border; x++) {
             for (int y = border; y < image.cols - border; y++) {
-                uchar min = 255;
                 uchar max = 0;
+                uchar min = 255;
 
                 for (int i = -border; i <= border; i++) {
                     for (int j = -border; j <= border; j++) {
-                        const uchar currentPixel = image.at<uchar>(x + i, y + j);
-                        if (max < currentPixel) max = currentPixel;
-                        if (min > currentPixel) min = currentPixel;
+                        if (kernelSize % 2 == 0 && (i == border || j == border))
+                            continue;
+                        int nx = x + i;
+                        int ny = y + j;
+
+                        const uchar currentPixel = image.at<uchar>(nx, ny);
+                        if (currentPixel > max) {
+                            max = currentPixel;
+                        }
+                        if (currentPixel < min) {
+                            min = currentPixel;
+                        }
                     }
                 }
-
                 newImage.at<uchar>(x, y) = (max + min) / 2;
             }
         }
@@ -176,12 +181,8 @@ namespace SpatialDomainProcessor {
     }
 
     cv::Mat arithmeticMeanFilter(cv::Mat image, const int kernelSize) {
-        if (kernelSize < 1) {
-            throw std::invalid_argument("Kernel size must be at least 1");
-        }
-
-        cv::Mat result = image.clone();
-
+        cv::Mat newImage;
+        image.copyTo(newImage);
         const int border = kernelSize / 2;
 
         for (int x = border; x < image.rows - border; x++) {
@@ -191,17 +192,20 @@ namespace SpatialDomainProcessor {
 
                 for (int i = -border; i <= border; i++) {
                     for (int j = -border; j <= border; j++) {
-                        sum += image.at<uchar>(x + i, y + j);
+                        if (kernelSize % 2 == 0 && (i == border || j == border))
+                            continue;
+
+                        int nx = x + i;
+                        int ny = y + j;
+
+                        sum += image.at<uchar>(nx, ny);
                         count++;
                     }
                 }
-
-
-                result.at<uchar>(x, y) = count > 0 ? static_cast<uchar>(sum / count) : image.at<uchar>(x, y);
+                newImage.at<uchar>(x, y) = static_cast<uchar>(sum / count);
             }
         }
-
-        return result;
+        return newImage;
     }
 
 
