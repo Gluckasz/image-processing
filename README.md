@@ -25,7 +25,7 @@ A command-line tool for image processing, designed for academic purposes. This a
 
 - **C++ Compiler:** C++20 (or higher) with OpenMP support
 - **OpenCV:** Version 4.10.0 (or higher)
-- **Google Test:** Version 1.14.0 or later
+- **Google Test:** Version 1.14.0 (or higher)- included as a subdirectory
 
 
 ## Installation
